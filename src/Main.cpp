@@ -241,6 +241,7 @@ int main() {
 				window.draw(inputTextRect);
 				window.draw(inputText);
 			}
+		}
 		if(turn > 3){
 			turn = 0;
 		}
@@ -321,6 +322,5 @@ int main() {
 	}
 	delete[] players;
 	return 0;
-
 
 }
