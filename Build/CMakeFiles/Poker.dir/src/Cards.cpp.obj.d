@@ -1,33 +1,13 @@
-CMakeFiles/PokerProject.dir/src/Cards.cpp.obj: \
+CMakeFiles/Poker.dir/src/Cards.cpp.obj: \
  C:\Users\terra\Downloads\Projects\repos\Poker\src\Cards.cpp \
  C:\Users\terra\Downloads\Projects\repos\Poker\src\Cards.h \
- C:/msys64/mingw32/include/c++/13.1.0/exception \
+ C:/Users/terra/Downloads/Projects/Libraries/MinGW/MiscLib/include/Misc.h \
+ C:/msys64/mingw32/include/c++/13.1.0/iostream \
+ C:/msys64/mingw32/include/c++/13.1.0/bits/requires_hosted.h \
  C:/msys64/mingw32/include/c++/13.1.0/i686-w64-mingw32/bits/c++config.h \
  C:/msys64/mingw32/include/c++/13.1.0/i686-w64-mingw32/bits/os_defines.h \
  C:/msys64/mingw32/include/c++/13.1.0/i686-w64-mingw32/bits/cpu_defines.h \
  C:/msys64/mingw32/include/c++/13.1.0/pstl/pstl_config.h \
- C:/msys64/mingw32/include/c++/13.1.0/bits/exception.h \
- C:/msys64/mingw32/include/c++/13.1.0/bits/exception_ptr.h \
- C:/msys64/mingw32/include/c++/13.1.0/bits/exception_defines.h \
- C:/msys64/mingw32/include/c++/13.1.0/bits/cxxabi_init_exception.h \
- C:/msys64/mingw32/lib/gcc/i686-w64-mingw32/13.1.0/include/stddef.h \
- C:/msys64/mingw32/i686-w64-mingw32/include/stddef.h \
- C:/msys64/mingw32/i686-w64-mingw32/include/crtdefs.h \
- C:/msys64/mingw32/i686-w64-mingw32/include/corecrt.h \
- C:/msys64/mingw32/i686-w64-mingw32/include/_mingw.h \
- C:/msys64/mingw32/i686-w64-mingw32/include/_mingw_mac.h \
- C:/msys64/mingw32/i686-w64-mingw32/include/_mingw_secapi.h \
- C:/msys64/mingw32/i686-w64-mingw32/include/vadefs.h \
- C:/msys64/mingw32/i686-w64-mingw32/include/sdks/_mingw_ddk.h \
- C:/msys64/mingw32/include/c++/13.1.0/typeinfo \
- C:/msys64/mingw32/include/c++/13.1.0/bits/hash_bytes.h \
- C:/msys64/mingw32/include/c++/13.1.0/new \
- C:/msys64/mingw32/include/c++/13.1.0/bits/move.h \
- C:/msys64/mingw32/include/c++/13.1.0/type_traits \
- C:/msys64/mingw32/include/c++/13.1.0/bits/nested_exception.h \
- C:/Users/terra/Downloads/Projects/Libraries/MinGW/MiscLib/include/Misc.h \
- C:/msys64/mingw32/include/c++/13.1.0/iostream \
- C:/msys64/mingw32/include/c++/13.1.0/bits/requires_hosted.h \
  C:/msys64/mingw32/include/c++/13.1.0/ostream \
  C:/msys64/mingw32/include/c++/13.1.0/ios \
  C:/msys64/mingw32/include/c++/13.1.0/iosfwd \
@@ -36,12 +16,32 @@ CMakeFiles/PokerProject.dir/src/Cards.cpp.obj: \
  C:/msys64/mingw32/include/c++/13.1.0/bits/postypes.h \
  C:/msys64/mingw32/include/c++/13.1.0/cwchar \
  C:/msys64/mingw32/i686-w64-mingw32/include/wchar.h \
+ C:/msys64/mingw32/i686-w64-mingw32/include/corecrt.h \
+ C:/msys64/mingw32/i686-w64-mingw32/include/_mingw.h \
+ C:/msys64/mingw32/i686-w64-mingw32/include/_mingw_mac.h \
+ C:/msys64/mingw32/i686-w64-mingw32/include/_mingw_secapi.h \
+ C:/msys64/mingw32/i686-w64-mingw32/include/vadefs.h \
+ C:/msys64/mingw32/i686-w64-mingw32/include/sdks/_mingw_ddk.h \
  C:/msys64/mingw32/i686-w64-mingw32/include/corecrt_stdio_config.h \
  C:/msys64/mingw32/i686-w64-mingw32/include/corecrt_wstdlib.h \
  C:/msys64/mingw32/i686-w64-mingw32/include/_mingw_off_t.h \
  C:/msys64/mingw32/i686-w64-mingw32/include/_mingw_stat64.h \
  C:/msys64/mingw32/i686-w64-mingw32/include/swprintf.inl \
  C:/msys64/mingw32/i686-w64-mingw32/include/sec_api/wchar_s.h \
+ C:/msys64/mingw32/include/c++/13.1.0/exception \
+ C:/msys64/mingw32/include/c++/13.1.0/bits/exception.h \
+ C:/msys64/mingw32/include/c++/13.1.0/bits/exception_ptr.h \
+ C:/msys64/mingw32/include/c++/13.1.0/bits/exception_defines.h \
+ C:/msys64/mingw32/include/c++/13.1.0/bits/cxxabi_init_exception.h \
+ C:/msys64/mingw32/lib/gcc/i686-w64-mingw32/13.1.0/include/stddef.h \
+ C:/msys64/mingw32/i686-w64-mingw32/include/stddef.h \
+ C:/msys64/mingw32/i686-w64-mingw32/include/crtdefs.h \
+ C:/msys64/mingw32/include/c++/13.1.0/typeinfo \
+ C:/msys64/mingw32/include/c++/13.1.0/bits/hash_bytes.h \
+ C:/msys64/mingw32/include/c++/13.1.0/new \
+ C:/msys64/mingw32/include/c++/13.1.0/bits/move.h \
+ C:/msys64/mingw32/include/c++/13.1.0/type_traits \
+ C:/msys64/mingw32/include/c++/13.1.0/bits/nested_exception.h \
  C:/msys64/mingw32/include/c++/13.1.0/bits/char_traits.h \
  C:/msys64/mingw32/include/c++/13.1.0/compare \
  C:/msys64/mingw32/include/c++/13.1.0/concepts \

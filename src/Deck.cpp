@@ -4,8 +4,8 @@ Poker::Deck::Deck() {
 	this->deck = (Card*)new Card[52];
 	this->mySize = 52;
 	int counter = 0;
-	for (size_t i = 10; i < Suits::Spades + 1; i += 10) {
-		for (size_t j = 2; j < CardNumbers::ace + 1; j++) {
+	for (size_t i = 10; i < Suits::Spades; i += 10) {
+		for (size_t j = 2; j < CardNumbers::ace; j++) {
 			deck[counter].changeCard(j, i);
 			std::unique_ptr<std::vector<std::string>> vect = std::move(Poker::Card::getCardBackPaths());
 			deck[counter].setIsTurned(false);

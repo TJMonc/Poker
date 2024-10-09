@@ -6,13 +6,14 @@ int main() {
 	Vector2f windowScale = Vector2f(window.getSize()) / Vector2f RES_768;
 	CircleShape mouseCircle(5.f);
 	Poker::Deck deck;
+	deck.setWindow(&window);
+
 	Vector2f deckPos = {
 	window.getSize().x - deck[0].getGlobalBounds().getSize().x,
 	window.getSize().y - deck[0].getGlobalBounds().getSize().y
 	};
 	deckPos = (1.f / 2.f) * deckPos;
 	deck.setPosition(deckPos);
-
 
 	Poker::Hand* players = new Poker::Hand[4];
 	for(size_t i = 0; i < 4; i++) {
@@ -171,7 +172,7 @@ int main() {
 				turn++;
 			}
 		}
-		if(turn > 3){
+		if (turn > 3) {
 			turn = 0;
 			phase++;
 		}
@@ -204,7 +205,7 @@ int main() {
 			if (isWriting && isRaising) {
 				std::string validNums = "1234567890";
 
-				if (anEvent.type == Event::TextEntered && lol > 10)	{
+				if (anEvent.type == Event::TextEntered && lol > 20)	{
 					lol = 0;
 					if (anEvent.text.unicode == '\b') {
 						if (inputText.getString() != "") {
@@ -242,85 +243,10 @@ int main() {
 				window.draw(inputText);
 			}
 		}
-		if(turn > 3){
-			turn = 0;
-		}
-
-		mouseCircle.setPosition(Vector2f(Mouse::getPosition(window).x, Mouse::getPosition(window).y));
-		lol++;
-		if (Keyboard::isKeyPressed(Keyboard::Enter) && lol > 30) {
-			lol = 0;
-			if (cardPhase) {
-				for (size_t i = 0; i < 4; i++) {
-					players[i].discardCards();
-					players[i].setHandType();
-
-					std::cout
-						<< "Hand " << i + 1 << std::endl
-						<< players[i];
-				}
-			}
-
-		}
-
-		if(players[turn].getIsPlayer()){
-			if(Keyboard::isKeyPressed(Keyboard::Enter) && interactionClock.getElapsedTime() > interactionTime){
-				interactionClock.restart();
-				if(isRaising[turn]){
-					int raiseAmount = std::stoi((std::string)inputText.getString());
-				}
-			}
-		}
-
-		players[turn].updateMouse(mouseCircle);
-		if (betPhase && turn == 0) {
-
-			if (Mouse::isButtonPressed(Mouse::Left) && lol > 30) {
-				lol = 0;
-				if (mouseCircle.getGlobalBounds().intersects(callBox.getGlobalBounds())) {
-					if (callText.getString() == callString) {
-						isRaising[0] = true;
-						callText.setString(raiseString);
-					}
-					else {
-						isRaising[0] = false;
-						callText.setString(callString);
-					}
-				}
-				if (mouseCircle.getGlobalBounds().intersects(inputTextRect.getGlobalBounds())) {
-					isWriting = true;
-				}
-				else {
-					isWriting = false;
-				}
-			}
-			if (isWriting && isRaising) {
-				if (anEvent.type == Event::TextEntered && lol > 10) {
-					lol = 0;
-					if (anEvent.text.unicode == '\b') {
-						input.erase(input.size() - 1);
-					}
-					else {
-						input += anEvent.text.unicode;
-					}
-				}
-				inputText.setString(input);
-			}
-		}
-		window.clear();
-		for(size_t i = 0; i < 4; i++) {
-			players[i].drawTo(window);
-		}
-		deck.drawTo(window);
-		window.draw(callBox);
-		window.draw(callText);
-		if(isRaising[0]){
-			window.draw(inputTextRect);
-			window.draw(inputText);
-		}
 		window.display();
 	}
 	delete[] players;
 	return 0;
+
 
 }

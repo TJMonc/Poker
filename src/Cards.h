@@ -1,5 +1,4 @@
 #pragma once
-#include <exception>
 #include "Misc.h"
 
 using namespace sf;

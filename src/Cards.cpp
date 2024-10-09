@@ -2,16 +2,16 @@
 #include "Cards.h"
 
 
-const std::unordered_map<int, std::string> Poker::Suits::suit = { {Spades, "Spades"}, {Hearts, "Hearts" }, {Diamonds, "Diamonds"}, {Clubs, "Clubs"} };
+const std::unordered_map<int, std::string> Poker::Suits::suit = { {Spades, "spades"}, {Hearts, "hearts" }, {Diamonds, "diamonds"}, {Clubs, "clubs"} };
 
 
 
 Poker::Card::Card(const int aNumber, const int aSuit)
 : number(CardNumbers::Number(aNumber)), suit(Suits::Suit(aSuit)), inHand(false), isTurned(false){
 	std::srand(time(NULL));
-
+	cardText = Texture();
 	this->changeCard(number, suit);
-
+	texturePath = "";
 	std::unique_ptr<std::vector<std::string>> vect = std::move(getCardBackPaths());
 	int lol = rand() % vect->size();
 	this->backPath = (*vect)[lol];
@@ -71,12 +71,11 @@ std::string Poker::Card::getCardPath(const CardNumbers::Number aCardNum, const S
 			std::getline(s, breaker, ',');
 			std::getline(s, breaker, ',');
 			
-			file->close();
 			return breaker;
 		}
 	}
 	throw FileError("Main app failure due to Poker::Card::getCardPath");
-	return NULL;
+	return "no";
 }
 
 void Poker::Card::drawTo(RenderWindow& window) {
@@ -117,7 +116,7 @@ void Poker::Card::changeCard(const int aNumber, const int aSuit) {
 	this->suit = Suits::Suit(aSuit);
 
 	this->texturePath = getCardPath(number, suit);
-	Game::loadSprite(cardText, this->texturePath);
+	Game::loadSprite(cardText, texturePath);
 	this->ID = Suits::suit.at(aSuit) + std::to_string(aNumber);
 	
 	cardSprite.setTexture(cardText);

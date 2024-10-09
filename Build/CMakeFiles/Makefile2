@@ -44,10 +44,10 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = C:\msys64\mingw64\bin\cmake.exe
+CMAKE_COMMAND = C:\msys64\ucrt64\bin\cmake.exe
 
 # The command to remove a file.
-RM = C:\msys64\mingw64\bin\cmake.exe -E rm -f
+RM = C:\msys64\ucrt64\bin\cmake.exe -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -62,7 +62,7 @@ CMAKE_BINARY_DIR = C:\Users\terra\Downloads\Projects\repos\Poker\Build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/PokerProject.dir/all
+all: CMakeFiles/Poker.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -70,34 +70,34 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/PokerProject.dir/clean
+clean: CMakeFiles/Poker.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/PokerProject.dir
+# Target rules for target CMakeFiles/Poker.dir
 
 # All Build rule for target.
-CMakeFiles/PokerProject.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\PokerProject.dir\build.make CMakeFiles/PokerProject.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\PokerProject.dir\build.make CMakeFiles/PokerProject.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=1,2,3,4,5,6 "Built target PokerProject"
-.PHONY : CMakeFiles/PokerProject.dir/all
+CMakeFiles/Poker.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=1,2,3,4,5,6 "Built target Poker"
+.PHONY : CMakeFiles/Poker.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/PokerProject.dir/rule: cmake_check_build_system
+CMakeFiles/Poker.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles 6
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/PokerProject.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/Poker.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles 0
-.PHONY : CMakeFiles/PokerProject.dir/rule
+.PHONY : CMakeFiles/Poker.dir/rule
 
 # Convenience name for target.
-PokerProject: CMakeFiles/PokerProject.dir/rule
-.PHONY : PokerProject
+Poker: CMakeFiles/Poker.dir/rule
+.PHONY : Poker
 
 # clean rule for target.
-CMakeFiles/PokerProject.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\PokerProject.dir\build.make CMakeFiles/PokerProject.dir/clean
-.PHONY : CMakeFiles/PokerProject.dir/clean
+CMakeFiles/Poker.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/clean
+.PHONY : CMakeFiles/Poker.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

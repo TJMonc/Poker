@@ -61,7 +61,7 @@ namespace Poker {
 				for (int i = 0; i < discardNum; i++)
 				{
 
-					discarded[i] = i;
+					discarded.push_back(i);
 				}
 			}
 		

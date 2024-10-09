@@ -1,4 +1,4 @@
-set(CMAKE_CXX_COMPILER "C:/msys64/mingw32/bin/c++.exe")
+set(CMAKE_CXX_COMPILER "C:/msys64/mingw32/bin/g++32.exe")
 set(CMAKE_CXX_COMPILER_ARG1 "")
 set(CMAKE_CXX_COMPILER_ID "GNU")
 set(CMAKE_CXX_COMPILER_VERSION "13.1.0")
@@ -22,11 +22,11 @@ set(CMAKE_CXX_SIMULATE_VERSION "")
 
 
 
-set(CMAKE_AR "C:/msys64/mingw32/bin/ar.exe")
+set(CMAKE_AR "C:/msys64/ucrt64/bin/ar.exe")
 set(CMAKE_CXX_COMPILER_AR "C:/msys64/mingw32/bin/gcc-ar.exe")
-set(CMAKE_RANLIB "C:/msys64/mingw32/bin/ranlib.exe")
+set(CMAKE_RANLIB "C:/msys64/ucrt64/bin/ranlib.exe")
 set(CMAKE_CXX_COMPILER_RANLIB "C:/msys64/mingw32/bin/gcc-ranlib.exe")
-set(CMAKE_LINKER "C:/msys64/mingw32/bin/ld.exe")
+set(CMAKE_LINKER "C:/msys64/ucrt64/bin/ld.exe")
 set(CMAKE_MT "")
 set(CMAKE_TAPI "CMAKE_TAPI-NOTFOUND")
 set(CMAKE_COMPILER_IS_GNUCXX 1)
