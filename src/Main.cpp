@@ -3,6 +3,7 @@
 //TODO: Finish mouse if statement.
 int main() {
 	RenderWindow window(sf::VideoMode(), "SFML Practice", sf::Style::Fullscreen);
+	window.setFramerateLimit(60);
 	Vector2f windowScale = Vector2f(window.getSize()) / Vector2f RES_768;
 	CircleShape mouseCircle(5.f);
 	Poker::Deck deck;
@@ -13,6 +14,7 @@ int main() {
 	window.getSize().y - deck[0].getGlobalBounds().getSize().y
 	};
 	deckPos = (1.f / 2.f) * deckPos;
+
 	deck.setPosition(deckPos);
 
 	Poker::Hand* players = new Poker::Hand[4];
@@ -29,9 +31,9 @@ int main() {
 		(window.getSize().x - players[0].getSize().x),
 		(window.getSize().y - players[0].getSize().y)
 	};
-	players[0].setPosition({mid.x, neg.y});
-	players[1].setPosition({0.f, mid.y});
-	players[2].setPosition({mid.x, 0.f});
+	players[0].setPosition({mid.x, neg.y - 30.f * windowScale.y});
+	players[1].setPosition({windowScale.x, mid.y});
+	players[2].setPosition({mid.x, 30.f * windowScale.y});
 	players[3].setPosition({neg.x, mid.y});
 
 	players[0].setIsPlayer(true);
@@ -43,7 +45,6 @@ int main() {
 	inputTextRect.setSize(Vector2f(200.f, 50.f) * windowScale);
 	inputTextRect.setPosition({50 * windowScale.x, window.getSize().y - inputTextRect.getSize().y - 50 * windowScale.y});
 	bool isRaising[4] = {false, false, false, false};	//This should be false
-
 	Font font;
 	font.loadFromFile(Game::FontPaths::blackLivesFont);
 
@@ -80,8 +81,29 @@ int main() {
 
 	int betPool = 0;
 	int betMoney[4] = {3000, 3000, 3000, 3000};
+	bool called[4] = {false, false, false, false};
+	std::string str_betMoney[4];
+	Text text_betMoney[4];
+	for(size_t i = 0; i < 4; i++){
+		str_betMoney[i] = std::to_string(betMoney[i]);
+		text_betMoney[i].setFont(font);
+		text_betMoney[i].setCharacterSize(20.f * windowScale.x);
+		text_betMoney[i].setPosition(players[i].getPosition().x, players[i].getPosition().y - 20 * windowScale.y);
+		text_betMoney[i].setFillColor(Color::Cyan);
+		text_betMoney[i].setString(str_betMoney[i]);
+	}
+
 	int betAmount[4] = {0, 0, 0, 0};
 	int callAmount = 0;
+
+	Text text_handType[4];
+	for(size_t i = 0; i < 4; i++){
+		text_handType[i].setFont(font);
+		text_handType[i].setCharacterSize(20.f * windowScale.x);
+		text_handType[i].setPosition(players[i].getPosition().x, players[i].getPosition().y + players[i].getSize().y);
+		text_handType[i].setFillColor(Color::Blue);
+		text_handType[i].setString(Poker::Hand::typesMap.at(players[i].getHandType()));
+	}
 
 	for(size_t i = 0; i < 4; i++){
 		if (!players[i].getIsPlayer()) {
@@ -115,6 +137,7 @@ int main() {
 						betPool += diff;
 						callAmount += raiseAmount;
 						betAmount[turn] += diff;
+						called[turn] = false;
 					}
 					else {
 						if (betAmount[turn] < callAmount) {
@@ -130,29 +153,47 @@ int main() {
 								betAmount[turn] = callAmount;
 							}
 						}
+						called[turn] = true;
 					}
+					text_betMoney[turn].setString(std::to_string(betMoney[turn]));
+
 					turn++;
 
 				}
 			}
 			else {
-				isRaising[turn] = rand() % 2;
+				int randNum = rand() % 10 + 1;
+				isRaising[turn] = (randNum > 8);
+				if(betMoney[turn] < (callAmount - betMoney[turn])){
+					isRaising[turn] = false;
+				}
 				if (isRaising[turn]) {
-					int raiseAmount = rand() % (callAmount - betAmount[turn] + betMoney[turn]);
+					int raiseAmount = rand() % (callAmount - betMoney[turn]);
 					int diff = raiseAmount + (callAmount - betAmount[turn]);
 					betMoney[turn] -= diff;
 					betPool += diff;
 					callAmount += raiseAmount;
 					betAmount[turn] += diff;
+					called[turn] = false;
 				}
 				else {
-					int diff = callAmount - betAmount[turn];
-					betMoney[turn] -= diff;
-					betPool += diff;
+					if (betAmount[turn] < callAmount) {
+						if (betMoney[turn] < (callAmount)) {
+							betAmount[turn] += betMoney[turn];
+							betMoney[turn] = 0;
+						}
+						else {
+							int diff = callAmount - betAmount[turn];
+							betMoney[turn] -= diff;
+							betPool += diff;
 
-					betAmount[turn] = callAmount;
-					players[turn].hasChosen = false;
+							betAmount[turn] = callAmount;
+						}
+					}
+					called[turn] = true;
 				}
+				text_betMoney[turn].setString(std::to_string(betMoney[turn]));
+
 				turn++;
 			}
 			break;
@@ -162,19 +203,37 @@ int main() {
 					interactionClock.restart();
 					players[turn].discardCards();
 					players[turn].setHandType();
+					text_handType[turn].setString(Poker::Hand::typesMap.at(players[turn].getHandType()));
 					turn++;
 				}
 			}
 			else{
 				players[turn].discardCards();
 				players[turn].setHandType();
-				players[turn].setTurned(true);
+				players[turn].setTurned(false);
+				text_handType[turn].setString(Poker::Hand::typesMap.at(players[turn].getHandType()));
+
 				turn++;
 			}
+			break;
 		}
+		//Turn Case ends
+
 		if (turn > 3) {
 			turn = 0;
 			phase++;
+
+			bool allCall;
+			for(size_t i = 1; i < 4; i++){
+				if(!called[i]){
+					allCall = false;
+					break;
+				}
+				allCall = true;
+			}
+			if (!allCall){
+				phase--;
+			}
 		}
 		if(phase > 2){
 			phase = 0;
@@ -231,14 +290,16 @@ int main() {
 		window.clear();
 		for(size_t i = 0; i < 4; i++) {
 			players[i].drawTo(window);
-
+			window.draw(text_betMoney[i]);
+			if(players[i].getIsPlayer() || phase == 2){
+				window.draw(text_handType[i]);
+			}
 		}
 		deck.drawTo(window);
 		if (phase == 0 || phase == 2) {
 			window.draw(callBox);
 			window.draw(callText);
-			if (isRaising[0])
-			{
+			if (isRaising[0]){
 				window.draw(inputTextRect);
 				window.draw(inputText);
 			}

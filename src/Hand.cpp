@@ -25,9 +25,6 @@ void Poker::Hand::replaceCard(const Card* aCard) {
 	while (deck->at(randNum).isInHand()) {
 		randNum = rand() % 52;
 	}
-	if(isPlayer){
-	this->at(index).setIsTurned(false);
-	}
 
 	this->at(index).setInHand(false);
 	hand[index] = &deck->at(randNum);
