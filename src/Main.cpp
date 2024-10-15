@@ -210,7 +210,7 @@ int main() {
 			else{
 				players[turn].discardCards();
 				players[turn].setHandType();
-				players[turn].setTurned(false);
+				players[turn].setTurned(true);
 				text_handType[turn].setString(Poker::Hand::typesMap.at(players[turn].getHandType()));
 
 				turn++;
