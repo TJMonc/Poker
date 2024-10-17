@@ -1,11 +1,9 @@
 cmake_minimum_required(VERSION 3.21)
 add_definitions(-std=c++20)
-
 project(Poker)
 file(GLOB SOURCES "src/*.cpp")
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 include_directories("C:/SFML-2.6.1/Visual Stuio (32 bit)/include" "C:/Users/terra/Downloads/Projects/Libraries/MinGW/MiscLib/include")
-
 if(MSVC)
 	link_directories("C:/SFML-2.6.1/Visual Stuio (32 bit)/lib" "C:/Users/terra/Downloads/Projects/Libraries/Visual Studio/MiscLib/bin/Release")
 	set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/MSVC)
@@ -18,6 +16,7 @@ else()
 	add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
 	target_link_libraries(${PROJECT_NAME} libMisc.a libsfml-graphics.a libsfml-window.a libsfml-audio.a libsfml-main.a libsfml-network.a libopenal32.a libsfml-system.a)
 endif()
+
 
 set(CMAKE_EXE_LINKER_FLAGS "-static")
 

@@ -110,9 +110,82 @@ int main() {
 			players[i].setTurned(true);
 		}
 	}
-
 	Clock interactionClock;
 	Time interactionTime = milliseconds(200);
+	auto bet = [&]() {
+		if (players[turn].getIsPlayer()) {
+			if (Keyboard::isKeyPressed(Keyboard::Enter) && interactionClock.getElapsedTime() > interactionTime) {
+				interactionClock.restart();
+				if (isRaising[turn]) {
+					int raiseAmount = std::stoi(input);
+					int diff = raiseAmount + (callAmount - betAmount[turn]);
+					betMoney[turn] -= diff;
+					betPool += diff;
+					callAmount += raiseAmount;
+					betAmount[turn] += diff;
+					called[turn] = false;
+				}
+				else {
+					if (betAmount[turn] < callAmount)
+					{
+						if (betMoney[turn] < (callAmount - betMoney[turn]))
+						{
+							betAmount[turn] += betMoney[turn];
+							betMoney[turn] = 0;
+						}
+						else
+						{
+							int diff = callAmount - betAmount[turn];
+							betMoney[turn] -= diff;
+							betPool += diff;
+
+							betAmount[turn] = callAmount;
+						}
+					}
+					called[turn] = true;
+				}
+				text_betMoney[turn].setString(std::to_string(betMoney[turn]));
+
+				turn++;
+			}
+		}
+		else {
+			int randNum = rand() % 10 + 1;
+			isRaising[turn] = (randNum > 8);
+			if (betMoney[turn] < (callAmount - betMoney[turn])) {
+				isRaising[turn] = false;
+			}
+			if (isRaising[turn]) {
+				int raiseAmount = rand() % (callAmount - betMoney[turn]);
+				int diff = raiseAmount + (callAmount - betAmount[turn]);
+				betMoney[turn] -= diff;
+				betPool += diff;
+				callAmount += raiseAmount;
+				betAmount[turn] += diff;
+				called[turn] = false;
+			}
+			else {
+				if (betAmount[turn] < callAmount) {
+					if (betMoney[turn] < (callAmount)) {
+						betAmount[turn] += betMoney[turn];
+						betMoney[turn] = 0;
+					}
+					else {
+						int diff = callAmount - betAmount[turn];
+						betMoney[turn] -= diff;
+						betPool += diff;
+
+						betAmount[turn] = callAmount;
+					}
+				}
+				called[turn] = true;
+			}
+			text_betMoney[turn].setString(std::to_string(betMoney[turn]));
+
+			turn++;
+		}
+	};
+
 	while (window.isOpen()) {
 		Event anEvent;
 		while (window.pollEvent(anEvent)) {
@@ -127,75 +200,7 @@ int main() {
 
 		switch (phase) {
 		case 0:
-			if (players[turn].getIsPlayer()) {
-				if (Keyboard::isKeyPressed(Keyboard::Enter) && interactionClock.getElapsedTime() > interactionTime) {
-					interactionClock.restart();
-					if (isRaising[turn]) {
-						int raiseAmount = std::stoi(input);
-						int diff = raiseAmount + (callAmount - betAmount[turn]);
-						betMoney[turn] -= diff;
-						betPool += diff;
-						callAmount += raiseAmount;
-						betAmount[turn] += diff;
-						called[turn] = false;
-					}
-					else {
-						if (betAmount[turn] < callAmount) {
-							if (betMoney[turn] < (callAmount - betMoney[turn])) {
-								betAmount[turn] += betMoney[turn];
-								betMoney[turn] = 0;
-							}
-							else {
-								int diff = callAmount - betAmount[turn];
-								betMoney[turn] -= diff;
-								betPool += diff;
-
-								betAmount[turn] = callAmount;
-							}
-						}
-						called[turn] = true;
-					}
-					text_betMoney[turn].setString(std::to_string(betMoney[turn]));
-
-					turn++;
-
-				}
-			}
-			else {
-				int randNum = rand() % 10 + 1;
-				isRaising[turn] = (randNum > 8);
-				if(betMoney[turn] < (callAmount - betMoney[turn])){
-					isRaising[turn] = false;
-				}
-				if (isRaising[turn]) {
-					int raiseAmount = rand() % (callAmount - betMoney[turn]);
-					int diff = raiseAmount + (callAmount - betAmount[turn]);
-					betMoney[turn] -= diff;
-					betPool += diff;
-					callAmount += raiseAmount;
-					betAmount[turn] += diff;
-					called[turn] = false;
-				}
-				else {
-					if (betAmount[turn] < callAmount) {
-						if (betMoney[turn] < (callAmount)) {
-							betAmount[turn] += betMoney[turn];
-							betMoney[turn] = 0;
-						}
-						else {
-							int diff = callAmount - betAmount[turn];
-							betMoney[turn] -= diff;
-							betPool += diff;
-
-							betAmount[turn] = callAmount;
-						}
-					}
-					called[turn] = true;
-				}
-				text_betMoney[turn].setString(std::to_string(betMoney[turn]));
-
-				turn++;
-			}
+			bet();
 			break;
 		case 1:
 			if(players[turn].getIsPlayer()){
@@ -216,6 +221,9 @@ int main() {
 				turn++;
 			}
 			break;
+		case 3:
+			bet();
+
 		}
 		//Turn Case ends
 
