@@ -15,7 +15,6 @@ Poker::Card::Card(const int aNumber, const int aSuit)
 	std::unique_ptr<std::vector<std::string>> vect = std::move(getCardBackPaths());
 	int lol = rand() % vect->size();
 	this->backPath = (*vect)[lol];
-
 }
 
 Poker::Card::Card()
@@ -62,7 +61,6 @@ std::string Poker::Card::getCardBackPath(const std::string color) {
 std::string Poker::Card::getCardPath(const CardNumbers::Number aCardNum, const Suits::Suit aSuit) {
 	std::unique_ptr<std::ifstream> file = std::move(openReadFile("CardPaths.csv"));
 	std::string fileLine;
-
 	while (std::getline(*file, fileLine)) {
 		if (fileLine.find(Suits::suit.at(aSuit) + "," + std::to_string(aCardNum)) != std::string::npos) {
 			std::stringstream s(fileLine);
@@ -74,6 +72,7 @@ std::string Poker::Card::getCardPath(const CardNumbers::Number aCardNum, const S
 			return breaker;
 		}
 	}
+	
 	throw FileError("Main app failure due to Poker::Card::getCardPath");
 	return "no";
 }

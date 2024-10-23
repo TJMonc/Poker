@@ -37,8 +37,8 @@ namespace Poker {
 		Suits::Suit highSuit;
 		HandTypes handType;
 		Clock interactionClock;
-
 		Time interactionTime = milliseconds(150);
+		bool isFolded = false;
 	public:
 		bool hasChosen = false;
 	private:
@@ -81,7 +81,8 @@ namespace Poker {
 		void setDeck(Deck* deck);
 		void setTurned(const bool isTurned);
 		void setIsPlayer(const bool aIsPlayer);
-		bool isDiscarded(int index);	//Checks if a certain card's index is in the discarded vector
+		void setFolded(const bool &folded) {this->isFolded = folded;};
+		bool isDiscarded(int index);	// Checks if a certain card's index is in the discarded vector
 		void unDiscard(int index);		// Removes an index from the discarded vector
 
 		void discardCards();			// Discards the index in the discarded hand
@@ -90,6 +91,7 @@ namespace Poker {
 		const int getIDIndex(std::string aID) const;
 		const int getHandType() const;
 		const bool getIsPlayer() const;
+		const bool getFolded() const {return this->isFolded;};
 		void sortCards();
 		
 		std::string setHighSuit();

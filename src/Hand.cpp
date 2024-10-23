@@ -57,7 +57,12 @@ void Poker::Hand::drawTo(RenderWindow& aWindow) {
 }
 
 void Poker::Hand::updateMouse(CircleShape& mPointer) {
-	if (isPlayer) {
+	if(isFolded){
+		for(size_t i = 0; i < 5; i++){
+			hand[i]->getSprite().setColor(Color::Red);
+		}
+	}
+	else if (isPlayer) {
 		for (size_t i = 0; i < 5; i++) {
 			if (visibleHand[i].getGlobalBounds().intersects(mPointer.getGlobalBounds())) {
 				hand[i]->getSprite().setColor(Color::Green);
@@ -67,7 +72,7 @@ void Poker::Hand::updateMouse(CircleShape& mPointer) {
 						hand[i]->getSprite().setColor(Color::White);
 					}
 					else if (Mouse::isButtonPressed(Mouse::Left)) {
-						discarded.push_back(i);
+						discarded.emplace_back(i);
 					}
 					interactionClock.restart();
 				}
@@ -138,11 +143,11 @@ void Poker::Hand::unDiscard(int index) {
 }
 
 void Poker::Hand::discardCards() {
-
 	std::vector<Card*> pastNums;
 	for (size_t i = 0; i < discarded.size(); i++) {
 		int randNum = rand() % 52;
 		int index = discarded[i];
+		this->at(index).getSprite().setColor(Color::White);
 		while (deck->at(randNum).isInHand()) {
 			randNum = rand() % 52;
 		}

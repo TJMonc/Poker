@@ -1,6 +1,5 @@
-#include "Game.h"
 
-//TODO: Finish mouse if statement.
+#include "Game.h"
 int main() {
 	RenderWindow window(sf::VideoMode(), "SFML Practice", sf::Style::Fullscreen);
 	window.setFramerateLimit(60);
@@ -14,7 +13,6 @@ int main() {
 	window.getSize().y - deck[0].getGlobalBounds().getSize().y
 	};
 	deckPos = (1.f / 2.f) * deckPos;
-
 	deck.setPosition(deckPos);
 
 	Poker::Hand* players = new Poker::Hand[4];
@@ -72,6 +70,18 @@ int main() {
 	callText.setFillColor(Color::Blue);
 	callText.setString(callString);
 
+	RectangleShape foldBox(callBox.getSize());
+	foldBox.setOutlineColor(Color::Red);
+	foldBox.setOutlineThickness(5.f * windowScale.y);
+	foldBox.setPosition(callBox.getPosition().x, callBox.getPosition().y - callBox.getSize().y - 30.f * windowScale.y);
+	Text foldText;
+	foldText.setFont(font);
+	foldText.setCharacterSize(30.f * windowScale.x);
+	foldText.setFillColor(Color::Red);
+	foldText.setPosition(foldBox.getPosition());
+	foldText.setString("FOLD");
+	bool foldPressed = false;
+
 	bool betPhase = true;
 	bool cardPhase = false;
 	bool endPhase = false;
@@ -105,6 +115,7 @@ int main() {
 		text_handType[i].setString(Poker::Hand::typesMap.at(players[i].getHandType()));
 	}
 
+
 	for(size_t i = 0; i < 4; i++){
 		if (!players[i].getIsPlayer()) {
 			players[i].setTurned(true);
@@ -113,10 +124,16 @@ int main() {
 	Clock interactionClock;
 	Time interactionTime = milliseconds(200);
 	auto bet = [&]() {
+		if(players[turn].getFolded()){
+			turn++;
+		}
 		if (players[turn].getIsPlayer()) {
-			if (Keyboard::isKeyPressed(Keyboard::Enter) && interactionClock.getElapsedTime() > interactionTime) {
+			if ((Keyboard::isKeyPressed(Keyboard::Enter)) && interactionClock.getElapsedTime() > interactionTime) {
 				interactionClock.restart();
-				if (isRaising[turn]) {
+				if(foldPressed){
+					players[turn].setFolded(true);
+				}
+				else if (isRaising[turn] && input != "") {
 					int raiseAmount = std::stoi(input);
 					int diff = raiseAmount + (callAmount - betAmount[turn]);
 					betMoney[turn] -= diff;
@@ -126,15 +143,13 @@ int main() {
 					called[turn] = false;
 				}
 				else {
-					if (betAmount[turn] < callAmount)
-					{
-						if (betMoney[turn] < (callAmount - betMoney[turn]))
-						{
+					isRaising[turn] = false;
+					if (betAmount[turn] < callAmount) {
+						if (betMoney[turn] < (callAmount - betMoney[turn])) {
 							betAmount[turn] += betMoney[turn];
 							betMoney[turn] = 0;
 						}
-						else
-						{
+						else {
 							int diff = callAmount - betAmount[turn];
 							betMoney[turn] -= diff;
 							betPool += diff;
@@ -180,8 +195,8 @@ int main() {
 				}
 				called[turn] = true;
 			}
+			players[turn].hasChosen = false;
 			text_betMoney[turn].setString(std::to_string(betMoney[turn]));
-
 			turn++;
 		}
 	};
@@ -203,6 +218,9 @@ int main() {
 			bet();
 			break;
 		case 1:
+			if(players[turn].getFolded()){
+				turn++;
+			}
 			if(players[turn].getIsPlayer()){
 				if(Keyboard::isKeyPressed(Keyboard::Enter) && interactionClock.getElapsedTime() > interactionTime){
 					interactionClock.restart();
@@ -221,9 +239,53 @@ int main() {
 				turn++;
 			}
 			break;
-		case 3:
+		case 2:
 			bet();
+			break;
+		case 3:
+			Poker::Hand* winner = &players[0];
+			int winnerIndex = 0;
+			if (!endPhase) {
+				for (size_t i = 0; i < 4; i++) {
+					if(players[i].getFolded()){
+						continue;
+					}
+					if (winner->getHandType() < players[i].getHandType()) {
+						winner = &players[i];
+						winnerIndex = i;
+					}
+					else if (winner->getHandType() == players[i].getHandType()) {
+						if (winner->getHandType() == Poker::Hand::Flush) {
+							if (players->getHighSuit() > winner->getHighSuit()) {
+								winner = &players[i];
+								winnerIndex = i;
+							}
+						}
+						else if (players[i].getHighCard() > winner->getHighCard()) {
+							winner = &players[i];
+							winnerIndex = i;
+						}
+					}
+					players[i].setFolded(false);
+					players[i].setTurned(false);
 
+				}
+				for(size_t i = 0; i < 4; i++){
+					if(i == winnerIndex){
+						text_handType[i].setString("Winner: " + static_cast<std::string>(text_handType[i].getString()));
+						text_handType[i].setFillColor(Color::Green);
+					}
+					else{
+						text_handType[i].setFillColor(Color::Red);
+					}
+				}
+				endPhase = true;
+				foldPressed = false;
+
+			}
+
+			//TODO FINISH THIS
+			break;
 		}
 		//Turn Case ends
 
@@ -243,12 +305,12 @@ int main() {
 				phase--;
 			}
 		}
-		if(phase > 2){
+		if(phase > 3){
 			phase = 0;
 			turn = 0;
 		}
 		
-		if (betPhase && turn == 0) {
+		if ((turn == 0 || turn == 2)) {
 
 			if (Mouse::isButtonPressed(Mouse::Left) && lol > 30) {
 				lol = 0;
@@ -261,6 +323,9 @@ int main() {
 						isRaising[0] = false;
 						callText.setString(callString);
 					}
+				}
+				else if(mouseCircle.getGlobalBounds().intersects(foldBox.getGlobalBounds()) && !isRaising[0]){
+					foldPressed = true;
 				}
 				if (mouseCircle.getGlobalBounds().intersects(inputTextRect.getGlobalBounds())) {
 					isWriting = true;
@@ -299,7 +364,7 @@ int main() {
 		for(size_t i = 0; i < 4; i++) {
 			players[i].drawTo(window);
 			window.draw(text_betMoney[i]);
-			if(players[i].getIsPlayer() || phase == 2){
+			if(players[i].getIsPlayer() || phase == 3){
 				window.draw(text_handType[i]);
 			}
 		}
@@ -310,6 +375,10 @@ int main() {
 			if (isRaising[0]){
 				window.draw(inputTextRect);
 				window.draw(inputText);
+			}
+			else{
+				window.draw(foldBox);
+				window.draw(foldText);
 			}
 		}
 		window.display();

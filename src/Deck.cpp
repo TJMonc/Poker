@@ -35,6 +35,7 @@ void Poker::Deck::setWindow(RenderWindow* aWindow) {
 	for (size_t i = 0; i < this->mySize; i++) {
 		deck[i].getSprite().setScale(windowScale * 0.2f);
 	}
+	
 }
 
 void Poker::Deck::setPosition(const Vector2f aPos) {
