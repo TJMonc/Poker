@@ -1,6 +1,7 @@
 
 #include "Game.h"
 int main() {
+	srand(time(NULL));
 	RenderWindow window(sf::VideoMode(), "SFML Practice", sf::Style::Fullscreen);
 	window.setFramerateLimit(60);
 	Vector2f windowScale = Vector2f(window.getSize()) / Vector2f RES_768;
@@ -123,11 +124,13 @@ int main() {
 	}
 	Clock interactionClock;
 	Time interactionTime = milliseconds(200);
+	int winnerIndex;
+
 	auto bet = [&]() {
 		if(players[turn].getFolded()){
 			turn++;
 		}
-		if (players[turn].getIsPlayer()) {
+		else if (players[turn].getIsPlayer()) {
 			if ((Keyboard::isKeyPressed(Keyboard::Enter)) && interactionClock.getElapsedTime() > interactionTime) {
 				interactionClock.restart();
 				if(foldPressed){
@@ -141,6 +144,7 @@ int main() {
 					callAmount += raiseAmount;
 					betAmount[turn] += diff;
 					called[turn] = false;
+
 				}
 				else {
 					isRaising[turn] = false;
@@ -165,19 +169,19 @@ int main() {
 			}
 		}
 		else {
-			int randNum = rand() % 10 + 1;
+			int randNum = std::rand() % 10 + 1;
 			isRaising[turn] = (randNum > 8);
-			if (betMoney[turn] < (callAmount - betMoney[turn])) {
+			if ((betMoney[turn] - callAmount) < 0) {
 				isRaising[turn] = false;
 			}
 			if (isRaising[turn]) {
-				int raiseAmount = rand() % (callAmount - betMoney[turn]);
+				int raiseAmount = rand() % (betMoney[turn] - callAmount);
 				int diff = raiseAmount + (callAmount - betAmount[turn]);
 				betMoney[turn] -= diff;
 				betPool += diff;
 				callAmount += raiseAmount;
 				betAmount[turn] += diff;
-				called[turn] = false;
+
 			}
 			else {
 				if (betAmount[turn] < callAmount) {
@@ -221,7 +225,7 @@ int main() {
 			if(players[turn].getFolded()){
 				turn++;
 			}
-			if(players[turn].getIsPlayer()){
+			else if(players[turn].getIsPlayer()){
 				if(Keyboard::isKeyPressed(Keyboard::Enter) && interactionClock.getElapsedTime() > interactionTime){
 					interactionClock.restart();
 					players[turn].discardCards();
@@ -235,8 +239,8 @@ int main() {
 				players[turn].setHandType();
 				players[turn].setTurned(true);
 				text_handType[turn].setString(Poker::Hand::typesMap.at(players[turn].getHandType()));
-
-				turn++;
+				players[turn].hasChosen = false;
+				turn++;				
 			}
 			break;
 		case 2:
@@ -244,10 +248,15 @@ int main() {
 			break;
 		case 3:
 			Poker::Hand* winner = &players[0];
-			int winnerIndex = 0;
 			if (!endPhase) {
+				winnerIndex = 0;
+
 				for (size_t i = 0; i < 4; i++) {
 					if(players[i].getFolded()){
+						if(winnerIndex == i){
+							winnerIndex++;
+							winner = &players[i + 1];
+						}
 						continue;
 					}
 					if (winner->getHandType() < players[i].getHandType()) {
@@ -266,8 +275,7 @@ int main() {
 							winnerIndex = i;
 						}
 					}
-					players[i].setFolded(false);
-					players[i].setTurned(false);
+
 
 				}
 				for(size_t i = 0; i < 4; i++){
@@ -278,10 +286,31 @@ int main() {
 					else{
 						text_handType[i].setFillColor(Color::Red);
 					}
+					players[i].setFolded(false);
+					players[i].setTurned(false);
+					betAmount[i] = 0;
 				}
 				endPhase = true;
 				foldPressed = false;
 
+			}
+			if(Keyboard::isKeyPressed(Keyboard::Enter) && interactionClock.getElapsedTime() > interactionTime){
+				interactionClock.restart();
+				deck.reset();
+
+				phase++;
+				betMoney[winnerIndex] += betPool;
+				winnerIndex = 0;
+				betPool = 0;
+				callAmount = 5;
+				endPhase = false;
+				for(size_t i = 0; i < 4; i++){
+					text_handType[i].setFillColor(Color::Blue);
+					players[i].setDeck(&deck);
+					if(!players[i].getIsPlayer()){
+						players[i].setTurned(true);
+					}
+				}
 			}
 
 			//TODO FINISH THIS
@@ -292,16 +321,18 @@ int main() {
 		if (turn > 3) {
 			turn = 0;
 			phase++;
-
 			bool allCall;
-			for(size_t i = 1; i < 4; i++){
-				if(!called[i]){
+			for (size_t i = 1; i < 4; i++) {
+				if (players[i].getFolded()) {
+					continue;
+				}
+				if (!called[i]) {
 					allCall = false;
 					break;
 				}
 				allCall = true;
 			}
-			if (!allCall){
+			if (!allCall) {
 				phase--;
 			}
 		}
@@ -385,6 +416,4 @@ int main() {
 	}
 	delete[] players;
 	return 0;
-
-
 }

@@ -46,21 +46,14 @@ namespace Poker {
 			if(isPlayer || hasChosen){
 				return;
 			}
-			srand(std::time(NULL));
-			int discardNum = rand() % 5 + 1;
+			int discardNum = rand() % 5;
 			if (discardNum != 5) {
 				for (int i = 0; i < discardNum; i++) {
-					int randNum = rand() % 5;
-					while (isDiscarded(randNum)) {
-						randNum = rand() % 5;
-					}
-					discarded.push_back(randNum);
+					discarded.push_back(i);
 				}
 			}
 			else {
-				for (int i = 0; i < discardNum; i++)
-				{
-
+				for (int i = 0; i < discardNum; i++) {
 					discarded.push_back(i);
 				}
 			}
@@ -72,7 +65,7 @@ namespace Poker {
 		Hand(Deck* deck);
 		Hand() = default;
 		
-		void replaceCard(const Card* aCard);	//Uses the ID of a card taken in as argument to replace one card with a random card from deck		// A bit inefficient now that I think about it
+		void replaceCard();	//Uses the ID of a card taken in as argument to replace one card with a random card from deck		// A bit inefficient now that I think about it
 		void setWindow(RenderWindow* aWindow);
 		void drawTo(RenderWindow& aWindow);
 		void updateMouse(CircleShape& mpointer);

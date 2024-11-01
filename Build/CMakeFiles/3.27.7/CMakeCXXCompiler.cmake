@@ -22,12 +22,13 @@ set(CMAKE_CXX_SIMULATE_VERSION "")
 
 
 
-set(CMAKE_AR "C:/msys64/mingw32/bin/ar.exe")
+set(CMAKE_AR "C:/msys64/ucrt64/bin/ar.exe")
 set(CMAKE_CXX_COMPILER_AR "C:/msys64/mingw32/bin/gcc-ar.exe")
-set(CMAKE_RANLIB "C:/msys64/mingw32/bin/ranlib.exe")
+set(CMAKE_RANLIB "C:/msys64/ucrt64/bin/ranlib.exe")
 set(CMAKE_CXX_COMPILER_RANLIB "C:/msys64/mingw32/bin/gcc-ranlib.exe")
-set(CMAKE_LINKER "C:/msys64/mingw32/bin/ld.exe")
+set(CMAKE_LINKER "C:/msys64/ucrt64/bin/ld.exe")
 set(CMAKE_MT "")
+set(CMAKE_TAPI "CMAKE_TAPI-NOTFOUND")
 set(CMAKE_COMPILER_IS_GNUCXX 1)
 set(CMAKE_CXX_COMPILER_LOADED 1)
 set(CMAKE_CXX_COMPILER_WORKS TRUE)
@@ -36,7 +37,7 @@ set(CMAKE_CXX_ABI_COMPILED TRUE)
 set(CMAKE_CXX_COMPILER_ENV_VAR "CXX")
 
 set(CMAKE_CXX_COMPILER_ID_RUN 1)
-set(CMAKE_CXX_SOURCE_FILE_EXTENSIONS C;M;c++;cc;cpp;cxx;m;mm;mpp;CPP;ixx;cppm)
+set(CMAKE_CXX_SOURCE_FILE_EXTENSIONS C;M;c++;cc;cpp;cxx;m;mm;mpp;CPP;ixx;cppm;ccm;cxxm;c++m)
 set(CMAKE_CXX_IGNORE_EXTENSIONS inl;h;hpp;HPP;H;o;O;obj;OBJ;def;DEF;rc;RC)
 
 foreach (lang C OBJC OBJCXX)
@@ -49,6 +50,7 @@ endforeach()
 
 set(CMAKE_CXX_LINKER_PREFERENCE 30)
 set(CMAKE_CXX_LINKER_PREFERENCE_PROPAGATES 1)
+set(CMAKE_CXX_LINKER_DEPFILE_SUPPORTED TRUE)
 
 # Save compiler ABI information.
 set(CMAKE_CXX_SIZEOF_DATA_PTR "4")
@@ -78,6 +80,6 @@ endif()
 
 
 set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES "C:/msys64/mingw32/include/c++/13.1.0;C:/msys64/mingw32/include/c++/13.1.0/i686-w64-mingw32;C:/msys64/mingw32/include/c++/13.1.0/backward;C:/msys64/mingw32/lib/gcc/i686-w64-mingw32/13.1.0/include;C:/msys64/mingw32/include;C:/msys64/mingw32/lib/gcc/i686-w64-mingw32/13.1.0/include-fixed;C:/msys64/mingw32/i686-w64-mingw32/include")
-set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "C:/msys64/mingw32/lib/libstdc++.a;mingw32;gcc;moldname;mingwex;kernel32;pthread;advapi32;shell32;user32;kernel32;mingw32;gcc;moldname;mingwex;kernel32")
+set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "stdc++;mingw32;gcc_s;gcc;moldname;mingwex;kernel32;pthread;advapi32;shell32;user32;kernel32;mingw32;gcc_s;gcc;moldname;mingwex;kernel32")
 set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "C:/msys64/mingw32/lib/gcc/i686-w64-mingw32/13.1.0;C:/msys64/mingw32/lib/gcc;C:/msys64/mingw32/i686-w64-mingw32/lib;C:/msys64/mingw32/lib")
 set(CMAKE_CXX_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")

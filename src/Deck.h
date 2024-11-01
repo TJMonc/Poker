@@ -5,6 +5,7 @@ namespace Poker {
 	class Deck {
 	private:
 		Card* deck;
+		Card* objDeck[52];
 		size_t mySize;
 		Sprite deckSprite;
 		Texture deckText;
@@ -15,9 +16,12 @@ namespace Poker {
 		Deck();
 		~Deck();
 		void drawTo(RenderWindow& aWindow);
+		void remove(int index);
+		void reset();
 		void setWindow(RenderWindow* aWindow);
 		void setPosition(const Vector2f aPos);
 		const Vector2f& getPositon() const;
+		int getSize() const { return mySize; }
 		Card& at(const int index);
 		const Card& at(const int index) const;
 		Card& at(const std::string aID);

@@ -1,5 +1,5 @@
 #include "Hand.h"
-
+#include <format>
 const std::unordered_map<int, std::string> Poker::Hand::typesMap = {
 	{HandTypes::High, "High Card"},
 	{HandTypes::Pair, "Pair"},
@@ -19,16 +19,23 @@ Poker::Hand::Hand(Deck* aDeck)
 }
 
 //You should only pass the cards that are in the hand with replaceCard.
-void Poker::Hand::replaceCard(const Card* aCard) {
-	int randNum = rand() % 52;
-	int index = getIDIndex(aCard->getID());
-	while (deck->at(randNum).isInHand()) {
-		randNum = rand() % 52;
+void Poker::Hand::replaceCard() {
+	std::vector<Card*> pastNums;
+	for (size_t i = 0; i < 5; i++) {
+		int randNum = rand() % deck->getSize();
+		this->at(i).getSprite().setColor(Color::White);
+		while (deck->at(randNum).isInHand()) {
+			randNum = rand() % deck->getSize();
+		}
+		
+		this->at(i).setIsTurned(true);
+		hand[i] = &deck->at(randNum);
+		this->deck->at(randNum).setInHand(true);
 	}
-
-	this->at(index).setInHand(false);
-	hand[index] = &deck->at(randNum);
-	this->deck->at(randNum).setInHand(true);
+	for (size_t i = 0; i < pastNums.size(); i++) {
+		pastNums.at(i)->setInHand(false);
+	}
+	discarded.clear();
 	this->sortCards();
 }
 
@@ -72,7 +79,7 @@ void Poker::Hand::updateMouse(CircleShape& mPointer) {
 						hand[i]->getSprite().setColor(Color::White);
 					}
 					else if (Mouse::isButtonPressed(Mouse::Left)) {
-						discarded.emplace_back(i);
+						discarded.push_back(i);
 					}
 					interactionClock.restart();
 				}
@@ -97,12 +104,11 @@ Vector2f Poker::Hand::getSize() {
 void Poker::Hand::setDeck(Deck* aDeck) {
 	this->deck = aDeck;
 	for (size_t i = 0; i < 5; i++) {
-		int randNum = rand() % 52;
-		while (deck->at(randNum).isInHand()) {
-			randNum = rand() % 52;
-		}
+		int randNum = rand() % deck->getSize();
 		hand[i] = &deck->at(randNum);
 		hand[i]->setInHand(true);
+		deck->remove(randNum);
+
 	}
 	this->sortCards();
 
@@ -145,23 +151,22 @@ void Poker::Hand::unDiscard(int index) {
 void Poker::Hand::discardCards() {
 	std::vector<Card*> pastNums;
 	for (size_t i = 0; i < discarded.size(); i++) {
-		int randNum = rand() % 52;
+		int randNum = rand() % deck->getSize();
 		int index = discarded[i];
 		this->at(index).getSprite().setColor(Color::White);
-		while (deck->at(randNum).isInHand()) {
-			randNum = rand() % 52;
-		}
-		
-		this->at(index).setIsTurned(true);
+
+		this->at(index).setIsTurned(false);
 		hand[index] = &deck->at(randNum);
 		this->deck->at(randNum).setInHand(true);
+		deck->remove(randNum);
+
 	}
 	for (size_t i = 0; i < pastNums.size(); i++) {
 		pastNums.at(i)->setInHand(false);
+
 	}
 	discarded.clear();
 	this->sortCards();
-	hasChosen = false;
 }
 
 void Poker::Hand::setPosition(Vector2f aPos) {
@@ -308,7 +313,7 @@ bool Poker::Hand::checkTwoPair() {
 bool Poker::Hand::checkKind(int number) {
 	int counter = 0;
 	for (size_t i = 0; i < 4; i++) {
-		for (size_t j = i; j < 5; j++) {
+		for (size_t j = i + 1; j < 5; j++) {
 			if (hand[i]->getNumber() == hand[j]->getNumber()) {
 				highCard = (CardNumbers::Number)hand[i]->getNumber();
 				counter++;

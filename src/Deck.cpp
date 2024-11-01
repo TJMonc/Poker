@@ -2,6 +2,9 @@
 
 Poker::Deck::Deck() {
 	this->deck = (Card*)new Card[52];
+	for(int i = 0; i < 52; i++){
+		objDeck[i] = &(deck[i]);
+	}
 	this->mySize = 52;
 	int counter = 0;
 	for (size_t i = 10; i < Suits::Spades + 1; i += 10) {
@@ -27,6 +30,20 @@ void Poker::Deck::drawTo(RenderWindow& aWindow) {
 	window->draw(this->deckSprite);
 }
 
+void Poker::Deck::remove(int index) {
+	mySize--;
+	for(int i = index; i < mySize; i++){
+		objDeck[i] = objDeck[i + 1];
+	}
+}
+
+void Poker::Deck::reset() {
+	mySize = 52;
+	for(int i = 0; i < 52; i++){
+		objDeck[i] = &(deck[i]);
+	}
+}
+
 void Poker::Deck::setWindow(RenderWindow* aWindow) {
 	this->window = aWindow;
 	this->windowScale = (Vector2f(window->getSize()) / Vector2f RES_768);
@@ -49,23 +66,23 @@ const Vector2f& Poker::Deck::getPositon() const {
 }
 
 Poker::Card& Poker::Deck::at(const int index) {
-	return this->deck[index];
+	return *(this->objDeck[index]);
 
 }
 
 const Poker::Card& Poker::Deck::at(const int index) const
 {
-	return this->deck[index];
+	return *(this->objDeck[index]);
 }
 
 Poker::Card& Poker::Deck::at(const std::string aID)
 {
 	for (size_t i = 0; i < 52; i++) {
-		if (deck[i].getID() != aID) {
+		if ((*objDeck[i]).getID() != aID) {
 			continue;
 		}
 		else {
-			return deck[i];
+			return *objDeck[i];
 		}
 	}
 	throw FileError("Main app failure due to Poker::Deck::at");
@@ -75,11 +92,11 @@ Poker::Card& Poker::Deck::at(const std::string aID)
 const Poker::Card& Poker::Deck::at(const std::string aID) const
 {
 	for (size_t i = 0; i < 52; i++) {
-		if (deck[i].getID() != aID) {
+		if ((*objDeck[i]).getID() != aID) {
 			continue;
 		}
 		else {
-			return deck[i];
+			return *(objDeck[i]);
 		}
 	}
 	throw FileError("Main app failure due to Poker::Deck::at");
@@ -87,19 +104,19 @@ const Poker::Card& Poker::Deck::at(const std::string aID) const
 }
 
 Poker::Card& Poker::Deck::operator[](const int index) {
-	return this->deck[index];
+	return (*objDeck[index]);
 }
 const Poker::Card& Poker::Deck::operator[](const int index) const {
-	return this->deck[index];
+	return (*objDeck[index]);
 }
 
 const Poker::Card& Poker::Deck::operator[](const std::string aID) const {
 	for (size_t i = 0; i < 52; i++) {
-		if (deck[i].getID() != aID) {
+		if ((*objDeck[i]).getID() != aID) {
 			continue;
 		}
 		else {
-			return deck[i];
+			return (*objDeck[i]);
 		}
 	}
 	throw std::exception();
@@ -107,11 +124,11 @@ const Poker::Card& Poker::Deck::operator[](const std::string aID) const {
 
 Poker::Card& Poker::Deck::operator[](const std::string aID) {
 	for (size_t i = 0; i < 52; i++) {
-		if (deck[i].getID() != aID) {
+		if ((*objDeck[i]).getID() != aID) {
 			continue;
 		}
 		else {
-			return deck[i];
+			return (*objDeck[i]);
 		}
 	}
 	throw FileError("Main app failure due to Poker::Deck::operato[]");

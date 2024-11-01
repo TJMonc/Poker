@@ -1,6 +1,4 @@
 #pragma once
-#define SFML_STATIC
-#include <Windows.h>
 #include "Misc.h"
 
 using namespace sf;
