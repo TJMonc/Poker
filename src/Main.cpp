@@ -116,7 +116,12 @@ int main() {
 		text_handType[i].setString(Poker::Hand::typesMap.at(players[i].getHandType()));
 	}
 
-
+	Text t_callAmount;
+	t_callAmount.setFont(font);
+	t_callAmount.setCharacterSize(20.f * windowScale.x);
+	t_callAmount.setFillColor(Color::White);
+	t_callAmount.setPosition(deck.getPositon().x, deck.getPositon().y - 50.f * windowScale.y);
+	t_callAmount.setString(std::to_string(callAmount));
 	for(size_t i = 0; i < 4; i++){
 		if (!players[i].getIsPlayer()) {
 			players[i].setTurned(true);
@@ -125,6 +130,7 @@ int main() {
 	Clock interactionClock;
 	Time interactionTime = milliseconds(200);
 	int winnerIndex;
+	bool bust[4] = {false, false, false, false};
 
 	auto bet = [&]() {
 		if(players[turn].getFolded()){
@@ -139,6 +145,9 @@ int main() {
 				else if (isRaising[turn] && input != "") {
 					int raiseAmount = std::stoi(input);
 					int diff = raiseAmount + (callAmount - betAmount[turn]);
+					if(diff > betMoney[turn]){
+						diff = betMoney[turn];
+					}
 					betMoney[turn] -= diff;
 					betPool += diff;
 					callAmount += raiseAmount;
@@ -149,7 +158,7 @@ int main() {
 				else {
 					isRaising[turn] = false;
 					if (betAmount[turn] < callAmount) {
-						if (betMoney[turn] < (callAmount - betMoney[turn])) {
+						if (betMoney[turn] < (callAmount - betAmount[turn])) {
 							betAmount[turn] += betMoney[turn];
 							betMoney[turn] = 0;
 						}
@@ -181,11 +190,11 @@ int main() {
 				betPool += diff;
 				callAmount += raiseAmount;
 				betAmount[turn] += diff;
-
+				called[turn] = false;
 			}
 			else {
 				if (betAmount[turn] < callAmount) {
-					if (betMoney[turn] < (callAmount)) {
+					if (betMoney[turn] < (callAmount - betAmount[turn])) {
 						betAmount[turn] += betMoney[turn];
 						betMoney[turn] = 0;
 					}
@@ -212,7 +221,11 @@ int main() {
 				window.close();
 			}
 		}
+		t_callAmount.setString(std::to_string(callAmount));
 
+		if(bust[turn]){
+			players[turn].setFolded(true);
+		}
 		mouseCircle.setPosition(Vector2f(Mouse::getPosition(window).x, Mouse::getPosition(window).y));
 		lol++;
 		players[turn].updateMouse(mouseCircle);
@@ -305,10 +318,19 @@ int main() {
 				callAmount = 5;
 				endPhase = false;
 				for(size_t i = 0; i < 4; i++){
-					text_handType[i].setFillColor(Color::Blue);
+					for (int j = 0; j < 5; j++){
+						players[i][j].getSprite().setColor(Color::White);
+					}
 					players[i].setDeck(&deck);
+					players[i].setHandType();
+					text_handType[i].setFillColor(Color::Blue);
+					text_handType[i].setString(Poker::Hand::typesMap.at(players[i].getHandType()));
+					text_betMoney[i].setString(std::to_string(betMoney[i]));
 					if(!players[i].getIsPlayer()){
 						players[i].setTurned(true);
+					}
+					if(betMoney[i] < 1){
+						bust[i] = true;
 					}
 				}
 			}
@@ -322,11 +344,11 @@ int main() {
 			turn = 0;
 			phase++;
 			bool allCall;
-			for (size_t i = 1; i < 4; i++) {
+			for (size_t i = 0; i < 4; i++) {
 				if (players[i].getFolded()) {
 					continue;
 				}
-				if (!called[i]) {
+				if (betAmount[i] < callAmount && betMoney[i] > 0) {
 					allCall = false;
 					break;
 				}
@@ -412,6 +434,7 @@ int main() {
 				window.draw(foldText);
 			}
 		}
+		window.draw(t_callAmount);
 		window.display();
 	}
 	delete[] players;

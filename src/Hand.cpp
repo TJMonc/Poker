@@ -311,7 +311,7 @@ bool Poker::Hand::checkTwoPair() {
 }
 
 bool Poker::Hand::checkKind(int number) {
-	int counter = 0;
+	int counter = 1;
 	for (size_t i = 0; i < 4; i++) {
 		for (size_t j = i + 1; j < 5; j++) {
 			if (hand[i]->getNumber() == hand[j]->getNumber()) {
@@ -322,7 +322,7 @@ bool Poker::Hand::checkKind(int number) {
 				}
 			}
 			else {
-				counter = 0;
+				counter = 1;
 				break;
 			}
 		}
