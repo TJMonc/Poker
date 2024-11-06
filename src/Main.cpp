@@ -83,8 +83,6 @@ int main() {
 	foldText.setString("FOLD");
 	bool foldPressed = false;
 
-	bool betPhase = true;
-	bool cardPhase = false;
 	bool endPhase = false;
 	int turn = 0;
 	int lol = 0;
@@ -101,7 +99,7 @@ int main() {
 		text_betMoney[i].setCharacterSize(20.f * windowScale.x);
 		text_betMoney[i].setPosition(players[i].getPosition().x, players[i].getPosition().y - 20 * windowScale.y);
 		text_betMoney[i].setFillColor(Color::Cyan);
-		text_betMoney[i].setString(str_betMoney[i]);
+		text_betMoney[i].setString(std::to_string(betMoney[i]));
 	}
 
 	int betAmount[4] = {0, 0, 0, 0};

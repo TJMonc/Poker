@@ -5,50 +5,65 @@
 namespace Poker {
 	class PokerGame {
 	private:
-		std::unique_ptr<RenderWindow> window = std::make_unique<RenderWindow>(sf::VideoMode(), "SFML Practice", sf::Style::Fullscreen);
-		CircleShape mouseCircle;
-		Vector2f windowScale;
-		int turnCounter;
-		int phases = 0;
-		int potMoney = 0;
-		int callAmount = 0;
-
-		Clock interactionClock;
-		Time interactionTime = milliseconds(200);
-
-	public:
 		struct PlayerStruct {
-			Hand hand;
-			int money;
-			bool isTurn;
-			bool isPlayer = false;
-			bool call = false;
-			bool raise = false;
+			Hand playerHand;
+			bool isRaising;
+			int betMoney;
+			int betAmount;
+			bool bust;
+
+			Text t_handType;
+			Text t_betMoney;
+		};
+		struct GameState{
+			int turn;
+			int phase;
+			int winnerIndex;
+			int callAmount;
+			int betPool;
+			Clock interactionClock;
+			Time interactionTime;
 
 		};
-		struct UIStruct {
+		
+		struct UIStruct{
 			Font font;
+
+			Text callText;
+			RectangleShape callBox;
+			std::string callString;
+			std::string raiseString;
+
+			Text foldText;
+			RectangleShape foldBox;
+
+			RectangleShape inputRect;
+			bool foldPressed;
+			bool isWriting;
 			Text inputText;
-			std::string playerInput;
-			RectangleShape textBox;
+			std::string input;
+			Text t_callAmount;
 
-			RectangleShape betTypeBox;
-			Text callOrRaise;
-			Text handTypeText;
-
-			bool isWriting = false;
-			bool call = true;
 		};
 
-	private:
-		std::array<PlayerStruct, 4> players;
-		std::unique_ptr<Deck> deck;
-		std::unique_ptr<UIStruct> userInterface;
 
-	public:
-		void init();
-		void initPlayers();
-		void initUI();
+		private:
+			RenderWindow window;
+			Vector2f windowScale;
+			Deck deck;
+			CircleShape mouseCircle;
+
+			PlayerStruct players[4];
+			GameState info;
+			UIStruct display;
+
+		
+		private:
+			void init();
+			void initDeck();
+			void initPlayers();
+			void initGameState();
+			void initUI();
 	};
 }
 
