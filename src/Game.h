@@ -31,8 +31,8 @@ namespace Poker {
 
 			Text callText;
 			RectangleShape callBox;
-			std::string callString;
-			std::string raiseString;
+			const std::string callString = "Call";
+			const std::string raiseString = "Raise";
 
 			Text foldText;
 			RectangleShape foldBox;
@@ -64,6 +64,10 @@ namespace Poker {
 			void initPlayers();
 			void initGameState();
 			void initUI();
+
+			void betPhase();
+			void discardPhase();
+			void endPhase();
 	};
 }
 

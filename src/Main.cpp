@@ -56,6 +56,7 @@ int main() {
 	bool isWriting = false;
 
 	RectangleShape callBox(Vector2f(100.f, 50.f) * windowScale);
+	callBox.setSize(Vector2f(100.f, 50.f) * windowScale);
 	callBox.setOutlineColor(Color::Blue);
 	callBox.setOutlineThickness(5.f * windowScale.y);
 	callBox.setPosition(
@@ -71,7 +72,8 @@ int main() {
 	callText.setFillColor(Color::Blue);
 	callText.setString(callString);
 
-	RectangleShape foldBox(callBox.getSize());
+	RectangleShape foldBox;
+	foldBox.setSize(callBox.getSize());
 	foldBox.setOutlineColor(Color::Red);
 	foldBox.setOutlineThickness(5.f * windowScale.y);
 	foldBox.setPosition(callBox.getPosition().x, callBox.getPosition().y - callBox.getSize().y - 30.f * windowScale.y);
