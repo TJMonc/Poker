@@ -21,6 +21,7 @@ namespace Poker {
 			int winnerIndex;
 			int callAmount;
 			int betPool;
+			bool end;
 			Clock interactionClock;
 			Time interactionTime;
 
@@ -59,7 +60,6 @@ namespace Poker {
 
 		
 		private:
-			void init();
 			void initDeck();
 			void initPlayers();
 			void initGameState();
@@ -68,6 +68,19 @@ namespace Poker {
 			void betPhase();
 			void discardPhase();
 			void endPhase();
+			void phaseChange();
+			void displayInteraction(Event& anEvent);
+			void draw();
+		public:
+			PokerGame(): window({VideoMode(), "Poker", Style::Fullscreen}){
+				windowScale = {Vector2f(window.getSize()) / Vector2f RES_768};
+				deck.setWindow(&window);
+				mouseCircle.setRadius(5.f);
+
+			}
+			void init();
+			void update();
+
 	};
 }
 
