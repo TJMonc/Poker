@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/SFML-2.6.1/Visual Stuio (32 bit)/include",
+                "C:/SFML-2.6.1/Visual Studio (32 bit)/include",
                 "C:/Users/terra/Downloads/Projects/Libraries/MinGW/MiscLib/include"
             ],
             "defines": [
