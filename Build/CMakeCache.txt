@@ -27,8 +27,8 @@ CMAKE_BUILD_TYPE:STRING=Release
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
 
-//CXX compiler
-CMAKE_CXX_COMPILER:STRING=C:/msys64/mingw32/bin/g++.exe
+//No help, variable specified on the command line.
+CMAKE_CXX_COMPILER:UNINITIALIZED=C:/msys64/mingw32/bin/g++.exe
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
@@ -247,6 +247,24 @@ Poker_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 Poker_SOURCE_DIR:STATIC=C:/Users/terra/Downloads/Projects/repos/Poker
+
+//Value Computed by CMake
+ServPoker2_BINARY_DIR:STATIC=C:/Users/terra/Downloads/Projects/repos/Poker/Build
+
+//Value Computed by CMake
+ServPoker2_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+ServPoker2_SOURCE_DIR:STATIC=C:/Users/terra/Downloads/Projects/repos/Poker
+
+//Value Computed by CMake
+ServPoker_BINARY_DIR:STATIC=C:/Users/terra/Downloads/Projects/repos/Poker/Build
+
+//Value Computed by CMake
+ServPoker_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+ServPoker_SOURCE_DIR:STATIC=C:/Users/terra/Downloads/Projects/repos/Poker
 
 
 ########################

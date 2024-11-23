@@ -68,97 +68,97 @@ include CMakeFiles/Poker.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Poker.dir/flags.make
 
-CMakeFiles/Poker.dir/src/Cards.cpp.obj: CMakeFiles/Poker.dir/flags.make
-CMakeFiles/Poker.dir/src/Cards.cpp.obj: CMakeFiles/Poker.dir/includes_CXX.rsp
-CMakeFiles/Poker.dir/src/Cards.cpp.obj: C:/Users/terra/Downloads/Projects/repos/Poker/src/Cards.cpp
-CMakeFiles/Poker.dir/src/Cards.cpp.obj: CMakeFiles/Poker.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Poker.dir/src/Cards.cpp.obj"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Poker.dir/src/Cards.cpp.obj -MF CMakeFiles\Poker.dir\src\Cards.cpp.obj.d -o CMakeFiles\Poker.dir\src\Cards.cpp.obj -c C:\Users\terra\Downloads\Projects\repos\Poker\src\Cards.cpp
+CMakeFiles/Poker.dir/cSrc/Cards.cpp.obj: CMakeFiles/Poker.dir/flags.make
+CMakeFiles/Poker.dir/cSrc/Cards.cpp.obj: CMakeFiles/Poker.dir/includes_CXX.rsp
+CMakeFiles/Poker.dir/cSrc/Cards.cpp.obj: C:/Users/terra/Downloads/Projects/repos/Poker/cSrc/Cards.cpp
+CMakeFiles/Poker.dir/cSrc/Cards.cpp.obj: CMakeFiles/Poker.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Poker.dir/cSrc/Cards.cpp.obj"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Poker.dir/cSrc/Cards.cpp.obj -MF CMakeFiles\Poker.dir\cSrc\Cards.cpp.obj.d -o CMakeFiles\Poker.dir\cSrc\Cards.cpp.obj -c C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Cards.cpp
 
-CMakeFiles/Poker.dir/src/Cards.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Poker.dir/src/Cards.cpp.i"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\terra\Downloads\Projects\repos\Poker\src\Cards.cpp > CMakeFiles\Poker.dir\src\Cards.cpp.i
+CMakeFiles/Poker.dir/cSrc/Cards.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Poker.dir/cSrc/Cards.cpp.i"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Cards.cpp > CMakeFiles\Poker.dir\cSrc\Cards.cpp.i
 
-CMakeFiles/Poker.dir/src/Cards.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Poker.dir/src/Cards.cpp.s"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\terra\Downloads\Projects\repos\Poker\src\Cards.cpp -o CMakeFiles\Poker.dir\src\Cards.cpp.s
+CMakeFiles/Poker.dir/cSrc/Cards.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Poker.dir/cSrc/Cards.cpp.s"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Cards.cpp -o CMakeFiles\Poker.dir\cSrc\Cards.cpp.s
 
-CMakeFiles/Poker.dir/src/Deck.cpp.obj: CMakeFiles/Poker.dir/flags.make
-CMakeFiles/Poker.dir/src/Deck.cpp.obj: CMakeFiles/Poker.dir/includes_CXX.rsp
-CMakeFiles/Poker.dir/src/Deck.cpp.obj: C:/Users/terra/Downloads/Projects/repos/Poker/src/Deck.cpp
-CMakeFiles/Poker.dir/src/Deck.cpp.obj: CMakeFiles/Poker.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Poker.dir/src/Deck.cpp.obj"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Poker.dir/src/Deck.cpp.obj -MF CMakeFiles\Poker.dir\src\Deck.cpp.obj.d -o CMakeFiles\Poker.dir\src\Deck.cpp.obj -c C:\Users\terra\Downloads\Projects\repos\Poker\src\Deck.cpp
+CMakeFiles/Poker.dir/cSrc/Deck.cpp.obj: CMakeFiles/Poker.dir/flags.make
+CMakeFiles/Poker.dir/cSrc/Deck.cpp.obj: CMakeFiles/Poker.dir/includes_CXX.rsp
+CMakeFiles/Poker.dir/cSrc/Deck.cpp.obj: C:/Users/terra/Downloads/Projects/repos/Poker/cSrc/Deck.cpp
+CMakeFiles/Poker.dir/cSrc/Deck.cpp.obj: CMakeFiles/Poker.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Poker.dir/cSrc/Deck.cpp.obj"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Poker.dir/cSrc/Deck.cpp.obj -MF CMakeFiles\Poker.dir\cSrc\Deck.cpp.obj.d -o CMakeFiles\Poker.dir\cSrc\Deck.cpp.obj -c C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Deck.cpp
 
-CMakeFiles/Poker.dir/src/Deck.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Poker.dir/src/Deck.cpp.i"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\terra\Downloads\Projects\repos\Poker\src\Deck.cpp > CMakeFiles\Poker.dir\src\Deck.cpp.i
+CMakeFiles/Poker.dir/cSrc/Deck.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Poker.dir/cSrc/Deck.cpp.i"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Deck.cpp > CMakeFiles\Poker.dir\cSrc\Deck.cpp.i
 
-CMakeFiles/Poker.dir/src/Deck.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Poker.dir/src/Deck.cpp.s"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\terra\Downloads\Projects\repos\Poker\src\Deck.cpp -o CMakeFiles\Poker.dir\src\Deck.cpp.s
+CMakeFiles/Poker.dir/cSrc/Deck.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Poker.dir/cSrc/Deck.cpp.s"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Deck.cpp -o CMakeFiles\Poker.dir\cSrc\Deck.cpp.s
 
-CMakeFiles/Poker.dir/src/Game.cpp.obj: CMakeFiles/Poker.dir/flags.make
-CMakeFiles/Poker.dir/src/Game.cpp.obj: CMakeFiles/Poker.dir/includes_CXX.rsp
-CMakeFiles/Poker.dir/src/Game.cpp.obj: C:/Users/terra/Downloads/Projects/repos/Poker/src/Game.cpp
-CMakeFiles/Poker.dir/src/Game.cpp.obj: CMakeFiles/Poker.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Poker.dir/src/Game.cpp.obj"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Poker.dir/src/Game.cpp.obj -MF CMakeFiles\Poker.dir\src\Game.cpp.obj.d -o CMakeFiles\Poker.dir\src\Game.cpp.obj -c C:\Users\terra\Downloads\Projects\repos\Poker\src\Game.cpp
+CMakeFiles/Poker.dir/cSrc/Game.cpp.obj: CMakeFiles/Poker.dir/flags.make
+CMakeFiles/Poker.dir/cSrc/Game.cpp.obj: CMakeFiles/Poker.dir/includes_CXX.rsp
+CMakeFiles/Poker.dir/cSrc/Game.cpp.obj: C:/Users/terra/Downloads/Projects/repos/Poker/cSrc/Game.cpp
+CMakeFiles/Poker.dir/cSrc/Game.cpp.obj: CMakeFiles/Poker.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Poker.dir/cSrc/Game.cpp.obj"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Poker.dir/cSrc/Game.cpp.obj -MF CMakeFiles\Poker.dir\cSrc\Game.cpp.obj.d -o CMakeFiles\Poker.dir\cSrc\Game.cpp.obj -c C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Game.cpp
 
-CMakeFiles/Poker.dir/src/Game.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Poker.dir/src/Game.cpp.i"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\terra\Downloads\Projects\repos\Poker\src\Game.cpp > CMakeFiles\Poker.dir\src\Game.cpp.i
+CMakeFiles/Poker.dir/cSrc/Game.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Poker.dir/cSrc/Game.cpp.i"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Game.cpp > CMakeFiles\Poker.dir\cSrc\Game.cpp.i
 
-CMakeFiles/Poker.dir/src/Game.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Poker.dir/src/Game.cpp.s"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\terra\Downloads\Projects\repos\Poker\src\Game.cpp -o CMakeFiles\Poker.dir\src\Game.cpp.s
+CMakeFiles/Poker.dir/cSrc/Game.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Poker.dir/cSrc/Game.cpp.s"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Game.cpp -o CMakeFiles\Poker.dir\cSrc\Game.cpp.s
 
-CMakeFiles/Poker.dir/src/Hand.cpp.obj: CMakeFiles/Poker.dir/flags.make
-CMakeFiles/Poker.dir/src/Hand.cpp.obj: CMakeFiles/Poker.dir/includes_CXX.rsp
-CMakeFiles/Poker.dir/src/Hand.cpp.obj: C:/Users/terra/Downloads/Projects/repos/Poker/src/Hand.cpp
-CMakeFiles/Poker.dir/src/Hand.cpp.obj: CMakeFiles/Poker.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Poker.dir/src/Hand.cpp.obj"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Poker.dir/src/Hand.cpp.obj -MF CMakeFiles\Poker.dir\src\Hand.cpp.obj.d -o CMakeFiles\Poker.dir\src\Hand.cpp.obj -c C:\Users\terra\Downloads\Projects\repos\Poker\src\Hand.cpp
+CMakeFiles/Poker.dir/cSrc/Hand.cpp.obj: CMakeFiles/Poker.dir/flags.make
+CMakeFiles/Poker.dir/cSrc/Hand.cpp.obj: CMakeFiles/Poker.dir/includes_CXX.rsp
+CMakeFiles/Poker.dir/cSrc/Hand.cpp.obj: C:/Users/terra/Downloads/Projects/repos/Poker/cSrc/Hand.cpp
+CMakeFiles/Poker.dir/cSrc/Hand.cpp.obj: CMakeFiles/Poker.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Poker.dir/cSrc/Hand.cpp.obj"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Poker.dir/cSrc/Hand.cpp.obj -MF CMakeFiles\Poker.dir\cSrc\Hand.cpp.obj.d -o CMakeFiles\Poker.dir\cSrc\Hand.cpp.obj -c C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Hand.cpp
 
-CMakeFiles/Poker.dir/src/Hand.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Poker.dir/src/Hand.cpp.i"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\terra\Downloads\Projects\repos\Poker\src\Hand.cpp > CMakeFiles\Poker.dir\src\Hand.cpp.i
+CMakeFiles/Poker.dir/cSrc/Hand.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Poker.dir/cSrc/Hand.cpp.i"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Hand.cpp > CMakeFiles\Poker.dir\cSrc\Hand.cpp.i
 
-CMakeFiles/Poker.dir/src/Hand.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Poker.dir/src/Hand.cpp.s"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\terra\Downloads\Projects\repos\Poker\src\Hand.cpp -o CMakeFiles\Poker.dir\src\Hand.cpp.s
+CMakeFiles/Poker.dir/cSrc/Hand.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Poker.dir/cSrc/Hand.cpp.s"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Hand.cpp -o CMakeFiles\Poker.dir\cSrc\Hand.cpp.s
 
-CMakeFiles/Poker.dir/src/Main.cpp.obj: CMakeFiles/Poker.dir/flags.make
-CMakeFiles/Poker.dir/src/Main.cpp.obj: CMakeFiles/Poker.dir/includes_CXX.rsp
-CMakeFiles/Poker.dir/src/Main.cpp.obj: C:/Users/terra/Downloads/Projects/repos/Poker/src/Main.cpp
-CMakeFiles/Poker.dir/src/Main.cpp.obj: CMakeFiles/Poker.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Poker.dir/src/Main.cpp.obj"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Poker.dir/src/Main.cpp.obj -MF CMakeFiles\Poker.dir\src\Main.cpp.obj.d -o CMakeFiles\Poker.dir\src\Main.cpp.obj -c C:\Users\terra\Downloads\Projects\repos\Poker\src\Main.cpp
+CMakeFiles/Poker.dir/cSrc/Main.cpp.obj: CMakeFiles/Poker.dir/flags.make
+CMakeFiles/Poker.dir/cSrc/Main.cpp.obj: CMakeFiles/Poker.dir/includes_CXX.rsp
+CMakeFiles/Poker.dir/cSrc/Main.cpp.obj: C:/Users/terra/Downloads/Projects/repos/Poker/cSrc/Main.cpp
+CMakeFiles/Poker.dir/cSrc/Main.cpp.obj: CMakeFiles/Poker.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\terra\Downloads\Projects\repos\Poker\Build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Poker.dir/cSrc/Main.cpp.obj"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Poker.dir/cSrc/Main.cpp.obj -MF CMakeFiles\Poker.dir\cSrc\Main.cpp.obj.d -o CMakeFiles\Poker.dir\cSrc\Main.cpp.obj -c C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Main.cpp
 
-CMakeFiles/Poker.dir/src/Main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Poker.dir/src/Main.cpp.i"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\terra\Downloads\Projects\repos\Poker\src\Main.cpp > CMakeFiles\Poker.dir\src\Main.cpp.i
+CMakeFiles/Poker.dir/cSrc/Main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Poker.dir/cSrc/Main.cpp.i"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Main.cpp > CMakeFiles\Poker.dir\cSrc\Main.cpp.i
 
-CMakeFiles/Poker.dir/src/Main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Poker.dir/src/Main.cpp.s"
-	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\terra\Downloads\Projects\repos\Poker\src\Main.cpp -o CMakeFiles\Poker.dir\src\Main.cpp.s
+CMakeFiles/Poker.dir/cSrc/Main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Poker.dir/cSrc/Main.cpp.s"
+	C:\msys64\mingw32\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\terra\Downloads\Projects\repos\Poker\cSrc\Main.cpp -o CMakeFiles\Poker.dir\cSrc\Main.cpp.s
 
 # Object files for target Poker
 Poker_OBJECTS = \
-"CMakeFiles/Poker.dir/src/Cards.cpp.obj" \
-"CMakeFiles/Poker.dir/src/Deck.cpp.obj" \
-"CMakeFiles/Poker.dir/src/Game.cpp.obj" \
-"CMakeFiles/Poker.dir/src/Hand.cpp.obj" \
-"CMakeFiles/Poker.dir/src/Main.cpp.obj"
+"CMakeFiles/Poker.dir/cSrc/Cards.cpp.obj" \
+"CMakeFiles/Poker.dir/cSrc/Deck.cpp.obj" \
+"CMakeFiles/Poker.dir/cSrc/Game.cpp.obj" \
+"CMakeFiles/Poker.dir/cSrc/Hand.cpp.obj" \
+"CMakeFiles/Poker.dir/cSrc/Main.cpp.obj"
 
 # External object files for target Poker
 Poker_EXTERNAL_OBJECTS =
 
-C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/src/Cards.cpp.obj
-C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/src/Deck.cpp.obj
-C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/src/Game.cpp.obj
-C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/src/Hand.cpp.obj
-C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/src/Main.cpp.obj
+C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/cSrc/Cards.cpp.obj
+C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/cSrc/Deck.cpp.obj
+C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/cSrc/Game.cpp.obj
+C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/cSrc/Hand.cpp.obj
+C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/cSrc/Main.cpp.obj
 C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/build.make
 C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/linkLibs.rsp
 C:/Users/terra/Downloads/Projects/repos/Poker/bin/Poker.exe: CMakeFiles/Poker.dir/objects1.rsp

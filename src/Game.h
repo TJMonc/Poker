@@ -57,7 +57,6 @@ namespace Poker {
 			PlayerStruct players[4];
 			GameState info;
 			UIStruct display;
-
 		
 		private:
 			void initDeck();

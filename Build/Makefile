@@ -128,125 +128,125 @@ Poker/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/build
 .PHONY : Poker/fast
 
-src/Cards.obj: src/Cards.cpp.obj
-.PHONY : src/Cards.obj
+cSrc/Cards.obj: cSrc/Cards.cpp.obj
+.PHONY : cSrc/Cards.obj
 
 # target to build an object file
-src/Cards.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Cards.cpp.obj
-.PHONY : src/Cards.cpp.obj
+cSrc/Cards.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Cards.cpp.obj
+.PHONY : cSrc/Cards.cpp.obj
 
-src/Cards.i: src/Cards.cpp.i
-.PHONY : src/Cards.i
+cSrc/Cards.i: cSrc/Cards.cpp.i
+.PHONY : cSrc/Cards.i
 
 # target to preprocess a source file
-src/Cards.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Cards.cpp.i
-.PHONY : src/Cards.cpp.i
+cSrc/Cards.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Cards.cpp.i
+.PHONY : cSrc/Cards.cpp.i
 
-src/Cards.s: src/Cards.cpp.s
-.PHONY : src/Cards.s
+cSrc/Cards.s: cSrc/Cards.cpp.s
+.PHONY : cSrc/Cards.s
 
 # target to generate assembly for a file
-src/Cards.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Cards.cpp.s
-.PHONY : src/Cards.cpp.s
+cSrc/Cards.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Cards.cpp.s
+.PHONY : cSrc/Cards.cpp.s
 
-src/Deck.obj: src/Deck.cpp.obj
-.PHONY : src/Deck.obj
+cSrc/Deck.obj: cSrc/Deck.cpp.obj
+.PHONY : cSrc/Deck.obj
 
 # target to build an object file
-src/Deck.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Deck.cpp.obj
-.PHONY : src/Deck.cpp.obj
+cSrc/Deck.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Deck.cpp.obj
+.PHONY : cSrc/Deck.cpp.obj
 
-src/Deck.i: src/Deck.cpp.i
-.PHONY : src/Deck.i
+cSrc/Deck.i: cSrc/Deck.cpp.i
+.PHONY : cSrc/Deck.i
 
 # target to preprocess a source file
-src/Deck.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Deck.cpp.i
-.PHONY : src/Deck.cpp.i
+cSrc/Deck.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Deck.cpp.i
+.PHONY : cSrc/Deck.cpp.i
 
-src/Deck.s: src/Deck.cpp.s
-.PHONY : src/Deck.s
+cSrc/Deck.s: cSrc/Deck.cpp.s
+.PHONY : cSrc/Deck.s
 
 # target to generate assembly for a file
-src/Deck.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Deck.cpp.s
-.PHONY : src/Deck.cpp.s
+cSrc/Deck.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Deck.cpp.s
+.PHONY : cSrc/Deck.cpp.s
 
-src/Game.obj: src/Game.cpp.obj
-.PHONY : src/Game.obj
+cSrc/Game.obj: cSrc/Game.cpp.obj
+.PHONY : cSrc/Game.obj
 
 # target to build an object file
-src/Game.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Game.cpp.obj
-.PHONY : src/Game.cpp.obj
+cSrc/Game.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Game.cpp.obj
+.PHONY : cSrc/Game.cpp.obj
 
-src/Game.i: src/Game.cpp.i
-.PHONY : src/Game.i
+cSrc/Game.i: cSrc/Game.cpp.i
+.PHONY : cSrc/Game.i
 
 # target to preprocess a source file
-src/Game.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Game.cpp.i
-.PHONY : src/Game.cpp.i
+cSrc/Game.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Game.cpp.i
+.PHONY : cSrc/Game.cpp.i
 
-src/Game.s: src/Game.cpp.s
-.PHONY : src/Game.s
+cSrc/Game.s: cSrc/Game.cpp.s
+.PHONY : cSrc/Game.s
 
 # target to generate assembly for a file
-src/Game.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Game.cpp.s
-.PHONY : src/Game.cpp.s
+cSrc/Game.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Game.cpp.s
+.PHONY : cSrc/Game.cpp.s
 
-src/Hand.obj: src/Hand.cpp.obj
-.PHONY : src/Hand.obj
+cSrc/Hand.obj: cSrc/Hand.cpp.obj
+.PHONY : cSrc/Hand.obj
 
 # target to build an object file
-src/Hand.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Hand.cpp.obj
-.PHONY : src/Hand.cpp.obj
+cSrc/Hand.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Hand.cpp.obj
+.PHONY : cSrc/Hand.cpp.obj
 
-src/Hand.i: src/Hand.cpp.i
-.PHONY : src/Hand.i
+cSrc/Hand.i: cSrc/Hand.cpp.i
+.PHONY : cSrc/Hand.i
 
 # target to preprocess a source file
-src/Hand.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Hand.cpp.i
-.PHONY : src/Hand.cpp.i
+cSrc/Hand.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Hand.cpp.i
+.PHONY : cSrc/Hand.cpp.i
 
-src/Hand.s: src/Hand.cpp.s
-.PHONY : src/Hand.s
+cSrc/Hand.s: cSrc/Hand.cpp.s
+.PHONY : cSrc/Hand.s
 
 # target to generate assembly for a file
-src/Hand.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Hand.cpp.s
-.PHONY : src/Hand.cpp.s
+cSrc/Hand.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Hand.cpp.s
+.PHONY : cSrc/Hand.cpp.s
 
-src/Main.obj: src/Main.cpp.obj
-.PHONY : src/Main.obj
+cSrc/Main.obj: cSrc/Main.cpp.obj
+.PHONY : cSrc/Main.obj
 
 # target to build an object file
-src/Main.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Main.cpp.obj
-.PHONY : src/Main.cpp.obj
+cSrc/Main.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Main.cpp.obj
+.PHONY : cSrc/Main.cpp.obj
 
-src/Main.i: src/Main.cpp.i
-.PHONY : src/Main.i
+cSrc/Main.i: cSrc/Main.cpp.i
+.PHONY : cSrc/Main.i
 
 # target to preprocess a source file
-src/Main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Main.cpp.i
-.PHONY : src/Main.cpp.i
+cSrc/Main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Main.cpp.i
+.PHONY : cSrc/Main.cpp.i
 
-src/Main.s: src/Main.cpp.s
-.PHONY : src/Main.s
+cSrc/Main.s: cSrc/Main.cpp.s
+.PHONY : cSrc/Main.s
 
 # target to generate assembly for a file
-src/Main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/src/Main.cpp.s
-.PHONY : src/Main.cpp.s
+cSrc/Main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Poker.dir\build.make CMakeFiles/Poker.dir/cSrc/Main.cpp.s
+.PHONY : cSrc/Main.cpp.s
 
 # Help Target
 help:
@@ -257,21 +257,21 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... Poker
-	@echo ... src/Cards.obj
-	@echo ... src/Cards.i
-	@echo ... src/Cards.s
-	@echo ... src/Deck.obj
-	@echo ... src/Deck.i
-	@echo ... src/Deck.s
-	@echo ... src/Game.obj
-	@echo ... src/Game.i
-	@echo ... src/Game.s
-	@echo ... src/Hand.obj
-	@echo ... src/Hand.i
-	@echo ... src/Hand.s
-	@echo ... src/Main.obj
-	@echo ... src/Main.i
-	@echo ... src/Main.s
+	@echo ... cSrc/Cards.obj
+	@echo ... cSrc/Cards.i
+	@echo ... cSrc/Cards.s
+	@echo ... cSrc/Deck.obj
+	@echo ... cSrc/Deck.i
+	@echo ... cSrc/Deck.s
+	@echo ... cSrc/Game.obj
+	@echo ... cSrc/Game.i
+	@echo ... cSrc/Game.s
+	@echo ... cSrc/Hand.obj
+	@echo ... cSrc/Hand.i
+	@echo ... cSrc/Hand.s
+	@echo ... cSrc/Main.obj
+	@echo ... cSrc/Main.i
+	@echo ... cSrc/Main.s
 .PHONY : help
 
 

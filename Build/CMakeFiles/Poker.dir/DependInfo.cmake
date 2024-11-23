@@ -8,11 +8,11 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "C:/Users/terra/Downloads/Projects/repos/Poker/src/Cards.cpp" "CMakeFiles/Poker.dir/src/Cards.cpp.obj" "gcc" "CMakeFiles/Poker.dir/src/Cards.cpp.obj.d"
-  "C:/Users/terra/Downloads/Projects/repos/Poker/src/Deck.cpp" "CMakeFiles/Poker.dir/src/Deck.cpp.obj" "gcc" "CMakeFiles/Poker.dir/src/Deck.cpp.obj.d"
-  "C:/Users/terra/Downloads/Projects/repos/Poker/src/Game.cpp" "CMakeFiles/Poker.dir/src/Game.cpp.obj" "gcc" "CMakeFiles/Poker.dir/src/Game.cpp.obj.d"
-  "C:/Users/terra/Downloads/Projects/repos/Poker/src/Hand.cpp" "CMakeFiles/Poker.dir/src/Hand.cpp.obj" "gcc" "CMakeFiles/Poker.dir/src/Hand.cpp.obj.d"
-  "C:/Users/terra/Downloads/Projects/repos/Poker/src/Main.cpp" "CMakeFiles/Poker.dir/src/Main.cpp.obj" "gcc" "CMakeFiles/Poker.dir/src/Main.cpp.obj.d"
+  "C:/Users/terra/Downloads/Projects/repos/Poker/cSrc/Cards.cpp" "CMakeFiles/Poker.dir/cSrc/Cards.cpp.obj" "gcc" "CMakeFiles/Poker.dir/cSrc/Cards.cpp.obj.d"
+  "C:/Users/terra/Downloads/Projects/repos/Poker/cSrc/Deck.cpp" "CMakeFiles/Poker.dir/cSrc/Deck.cpp.obj" "gcc" "CMakeFiles/Poker.dir/cSrc/Deck.cpp.obj.d"
+  "C:/Users/terra/Downloads/Projects/repos/Poker/cSrc/Game.cpp" "CMakeFiles/Poker.dir/cSrc/Game.cpp.obj" "gcc" "CMakeFiles/Poker.dir/cSrc/Game.cpp.obj.d"
+  "C:/Users/terra/Downloads/Projects/repos/Poker/cSrc/Hand.cpp" "CMakeFiles/Poker.dir/cSrc/Hand.cpp.obj" "gcc" "CMakeFiles/Poker.dir/cSrc/Hand.cpp.obj.d"
+  "C:/Users/terra/Downloads/Projects/repos/Poker/cSrc/Main.cpp" "CMakeFiles/Poker.dir/cSrc/Main.cpp.obj" "gcc" "CMakeFiles/Poker.dir/cSrc/Main.cpp.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
