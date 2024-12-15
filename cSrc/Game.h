@@ -1,12 +1,37 @@
 #ifndef POKERGAME_H
 #define POKERGAME_H
+#include <format>
 #include "Hand.h"
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+
+
+struct initPacket{
+    int index;
+    std::pair<int, int> cards[5];
+};
+struct packet1{
+    int phase;
+    bool isRaising;
+    int raiseAmount;
+
+};
+
+struct packet3{
+    int index;
+    std::pair<int, int> cards[4][5];
+};
+
+struct packet2{
+    std::pair<int, int> cards[5];
+};
 
 namespace Poker {
 	class PokerGame {
-	private:
+	public:
 		struct PlayerStruct {
 			Hand playerHand;
+			bool isPlayer;
 			bool isRaising;
 			int betMoney;
 			int betAmount;
@@ -56,6 +81,7 @@ namespace Poker {
 			PlayerStruct players[4];
 			GameState info;
 			UIStruct display;
+			packet3 initPack;
 			int you;
 		
 		private:
@@ -77,8 +103,8 @@ namespace Poker {
 				mouseCircle.setRadius(5.f);
 
 			}
-			void init(RenderWindow& window);
-			void update(RenderWindow& window);
+			void init(RenderWindow& window, SOCKET* acceptSock);
+			void update(RenderWindow& window, SOCKET* acceptSock);
 
 	};
 }

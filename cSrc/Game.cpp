@@ -1,6 +1,10 @@
 #include "Game.h"
 
-void Poker::PokerGame::init(RenderWindow& window) {
+void Poker::PokerGame::init(RenderWindow& window, SOCKET* acceptSock) {
+
+	if(recv(*acceptSock, (char*)&initPack, sizeof(packet3), 0) > 0){
+		you = initPack.index;
+	};
     initDeck(window);
     initGameState(window);
 	initPlayers(window);
@@ -8,10 +12,15 @@ void Poker::PokerGame::init(RenderWindow& window) {
 
 }
 
-void Poker::PokerGame::update(RenderWindow& window) {
+void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
+	sockaddr_in addrInfo = {0};
+	int addrSize = sizeof(addrInfo);
+	getpeername(*clientSock, reinterpret_cast<SOCKADDR*>(&addrInfo), &addrSize);
 	while(window.isOpen()){
+
 		Event anEvent;
 		while(window.pollEvent(anEvent)){
+
 			switch(anEvent.type){
 			case Event::EventType::Closed:
 				window.close();
@@ -21,11 +30,17 @@ void Poker::PokerGame::update(RenderWindow& window) {
 				window.close();
 			}
 		}
+
 		display.t_callAmount.setString(std::to_string(info.callAmount));
 
 		if (players[info.turn].bust) {
+			std::cin.get();
+
+
 			players[info.turn].playerHand.setFolded(true);
 		}
+
+
 		mouseCircle.setPosition(Vector2f(Mouse::getPosition(window).x, Mouse::getPosition(window).y));
 		players[info.turn].playerHand.updateMouse(mouseCircle);
 
@@ -43,6 +58,9 @@ void Poker::PokerGame::update(RenderWindow& window) {
 				endPhase();
 				break;
 			
+		}
+		for(int i = 0; i < 4; i++){
+			players[i].playerHand.setTurned(false);
 		}
 		phaseChange();
 		displayInteraction(anEvent);
@@ -69,8 +87,16 @@ void Poker::PokerGame::initPlayers(RenderWindow& window) {
         players[i].betMoney = 5000;
         players[i].betAmount = 0;
         players[i].bust = false;
+		players[i].isPlayer = true;
+
+		for(int j = 0; j < 5; j++){
+			players[i].playerHand[j] = deck.at(std::format("{}{}",
+			 							Suits::suit.at(initPack.cards[i][j].second), initPack.cards[i][j].first));
+		}
+
 
     }
+	players[you].playerHand.setIsPlayer(true);
 
     Vector2f mid = {
         (window.getSize().x / 2.f) - (players[0].playerHand.getSize().x / 2.f),
@@ -86,7 +112,7 @@ void Poker::PokerGame::initPlayers(RenderWindow& window) {
     players[1].playerHand.setPosition({windowScale.x, mid.y});
     players[2].playerHand.setPosition({mid.x, 30.f * windowScale.y});
     players[3].playerHand.setPosition({neg.x, mid.y});
-    players[0].playerHand.setIsPlayer(true);
+    
     for(int i = 0; i < 4; i++){
         players[i].t_betMoney.setFont(display.font);
         players[i].t_betMoney.setCharacterSize(20.f * windowScale.x);

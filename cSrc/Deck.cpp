@@ -78,11 +78,11 @@ const Poker::Card& Poker::Deck::at(const int index) const
 Poker::Card& Poker::Deck::at(const std::string aID)
 {
 	for (size_t i = 0; i < 52; i++) {
-		if ((*objDeck[i]).getID() != aID) {
+		if ((deck[i]).getID() != aID) {
 			continue;
 		}
 		else {
-			return *objDeck[i];
+			return deck[i];
 		}
 	}
 	throw FileError("Main app failure due to Poker::Deck::at");
@@ -92,11 +92,11 @@ Poker::Card& Poker::Deck::at(const std::string aID)
 const Poker::Card& Poker::Deck::at(const std::string aID) const
 {
 	for (size_t i = 0; i < 52; i++) {
-		if ((*objDeck[i]).getID() != aID) {
+		if ((deck[i]).getID() != aID) {
 			continue;
 		}
 		else {
-			return *(objDeck[i]);
+			return deck[i];
 		}
 	}
 	throw FileError("Main app failure due to Poker::Deck::at");

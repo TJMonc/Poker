@@ -4,4 +4,12 @@ cd Build
 start /wait "" make
 cd "C:\Users\terra\Downloads\Projects\repos\Poker"
 cd bin
-start Poker.exe
+start client
+start client
+start client
+start client
+
+start server
+
+
+

@@ -1,3 +1,0 @@
-C:\msys64\ucrt64\bin\cmake.exe -E rm -f CMakeFiles\ServPoker.dir/objects.a
-C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\ServPoker.dir/objects.a @CMakeFiles\ServPoker.dir\objects1.rsp
-C:\msys64\mingw32\bin\g++.exe -Werror -Wno-trigraphs -O3 -Wl,--whole-archive CMakeFiles\ServPoker.dir/objects.a -Wl,--no-whole-archive -o C:\Users\terra\Downloads\Projects\repos\Poker\bin\ServPoker.exe -Wl,--out-implib,C:\Users\terra\Downloads\Projects\repos\Poker\bin\libServPoker.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\ServPoker.dir\linkLibs.rsp

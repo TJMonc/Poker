@@ -1,3 +1,0 @@
-C:/Users/terra/Downloads/Projects/repos/Poker/Build/CMakeFiles/Poker.dir
-C:/Users/terra/Downloads/Projects/repos/Poker/Build/CMakeFiles/edit_cache.dir
-C:/Users/terra/Downloads/Projects/repos/Poker/Build/CMakeFiles/rebuild_cache.dir
