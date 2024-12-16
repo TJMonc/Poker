@@ -100,7 +100,7 @@ namespace Poker {
 		void setHandType();
 
 
-		Card& at(const int index);
+		Card*& pat(const int index);
 		const Card& at(const int index) const;
 		Card& at(const std::string aID);
 		const Card& at(const std::string aID) const;

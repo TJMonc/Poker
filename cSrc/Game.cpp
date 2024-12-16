@@ -6,8 +6,12 @@ void Poker::PokerGame::init(RenderWindow& window, SOCKET* acceptSock) {
 		you = initPack.index;
 	};
     initDeck(window);
+
     initGameState(window);
+		std::cout << "line 8\n";
+
 	initPlayers(window);
+
     initUI(window);
 
 }
@@ -88,12 +92,14 @@ void Poker::PokerGame::initPlayers(RenderWindow& window) {
         players[i].betAmount = 0;
         players[i].bust = false;
 		players[i].isPlayer = true;
-
+		std::cout << "line 95\n";
 		for(int j = 0; j < 5; j++){
-			players[i].playerHand[j] = deck.at(std::format("{}{}",
+			players[i].playerHand.pat(j) = &deck.at(std::format("{}{}",
 			 							Suits::suit.at(initPack.cards[i][j].second), initPack.cards[i][j].first));
-		}
 
+			std::cout << std::format("{}{}\n", Suits::suit.at(initPack.cards[i][j].second), initPack.cards[i][j].first);
+		}
+		players[i].playerHand.sortCards();
 
     }
 	players[you].playerHand.setIsPlayer(true);

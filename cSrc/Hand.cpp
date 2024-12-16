@@ -23,12 +23,12 @@ void Poker::Hand::replaceCard() {
 	std::vector<Card*> pastNums;
 	for (size_t i = 0; i < 5; i++) {
 		int randNum = rand() % deck->getSize();
-		this->at(i).getSprite().setColor(Color::White);
+		this->pat(i)->getSprite().setColor(Color::White);
 		while (deck->at(randNum).isInHand()) {
 			randNum = rand() % deck->getSize();
 		}
 		
-		this->at(i).setIsTurned(true);
+		this->pat(i)->setIsTurned(true);
 		hand[i] = &deck->at(randNum);
 		this->deck->at(randNum).setInHand(true);
 	}
@@ -104,10 +104,9 @@ Vector2f Poker::Hand::getSize() {
 void Poker::Hand::setDeck(Deck* aDeck) {
 	this->deck = aDeck;
 	for (size_t i = 0; i < 5; i++) {
-		int randNum = rand() % deck->getSize();
+		int randNum = rand() % 52;
 		hand[i] = &deck->at(randNum);
 		hand[i]->setInHand(true);
-		deck->remove(randNum);
 
 	}
 	this->sortCards();
@@ -151,14 +150,13 @@ void Poker::Hand::unDiscard(int index) {
 void Poker::Hand::discardCards() {
 	std::vector<Card*> pastNums;
 	for (size_t i = 0; i < discarded.size(); i++) {
-		int randNum = rand() % deck->getSize();
+		int randNum = rand() % 52;
 		int index = discarded[i];
-		this->at(index).getSprite().setColor(Color::White);
+		this->pat(index)->getSprite().setColor(Color::White);
 
-		this->at(index).setIsTurned(false);
+		this->pat(index)->setIsTurned(false);
 		hand[index] = &deck->at(randNum);
 		this->deck->at(randNum).setInHand(true);
-		deck->remove(randNum);
 
 	}
 	for (size_t i = 0; i < pastNums.size(); i++) {
@@ -384,8 +382,8 @@ void Poker::Hand::setHandType() {
 
 
 
-Poker::Card& Poker::Hand::at(const int index) {
-	return *hand[index];
+Poker::Card*& Poker::Hand::pat(const int index) {
+	return hand[index];
 }
 
 const Poker::Card& Poker::Hand::at(const int index) const {

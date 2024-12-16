@@ -20,33 +20,34 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand hand, Deck* deck, 
         getpeername(*allSocks[i], reinterpret_cast<SOCKADDR*>(&allInfo[i]), &addrsize);
     }
     int recvCount;
-    while(true){
-        switch(phase){
+    while (true) {
+        if ((recvCount = recvfrom(*acceptSock, (char *)&phase, sizeof(int), 0,
+            reinterpret_cast<SOCKADDR *>(&clientInfo), &addrsize)) != SOCKET_ERROR) {
+            switch (phase) {
             case 0: {
                 packet1 pack;
                 if ((recvCount = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR) {
                     for (int i = 0; i < 4; i++) {
-                        if (i == index || allSocks[i] == nullptr){
+                        if (i == index || allSocks[i] == nullptr) {
                             continue;
                         }
-                        sendto(*acceptSock, (char*)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&allInfo[i]), sizeof(allInfo[i]));
+                        sendto(*acceptSock, (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&allInfo[i]), sizeof(allInfo[i]));
                     }
                 }
-
-
             }
-                break;
+            break;
+            
             case 1: {
-                    packet2 pack;
-                }
-                break;
-                
+                packet2 pack;
+            }
+            break;
+
             default:
 
                 break;
-
+            }
         }
-        if(recvCount == SOCKET_ERROR){
+        else{
             break;
         }
     }
@@ -58,6 +59,7 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand hand, Deck* deck, 
 }
 
 int main(){
+    srand(time(NULL));
     WSAData data;
     WORD version = MAKEWORD(2,2);
     Deck* deck = new Deck;
