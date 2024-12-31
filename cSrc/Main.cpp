@@ -48,9 +48,9 @@ int main(){
     else {
         std::cout << "Client connected to " << inet_ntoa(clientServ.sin_addr) << "\n\n";
     }
-    RenderWindow window(VideoMode(1024,720), "Multiplayer Poker", Style::Resize);
+    RenderWindow window(VideoMode(), "Multiplayer Poker", Style::Fullscreen);
     Poker::PokerGame* game = new Poker::PokerGame(window);
-    game->init(window, &clientSock);
+    game->init(window, &clientSock, clientServ);
     game->update(window, &clientSock);
 
     delete game;

@@ -440,5 +440,3 @@ const Poker::Card& Poker::Hand::operator[](const std::string ID) const {
 	throw FileError("Main app failure due to Poker::Hand::operator[]");
 	return *hand[0];
 }
-
-

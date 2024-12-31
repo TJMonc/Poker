@@ -21,24 +21,38 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand hand, Deck* deck, 
     }
     int recvCount;
     while (true) {
-        if ((recvCount = recvfrom(*acceptSock, (char *)&phase, sizeof(int), 0,
-            reinterpret_cast<SOCKADDR *>(&clientInfo), &addrsize)) != SOCKET_ERROR) {
+        if ((recvCount = recv(*acceptSock, (char *)&phase, sizeof(int), 0)) != SOCKET_ERROR) {
+            std::cout << "recieved " << phase;
             switch (phase) {
-            case 0: {
+            case 0: { 
                 packet1 pack;
-                if ((recvCount = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR) {
+                if ((recvCount = recvfrom(*acceptSock, (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&clientInfo), &addrsize)) != SOCKET_ERROR) {
+                    std::cout << "22222\n";
                     for (int i = 0; i < 4; i++) {
                         if (i == index || allSocks[i] == nullptr) {
                             continue;
                         }
-                        sendto(*acceptSock, (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&allInfo[i]), sizeof(allInfo[i]));
+                        sendto(*allSocks[i], (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&allInfo[i]), sizeof(allInfo[i]));
                     }
+                    break;
+
                 }
             }
             break;
             
             case 1: {
                 packet2 pack;
+                auto& discarded = pack.discarded;
+                if((recvCount = recv(*acceptSock, (char*)&pack, sizeof(packet2), 0) != SOCKET_ERROR)){
+                    hand.setDiscarded(discarded);
+                    hand.discardCards();
+                }
+                for(int i = 0; i < 5; i++){
+                    pack.cards[i].first = hand.at(i).getNumber();
+                    pack.cards[i].second = hand.at(i).getSuite();
+                }
+                send(*acceptSock, (char*)&pack, sizeof(packet2), 0);
+                
             }
             break;
 
@@ -65,7 +79,7 @@ int main(){
     Deck* deck = new Deck;
     Hand* hand = new Hand[4];
 
-    packet3 initPacket;
+    initPacket initPacket;
 
     for(int i = 0; i < 4; i++){
         hand[i].setDeck(deck);
@@ -149,7 +163,7 @@ int main(){
                                      clientInfo.sin_port);
             client[i] = std::thread(clientThread, acceptSock, allSocks, hand[i], deck, i);
             initPacket.index = i;
-            sendto(*acceptSock, (char*)&initPacket, sizeof(packet3), 0, reinterpret_cast<SOCKADDR *>(&clientInfo), sizeof(clientInfo));
+            sendto(*acceptSock, (char*)&initPacket, sizeof(initPacket), 0, reinterpret_cast<SOCKADDR *>(&clientInfo), sizeof(clientInfo));
         }
         clientSize++;
     }

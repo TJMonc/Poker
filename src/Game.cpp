@@ -9,6 +9,7 @@ void Poker::PokerGame::init() {
 }
 
 void Poker::PokerGame::update() {
+	
 	while(window.isOpen()){
 		Event anEvent;
 		while(window.pollEvent(anEvent)){
@@ -229,6 +230,8 @@ void Poker::PokerGame::betPhase() {
 			if (players[info.turn].betAmount < info.callAmount) {
 				if (players[info.turn].betMoney < (info.callAmount - players[info.turn].betAmount)) {
 					players[info.turn].betAmount += players[info.turn].betMoney;
+					info.betPool += players[info.turn].betMoney;
+
 					players[info.turn].betMoney = 0;
 				}
 				else {

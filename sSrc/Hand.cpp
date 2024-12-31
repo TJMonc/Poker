@@ -148,6 +148,11 @@ void Poker::Hand::unDiscard(int index) {
 	}
 }
 
+void Poker::Hand::setDiscarded(std::vector<int> aDiscarded){
+	discarded = aDiscarded;
+}
+
+
 void Poker::Hand::discardCards() {
 	std::vector<Card*> pastNums;
 	for (size_t i = 0; i < discarded.size(); i++) {

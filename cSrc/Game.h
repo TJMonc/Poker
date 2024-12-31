@@ -6,10 +6,6 @@
 #include <WS2tcpip.h>
 
 
-struct initPacket{
-    int index;
-    std::pair<int, int> cards[5];
-};
 struct packet1{
     int phase;
     bool isRaising;
@@ -17,12 +13,15 @@ struct packet1{
 
 };
 
-struct packet3{
+struct initPacket{
     int index;
     std::pair<int, int> cards[4][5];
 };
 
 struct packet2{
+    int index;
+    int discardNum;
+    std::vector<int> discarded;
     std::pair<int, int> cards[5];
 };
 
@@ -81,7 +80,8 @@ namespace Poker {
 			PlayerStruct players[4];
 			GameState info;
 			UIStruct display;
-			packet3 initPack;
+			initPacket initPack;
+			sockaddr_in serverInfo;
 			int you;
 		
 		private:
@@ -90,9 +90,9 @@ namespace Poker {
 			void initGameState(RenderWindow& window);
 			void initUI(RenderWindow& window);
 
-			void betPhase();
-			void discardPhase();
-			void endPhase();
+			void betPhase(SOCKET* acceptSock);
+			void discardPhase(SOCKET* acceptSock);
+			void endPhase(SOCKET* acceptSock);
 			void phaseChange();
 			void displayInteraction(Event& anEvent);
 			void draw(RenderWindow& window);
@@ -103,7 +103,7 @@ namespace Poker {
 				mouseCircle.setRadius(5.f);
 
 			}
-			void init(RenderWindow& window, SOCKET* acceptSock);
+			void init(RenderWindow& window, SOCKET* acceptSock, sockaddr_in aServInfo);
 			void update(RenderWindow& window, SOCKET* acceptSock);
 
 	};

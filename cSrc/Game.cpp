@@ -1,24 +1,25 @@
 #include "Game.h"
 
-void Poker::PokerGame::init(RenderWindow& window, SOCKET* acceptSock) {
-
-	if(recv(*acceptSock, (char*)&initPack, sizeof(packet3), 0) > 0){
+void Poker::PokerGame::init(RenderWindow& window, SOCKET* acceptSock, sockaddr_in aServInfo) {
+	this->serverInfo = aServInfo;
+	if(recv(*acceptSock, (char*)&initPack, sizeof(initPacket), 0) > 0){
 		you = initPack.index;
 	};
     initDeck(window);
 
     initGameState(window);
-		std::cout << "line 8\n";
 
 	initPlayers(window);
 
     initUI(window);
+	draw(window);
 
 }
 
 void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 	sockaddr_in addrInfo = {0};
 	int addrSize = sizeof(addrInfo);
+	bool sent = false;
 	getpeername(*clientSock, reinterpret_cast<SOCKADDR*>(&addrInfo), &addrSize);
 	while(window.isOpen()){
 
@@ -47,19 +48,22 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 
 		mouseCircle.setPosition(Vector2f(Mouse::getPosition(window).x, Mouse::getPosition(window).y));
 		players[info.turn].playerHand.updateMouse(mouseCircle);
-
+		if(!sent){
+		send(*clientSock, (char*)&info.phase, sizeof(int), 0);
+		sent = true;
+		}
 		switch(info.phase){
 			case 0:
-				betPhase();
+				betPhase(clientSock);
 				break;
 			case 1:
-				discardPhase();
+				discardPhase(clientSock);
 				break;
 			case 2:
-				betPhase();
+				betPhase(clientSock);
 				break;
 			case 3:
-				endPhase();
+				endPhase(clientSock);
 				break;
 			
 		}
@@ -72,8 +76,7 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 	}
 }
 
-void Poker::PokerGame::initDeck(RenderWindow& window)
-{
+void Poker::PokerGame::initDeck(RenderWindow& window) {
     Vector2f deckPos = {
         window.getSize().x - deck[0].getGlobalBounds().getSize().x,
         window.getSize().y - deck[0].getGlobalBounds().getSize().y
@@ -92,12 +95,10 @@ void Poker::PokerGame::initPlayers(RenderWindow& window) {
         players[i].betAmount = 0;
         players[i].bust = false;
 		players[i].isPlayer = true;
-		std::cout << "line 95\n";
 		for(int j = 0; j < 5; j++){
 			players[i].playerHand.pat(j) = &deck.at(std::format("{}{}",
 			 							Suits::suit.at(initPack.cards[i][j].second), initPack.cards[i][j].first));
 
-			std::cout << std::format("{}{}\n", Suits::suit.at(initPack.cards[i][j].second), initPack.cards[i][j].first);
 		}
 		players[i].playerHand.sortCards();
 
@@ -201,7 +202,8 @@ void Poker::PokerGame::initUI(RenderWindow& window) {
 	display.t_callAmount.setString(std::to_string(info.callAmount));
 }
 
-void Poker::PokerGame::betPhase() {
+void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
+	packet1 pack;
 	if (players[info.turn].playerHand.getFolded()) {
 		info.turn++;
 	}
@@ -213,6 +215,52 @@ void Poker::PokerGame::betPhase() {
 			}
 			else if (players[info.turn].isRaising && display.input != "") {
 				int raiseAmount = std::stoi(display.input);
+				pack.raiseAmount = raiseAmount;
+
+				int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
+				if (diff > players[info.turn].betMoney) {
+					diff = players[info.turn].betMoney;
+				}
+				players[info.turn].betMoney -= diff;
+				info.betPool += diff;
+				info.callAmount += raiseAmount;
+				players[info.turn].betAmount += diff;
+			}
+			else {
+				pack.raiseAmount = 0;
+				players[info.turn].isRaising = false;
+				if (players[info.turn].betAmount < info.callAmount) {
+					if (players[info.turn].betMoney < (info.callAmount - players[info.turn].betAmount)) {
+						players[info.turn].betAmount += players[info.turn].betMoney;
+						players[info.turn].betMoney = 0;
+					}
+					else {
+						int diff = info.callAmount - players[info.turn].betAmount;
+						players[info.turn].betMoney -= diff;
+						info.betPool += diff;
+
+						players[info.turn].betAmount = info.callAmount;
+					}
+				}
+			}
+			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
+
+			pack.isRaising = players[info.turn].isRaising;
+			send(*acceptSock, (char*)&pack, sizeof(packet1), 0);
+
+			info.turn++;
+		}
+	}
+	else if(players[info.turn].isPlayer){
+		//IN PROGRESS
+		int addrSize = sizeof(serverInfo);
+		int bytes = 0;
+		if((bytes = recv(*acceptSock, (char*)&pack, sizeof(packet1), 0)) > 0){
+			int raiseAmount = pack.raiseAmount;
+			bool isRaising = pack.isRaising;
+
+			if (pack.isRaising) {
+
 				int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
 				if (diff > players[info.turn].betMoney) {
 					diff = players[info.turn].betMoney;
@@ -261,6 +309,7 @@ void Poker::PokerGame::betPhase() {
 			if (players[info.turn].betAmount < info.callAmount) {
 				if (players[info.turn].betMoney < (info.callAmount - players[info.turn].betAmount)) {
 					players[info.turn].betAmount += players[info.turn].betMoney;
+					info.betPool += players[info.turn].betMoney;
 					players[info.turn].betMoney = 0;
 				}
 				else {
@@ -278,7 +327,7 @@ void Poker::PokerGame::betPhase() {
 	}
 }
 
-void Poker::PokerGame::discardPhase(){
+void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 	auto& hand = players[info.turn].playerHand; 
 
 	if (hand.getFolded()){
@@ -303,7 +352,7 @@ void Poker::PokerGame::discardPhase(){
 	}
 }
 
-void Poker::PokerGame::endPhase() {
+void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 	Poker::Hand *winner = &players[0].playerHand;
 	if (!info.end) {
 		info.winnerIndex = 0;
@@ -410,7 +459,7 @@ void Poker::PokerGame::phaseChange() {
 void Poker::PokerGame::displayInteraction(Event& anEvent) {
 	auto& hand = players[info.turn].playerHand;
 
-	if (hand.getIsPlayer()) {
+	if (info.turn == you) {
 		if ((info.turn == 0 || info.turn == 2)) {
 
 			if (Mouse::isButtonPressed(Mouse::Left) &&

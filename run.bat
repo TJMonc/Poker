@@ -8,6 +8,9 @@ cd bin
 start server
 
 start client
+start client
+
+
 
 
 
