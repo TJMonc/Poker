@@ -48,13 +48,15 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 
 		mouseCircle.setPosition(Vector2f(Mouse::getPosition(window).x, Mouse::getPosition(window).y));
 		players[info.turn].playerHand.updateMouse(mouseCircle);
-		if(!sent){
-		send(*clientSock, (char*)&info.phase, sizeof(int), 0);
-		sent = true;
+		if(!sent && info.turn == you){
+			send(*clientSock, (char*)&info.phase, sizeof(int), 0);
+			sent = true;
 		}
 		switch(info.phase){
 			case 0:
 				betPhase(clientSock);
+				display.t_callAmount.setString(std::to_string(info.callAmount));
+
 				break;
 			case 1:
 				discardPhase(clientSock);
@@ -71,6 +73,9 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 			players[i].playerHand.setTurned(false);
 		}
 		phaseChange();
+		if(info.turn != you){
+			sent = false;
+		}
 		displayInteraction(anEvent);
 		draw(window);
 	}
@@ -459,8 +464,8 @@ void Poker::PokerGame::phaseChange() {
 void Poker::PokerGame::displayInteraction(Event& anEvent) {
 	auto& hand = players[info.turn].playerHand;
 
-	if (info.turn == you) {
-		if ((info.turn == 0 || info.turn == 2)) {
+	if (true) {
+		if ((info.phase == 0 || info.phase == 2)) {
 
 			if (Mouse::isButtonPressed(Mouse::Left) &&
 				info.interactionClock.getElapsedTime() > info.interactionTime) {

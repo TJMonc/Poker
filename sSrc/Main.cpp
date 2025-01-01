@@ -21,13 +21,18 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand hand, Deck* deck, 
     }
     int recvCount;
     while (true) {
-        if ((recvCount = recv(*acceptSock, (char *)&phase, sizeof(int), 0)) != SOCKET_ERROR) {
-            std::cout << "recieved " << phase;
+        if ((recvCount = recv(*acceptSock, (char *)&phase, sizeof(int), 0)) != SOCKET_ERROR && recvCount == sizeof(int)) {
+            std::cout << std::format("Recieved Phase: {}\n", phase);
             switch (phase) {
             case 0: { 
                 packet1 pack;
-                if ((recvCount = recvfrom(*acceptSock, (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&clientInfo), &addrsize)) != SOCKET_ERROR) {
-                    std::cout << "22222\n";
+                if ((recvCount = recvfrom(*acceptSock, (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&clientInfo), &addrsize)) != SOCKET_ERROR
+                 && recvCount == sizeof(packet1)) {
+                    std::cout << std::format(
+                        "Recieved Packet1:\n"
+                        "Player: {}\n"
+                        "Raise Amount: {}\n\n", index, pack.raiseAmount);
+
                     for (int i = 0; i < 4; i++) {
                         if (i == index || allSocks[i] == nullptr) {
                             continue;
