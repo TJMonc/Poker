@@ -98,7 +98,7 @@ void Poker::PokerGame::initPlayers(RenderWindow& window) {
         players[i].betMoney = 5000;
         players[i].betAmount = 0;
         players[i].bust = false;
-		players[i].isPlayer = true;
+
 		for(int j = 0; j < 5; j++){
 			players[i].playerHand.pat(j) = &deck.at(std::format("{}{}",
 			 							Suits::suit.at(initPack.cards[i][j].second), initPack.cards[i][j].first));
@@ -108,7 +108,9 @@ void Poker::PokerGame::initPlayers(RenderWindow& window) {
 
     }
 	players[you].playerHand.setIsPlayer(true);
-
+	for(int i = 0; i < initPack.playerNum; i++){
+		players[i].isPlayer = true;
+	}
     Vector2f mid = {
         (window.getSize().x / 2.f) - (players[0].playerHand.getSize().x / 2.f),
         (window.getSize().y / 2.f - players[0].playerHand.getSize().y / 2.f)
@@ -266,7 +268,7 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 			info.turn++;
 		}
 	}
-	else {
+	else if(you == 0){
 		int randNum = std::rand() % 10 + 1;
 		players[info.turn].isRaising = (randNum > 8);
 		if ((players[info.turn].betMoney - info.callAmount) < 0) {
@@ -274,6 +276,7 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 		}
 		if (players[info.turn].isRaising) {
 			int raiseAmount = rand() % (players[info.turn].betMoney - info.callAmount);
+			pack.raiseAmount = raiseAmount;
 			int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
 			players[info.turn].betMoney -= diff;
 			info.betPool += diff;
@@ -298,7 +301,47 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 		}
 		players[info.turn].playerHand.hasChosen = false;
 		players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
+		int t = 0;
+		pack.isRaising = players[info.turn].isRaising;
+		send(*acceptSock, (char*)&t, sizeof(int), 0);
+
+		send(*acceptSock, (char*)&pack, sizeof(packet1), 0);
 		info.turn++;
+	}
+	else{
+		int recvCount;
+		if ((recvCount = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR) {
+			if ((players[info.turn].betMoney - info.callAmount) < 0) {
+				players[info.turn].isRaising = false;
+			}
+			if (players[info.turn].isRaising) {
+				int raiseAmount = pack.raiseAmount;
+				int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
+				players[info.turn].betMoney -= diff;
+				info.betPool += diff;
+				info.callAmount += raiseAmount;
+				players[info.turn].betAmount += diff;
+			}
+			else {
+				if (players[info.turn].betAmount < info.callAmount) {
+					if (players[info.turn].betMoney < (info.callAmount - players[info.turn].betAmount)) {
+						players[info.turn].betAmount += players[info.turn].betMoney;
+						info.betPool += players[info.turn].betMoney;
+						players[info.turn].betMoney = 0;
+					}
+					else {
+						int diff = info.callAmount - players[info.turn].betAmount;
+						players[info.turn].betMoney -= diff;
+						info.betPool += diff;
+
+						players[info.turn].betAmount = info.callAmount;
+					}
+				}
+			}
+			players[info.turn].playerHand.hasChosen = false;
+			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
+			info.turn++;
+		}
 	}
 }
 
@@ -477,7 +520,7 @@ void Poker::PokerGame::displayInteraction(Event& anEvent) {
 					else {
 						display.input += anEvent.text.unicode;
 
-						if (display.input.find_first_of(validNums) == std::string::npos) {
+						if (display.input.find_first_not_of(validNums) != std::string::npos) {
 							display.input.erase(display.input.size() - 1);
 						}
 					}

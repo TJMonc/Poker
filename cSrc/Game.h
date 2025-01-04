@@ -31,7 +31,7 @@ namespace Poker {
 	public:
 		struct PlayerStruct {
 			Hand playerHand;
-			bool isPlayer;
+			bool isPlayer = false;
 			bool isRaising;
 			int betMoney;
 			int betAmount;

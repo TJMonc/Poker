@@ -82,10 +82,12 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand hand, Deck* deck, 
     WSACleanup();   // NOTE: Depending on how this works, it's a possible memory leak.
 }
 
-int initThread(SOCKET* acceptSock, sockaddr_in* info, Time* initTime, Clock* initClock, initPacket* pack){
+int initThread(SOCKET* acceptSock, sockaddr_in* info, Time* initTime, Clock* initClock, initPacket* pack, int index){
+    initPacket playerPack = *pack;
+    playerPack.index = index;
     while(true){
         if(initClock->getElapsedTime() > *initTime){
-            sendto(*acceptSock, (char*)pack, sizeof(initPacket), 0, reinterpret_cast<SOCKADDR*>(info), sizeof(info));
+            sendto(*acceptSock, (char*)&playerPack, sizeof(initPacket), 0, reinterpret_cast<SOCKADDR*>(info), sizeof(info));
             return 0;
         }
     }
@@ -195,8 +197,8 @@ int main(){
             initPacket.index = i;
            // sendto(*allSocks[i], (char*)&initPacket, sizeof(initPacket), 0, reinterpret_cast<SOCKADDR *>(&clientInfo), sizeof(clientInfo));
             initPacket.playerNum = clientSize;
-            init[i] = std::thread(initThread, acceptSock, &(allInfo[i]), &initTime, &initClock, &initPacket);
-
+            init[i] = std::thread(initThread, acceptSock, &(allInfo[i]), &initTime, &initClock, &initPacket, initPacket.index);
+            std::cout << std::format("Client Size = {}\n", clientSize);
         }
     }
 

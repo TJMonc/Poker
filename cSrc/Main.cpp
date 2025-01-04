@@ -1,6 +1,5 @@
 #include "Game.h"
 
-//IN PROGRESS:
 /*The new plan is to use the server to store the "real" Deck / playerHands (AND ONLY THE DECK AND PLAYERHANDS)*/
 int main(){
 
