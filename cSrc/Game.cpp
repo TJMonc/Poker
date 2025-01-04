@@ -207,7 +207,7 @@ void Poker::PokerGame::initUI(RenderWindow& window) {
 	display.t_callAmount.setPosition(deck.getPositon().x, deck.getPositon().y - 50.f * windowScale.y);
 	display.t_callAmount.setString(std::to_string(info.callAmount));
 }
-
+// NOTE: Refactor this later to have the calculations for the non-players to be done on server side.
 void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 	packet1 pack;
 	if (players[info.turn].playerHand.getFolded()) {
