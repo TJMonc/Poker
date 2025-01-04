@@ -55,7 +55,6 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 		switch(info.phase){
 			case 0:
 				betPhase(clientSock);
-				display.t_callAmount.setString(std::to_string(info.callAmount));
 
 				break;
 			case 1:
@@ -258,41 +257,12 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 	}
 	else if(players[info.turn].isPlayer){
 		//IN PROGRESS
-		int addrSize = sizeof(serverInfo);
-		int bytes = 0;
-		if((bytes = recv(*acceptSock, (char*)&pack, sizeof(packet1), 0)) > 0){
-			int raiseAmount = pack.raiseAmount;
-			bool isRaising = pack.isRaising;
-
-			if (pack.isRaising) {
-
-				int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
-				if (diff > players[info.turn].betMoney) {
-					diff = players[info.turn].betMoney;
-				}
-				players[info.turn].betMoney -= diff;
-				info.betPool += diff;
-				info.callAmount += raiseAmount;
-				players[info.turn].betAmount += diff;
-			}
-			else {
-				players[info.turn].isRaising = false;
-				if (players[info.turn].betAmount < info.callAmount) {
-					if (players[info.turn].betMoney < (info.callAmount - players[info.turn].betAmount)) {
-						players[info.turn].betAmount += players[info.turn].betMoney;
-						players[info.turn].betMoney = 0;
-					}
-					else {
-						int diff = info.callAmount - players[info.turn].betAmount;
-						players[info.turn].betMoney -= diff;
-						info.betPool += diff;
-
-						players[info.turn].betAmount = info.callAmount;
-					}
-				}
-			}
-			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
-
+		if(threadProgress == 0){
+			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
+		}
+		else if(threadProgress > 1){
+			recieve.join();
+			threadProgress = 0;
 			info.turn++;
 		}
 	}

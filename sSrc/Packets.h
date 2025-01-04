@@ -16,6 +16,7 @@ struct packet1{
 struct initPacket{
     int index;
     std::pair<int, int> cards[4][5];
+    int playerNum;
 };
 
 struct packet2{

@@ -16,6 +16,7 @@ struct packet1{
 struct initPacket{
     int index;
     std::pair<int, int> cards[4][5];
+	int playerNum;
 };
 
 struct packet2{
@@ -83,6 +84,9 @@ namespace Poker {
 			initPacket initPack;
 			sockaddr_in serverInfo;
 			int you;
+
+			std::thread recieve;
+			int threadProgress = 0;
 		
 		private:
 			void initDeck(RenderWindow& window);
@@ -96,6 +100,59 @@ namespace Poker {
 			void phaseChange();
 			void displayInteraction(Event& anEvent);
 			void draw(RenderWindow& window);
+
+			int recvThread(SOCKET* acceptSock, int* threadActive){
+				this->threadProgress = 1;
+
+				switch (info.phase) {
+				case 0: {
+					packet1 pack;
+					int addrSize = sizeof(serverInfo);
+					int bytes = 0;
+					if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) > 0) {
+						int raiseAmount = pack.raiseAmount;
+						bool isRaising = pack.isRaising;
+
+						if (pack.isRaising) {
+
+							int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
+							if (diff > players[info.turn].betMoney)
+							{
+								diff = players[info.turn].betMoney;
+							}
+							players[info.turn].betMoney -= diff;
+							info.betPool += diff;
+							info.callAmount += raiseAmount;
+							players[info.turn].betAmount += diff;
+						}
+						else {
+							players[info.turn].isRaising = false;
+							if (players[info.turn].betAmount < info.callAmount) {
+								if (players[info.turn].betMoney < (info.callAmount - players[info.turn].betAmount)) {
+									players[info.turn].betAmount += players[info.turn].betMoney;
+									players[info.turn].betMoney = 0;
+								}
+								else {
+									int diff = info.callAmount - players[info.turn].betAmount;
+									players[info.turn].betMoney -= diff;
+									info.betPool += diff;
+
+									players[info.turn].betAmount = info.callAmount;
+								}
+							}
+						}
+						players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
+					}
+					break;
+				}
+				default:
+					break;
+					
+				}
+				this->threadProgress = 2;
+				return 0;
+			}
+
 		public:
 			PokerGame(RenderWindow& window) {
 				windowScale = {Vector2f(window.getSize()) / Vector2f RES_768};
