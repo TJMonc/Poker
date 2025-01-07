@@ -101,23 +101,22 @@ namespace Poker {
 			void displayInteraction(Event& anEvent);
 			void draw(RenderWindow& window);
 
-			int recvThread(SOCKET* acceptSock, int* threadActive){
+			int recvThread(SOCKET *acceptSock, int *threadActive) {
 				this->threadProgress = 1;
 
 				switch (info.phase) {
 				case 0: {
 					packet1 pack;
 					int addrSize = sizeof(serverInfo);
-					int bytes = 0;
-					if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) > 0) {
+					int bytes;
+					if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR) {
 						int raiseAmount = pack.raiseAmount;
 						bool isRaising = pack.isRaising;
 
 						if (pack.isRaising) {
 
 							int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
-							if (diff > players[info.turn].betMoney)
-							{
+							if (diff > players[info.turn].betMoney) {
 								diff = players[info.turn].betMoney;
 							}
 							players[info.turn].betMoney -= diff;
@@ -143,11 +142,28 @@ namespace Poker {
 						}
 						players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 					}
+					else{
+						throw std::exception("SERVER ERROR");
+					}
 					break;
 				}
+				case 1:{
+					packet2 pack;
+					int recvCount;
+					if((recvCount = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR){
+						for (int i = 0; i < 5; i++) {
+							players[pack.index].playerHand.pat(i) = &deck.at(std::format("{}{}",
+																	Suits::suit.at(pack.cards[i].second), pack.cards[i].first));
+						}
+					}
+					else{
+						throw std::exception("lol");
+					}
+					
+				}
+
 				default:
 					break;
-					
 				}
 				this->threadProgress = 2;
 				return 0;

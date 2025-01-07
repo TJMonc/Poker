@@ -167,6 +167,10 @@ void Poker::Hand::discardCards() {
 	this->sortCards();
 }
 
+std::vector<int> Poker::Hand::getDiscarded() {
+    return this->discarded;
+}
+
 void Poker::Hand::setPosition(Vector2f aPos) {
 	this->position = aPos;
 	for (size_t i = 0; i < 5; i++) {

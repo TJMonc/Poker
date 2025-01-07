@@ -78,7 +78,8 @@ namespace Poker {
 		bool isDiscarded(int index);	// Checks if a certain card's index is in the discarded vector
 		void unDiscard(int index);		// Removes an index from the discarded vector
 
-		void discardCards();			// Discards the index in the discarded hand
+		void discardCards();	// Discards the index in the discarded hand
+		std::vector<int> getDiscarded();
 		void setPosition(Vector2f aPos);
 		const Vector2f getPosition() const;
 		const int getIDIndex(std::string aID) const;

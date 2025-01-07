@@ -443,4 +443,3 @@ const Poker::Card& Poker::Hand::operator[](const std::string ID) const {
 	return *hand[0];
 }
 
-

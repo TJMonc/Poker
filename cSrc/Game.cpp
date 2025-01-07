@@ -347,26 +347,40 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 
 void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 	auto& hand = players[info.turn].playerHand; 
-
+	packet2 pack;
 	if (hand.getFolded()){
 		info.turn++;
 	}
 	else if (players[info.turn].playerHand.getIsPlayer()) {
 		if (Keyboard::isKeyPressed(Keyboard::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
 			info.interactionClock.restart();
-			hand.discardCards();
-			hand.setHandType();
-			players[info.turn].t_handType.setString(Poker::Hand::typesMap.at(hand.getHandType()));
+			pack.discarded = hand.getDiscarded();
+			pack.discardNum = pack.discarded.size();
+			pack.index = you;
+			send(*acceptSock, (char*)&pack, sizeof(packet2), 0);
+			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
+			recieve.join();
+			threadProgress = 0;
+		}
+	}
+	else if(players[info.turn].isPlayer){
+		if(threadProgress == 0){
+			recieve = std::thread(&Poker::PokerGame::recvThread,this , acceptSock, &threadProgress);
+		}
+		else if(threadProgress == 2){
+			recieve.join();
+			threadProgress = 0;
 			info.turn++;
 		}
 	}
-	else {
-		hand.discardCards();
-		hand.setHandType();
-		hand.setTurned(true);
-		players[info.turn].t_handType.setString(Poker::Hand::typesMap.at(hand.getHandType()));
-		hand.hasChosen = false;
-		info.turn++;
+	else if(you == 0){
+		pack.discarded = hand.getDiscarded();
+		pack.discardNum = pack.discarded.size();
+		pack.index = you;
+		send(*acceptSock, (char *)&pack, sizeof(packet2), 0);
+		recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
+		recieve.join();
+		threadProgress = 0;
 	}
 }
 
