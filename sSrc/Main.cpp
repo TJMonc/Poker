@@ -1,13 +1,12 @@
 #include "Packets.h"
-void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand hand, Deck* deck, int index){
+void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck, int index){
     using namespace std::chrono_literals;
-    std::this_thread::sleep_for(10s);
+    //std::this_thread::sleep_for(20s);
     SOCKADDR_IN clientInfo = {0};
     SOCKADDR_IN allInfo[4];
     int phase = 0;
     int addrsize = sizeof(clientInfo);
     std::cout << "1\n";
-    hand.setDeck(deck);
 
     std::cout << std::format("Player {} starting Deck: ", index) << hand;
     getpeername(*acceptSock, reinterpret_cast<SOCKADDR*>(&clientInfo), &addrsize);
@@ -19,17 +18,16 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand hand, Deck* deck, 
         if(allSocks[i] == nullptr){
             continue;
         }
-        getpeername(*allSocks[i], reinterpret_cast<SOCKADDR*>(&allInfo[i]), &addrsize);
+        getpeername(*allSocks[i], reinterpret_cast<SOCKADDR*>(&(allInfo[i])), &addrsize);
     }
     int recvCount;
     while (true) {
-        if ((recvCount = recvfrom(*acceptSock, (char *)&phase, sizeof(int), 0, reinterpret_cast<SOCKADDR *>(&clientInfo), &addrsize)) != SOCKET_ERROR
-        && recvCount == sizeof(int)) {
+        if ((recvCount = recv(*acceptSock, (char *)&phase, sizeof(int), 0)) != SOCKET_ERROR) {
             std::cout << std::format("Recieved Phase: {}\n", phase);
             switch (phase) {
             case 0: { 
                 packet1 pack;
-                if ((recvCount = recvfrom(*acceptSock, (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&clientInfo), &addrsize)) != SOCKET_ERROR
+                if ((recvCount = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR
                 && recvCount == sizeof(packet1)) {
                     std::cout << std::format(
                         "Recieved Packet1:\n"
@@ -37,10 +35,10 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand hand, Deck* deck, 
                         "Raise Amount: {}\n\n", index, pack.raiseAmount);
 
                     for (int i = 0; i < 4; i++) {
-                        if (i == index || allSocks[i] == nullptr) {
+                        if (allSocks[i] == nullptr) {
                             continue;
                         }
-                        sendto(*allSocks[i], (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&allInfo[i]), sizeof(allInfo[i]));
+                        sendto(*(allSocks[i]), (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&(allInfo[i])), sizeof(allInfo[i]));
                     }
 
                 }
@@ -49,17 +47,32 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand hand, Deck* deck, 
             
             case 1: {
                 packet2 pack;
-                auto& discarded = pack.discarded;
+
                 if((recvCount = recv(*acceptSock, (char*)&pack, sizeof(packet2), 0) != SOCKET_ERROR)){
-                    hand.setDiscarded(discarded);
-                    hand.discardCards();
-                }
-                for(int i = 0; i < 5; i++){
-                    pack.cards[i].first = hand.at(i).getNumber();
-                    pack.cards[i].second = hand.at(i).getSuite();
-                }
-                send(*acceptSock, (char*)&pack, sizeof(packet2), 0);
+                    std::vector<int> d;
+                    for(int i = 0; i < pack.discardNum; i++){
+                        d.push_back(pack.discarded[i]);
+                    }
+                    hand[index].setDiscarded(d);
+
+                    hand[index].discardCards();
+                    for(int i = 0; i < pack.discardNum; i++){
+                        std::cout << pack.discarded[i];
+                    }
                 
+                    for(int i = 0; i < 5; i++){
+                        pack.cards[i].first = hand[index].at(i).getNumber();
+                        pack.cards[i].second = hand[index].at(i).getSuite();
+                        std::cout << "\nvalue: " << pack.cards[i].second;
+                    }
+                    for (int i = 0; i < 4; i++) {
+                        if (allSocks[i] == nullptr) {
+                            continue;
+                        }
+                        sendto(*(allSocks[i]), (char *)&pack, sizeof(packet2), 0, reinterpret_cast<SOCKADDR *>(&(allInfo[i])), sizeof(allInfo[i]));
+                    }              
+                }
+
             }
             break;
 
@@ -83,11 +96,12 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand hand, Deck* deck, 
 }
 
 int initThread(SOCKET* acceptSock, sockaddr_in* info, Time* initTime, Clock* initClock, initPacket* pack, int index){
-    initPacket playerPack = *pack;
-    playerPack.index = index;
+
     while(true){
         if(initClock->getElapsedTime() > *initTime){
-            sendto(*acceptSock, (char*)&playerPack, sizeof(initPacket), 0, reinterpret_cast<SOCKADDR*>(info), sizeof(info));
+            initPacket playerPack = *pack;
+            playerPack.index = index;
+            sendto(*acceptSock, (char*)&playerPack, sizeof(initPacket), 0, reinterpret_cast<SOCKADDR*>(info), sizeof(*info));
             return 0;
         }
     }
@@ -192,7 +206,7 @@ int main(){
                                      inet_ntoa(clientInfo.sin_addr),
                                      clientInfo.sin_port);
             clientSize++;
-            client[i] = std::thread(clientThread, acceptSock, allSocks, hand[i], deck, i);
+            client[i] = std::thread(clientThread, acceptSock, allSocks, hand, deck, i);
             clientIndexes.push_back(i);
             initPacket.index = i;
            // sendto(*allSocks[i], (char*)&initPacket, sizeof(initPacket), 0, reinterpret_cast<SOCKADDR *>(&clientInfo), sizeof(clientInfo));

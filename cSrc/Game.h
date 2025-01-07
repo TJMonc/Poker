@@ -20,10 +20,11 @@ struct initPacket{
 };
 
 struct packet2{
+	std::pair<int, int> cards[5];
+
     int index;
     int discardNum;
-    std::vector<int> discarded;
-    std::pair<int, int> cards[5];
+    int discarded[5];
 };
 
 namespace Poker {
@@ -102,14 +103,15 @@ namespace Poker {
 			void draw(RenderWindow& window);
 
 			int recvThread(SOCKET *acceptSock, int *threadActive) {
+				using namespace std::chrono_literals;
 				this->threadProgress = 1;
 
 				switch (info.phase) {
 				case 0: {
 					packet1 pack;
 					int addrSize = sizeof(serverInfo);
-					int bytes;
-					if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR) {
+					int bytes = 0;
+					if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) > 0) {
 						int raiseAmount = pack.raiseAmount;
 						bool isRaising = pack.isRaising;
 
@@ -143,27 +145,34 @@ namespace Poker {
 						players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 					}
 					else{
-						throw std::exception("SERVER ERROR");
+						std::cout << WSAGetLastError();
 					}
 					break;
-				}
-				case 1:{
-					packet2 pack;
-					int recvCount;
-					if((recvCount = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR){
-						for (int i = 0; i < 5; i++) {
-							players[pack.index].playerHand.pat(i) = &deck.at(std::format("{}{}",
-																	Suits::suit.at(pack.cards[i].second), pack.cards[i].first));
-						}
-					}
-					else{
-						throw std::exception("lol");
-					}
-					
+
 				}
 
-				default:
-					break;
+				case 1:{
+					try{
+					packet2 pack2;
+					int recvCount;
+					if((recvCount = recv(*acceptSock, (char *)&pack2, sizeof(packet2), 0)) != SOCKET_ERROR){
+						for (int i = 0; i < 5; i++) {
+
+							std::cout << "index: " << i;
+							std::cout << "\nvalue: " << recvCount;
+							players[info.turn].playerHand.pat(i) = &deck.at(std::format("{}{}",
+																	Suits::suit.at(pack2.cards[i].second), pack2.cards[i].first));
+						}
+						players[info.turn].playerHand.sortCards();
+					}
+					}
+					catch(std::out_of_range& e){
+						std::cout << e.what();
+					}
+
+				}
+				break;
+
 				}
 				this->threadProgress = 2;
 				return 0;

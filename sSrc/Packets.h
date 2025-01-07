@@ -20,10 +20,11 @@ struct initPacket{
 };
 
 struct packet2{
+    std::pair<int, int> cards[5];
+
     int index;
     int discardNum;
-    std::vector<int> discarded;
-    std::pair<int, int> cards[5];
+    int discarded[5];
 };
 
 

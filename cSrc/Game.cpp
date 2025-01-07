@@ -12,6 +12,13 @@ void Poker::PokerGame::init(RenderWindow& window, SOCKET* acceptSock, sockaddr_i
 	initPlayers(window);
 
     initUI(window);
+	int total = 0;
+	for(int i = 0; i < 4; i++){
+		if(players[i].isPlayer){
+			total += 1;
+		}
+	}
+	std::cout << total;
 	draw(window);
 
 }
@@ -48,10 +55,6 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 
 		mouseCircle.setPosition(Vector2f(Mouse::getPosition(window).x, Mouse::getPosition(window).y));
 		players[info.turn].playerHand.updateMouse(mouseCircle);
-		if(!sent && info.turn == you){
-			send(*clientSock, (char*)&info.phase, sizeof(int), 0);
-			sent = true;
-		}
 		switch(info.phase){
 			case 0:
 				betPhase(clientSock);
@@ -252,7 +255,11 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 
 			pack.isRaising = players[info.turn].isRaising;
+			send(*acceptSock, (char*)&info.phase, sizeof(int), 0);
+
 			send(*acceptSock, (char*)&pack, sizeof(packet1), 0);
+			recv(*acceptSock, (char*)&pack, sizeof(packet1), 0);
+
 
 			info.turn++;
 		}
@@ -301,19 +308,19 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 		}
 		players[info.turn].playerHand.hasChosen = false;
 		players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
-		int t = 0;
 		pack.isRaising = players[info.turn].isRaising;
-		send(*acceptSock, (char*)&t, sizeof(int), 0);
+		int t = 0;
+		send(*acceptSock, (char*)&info.phase, sizeof(int), 0);
 
 		send(*acceptSock, (char*)&pack, sizeof(packet1), 0);
+		recv(*acceptSock, (char *)&pack, sizeof(packet1), 0);
 		info.turn++;
 	}
 	else{
 		int recvCount;
 		if ((recvCount = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR) {
-			if ((players[info.turn].betMoney - info.callAmount) < 0) {
-				players[info.turn].isRaising = false;
-			}
+			players[info.turn].isRaising = pack.isRaising;
+			
 			if (players[info.turn].isRaising) {
 				int raiseAmount = pack.raiseAmount;
 				int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
@@ -353,14 +360,28 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 	}
 	else if (players[info.turn].playerHand.getIsPlayer()) {
 		if (Keyboard::isKeyPressed(Keyboard::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
-			info.interactionClock.restart();
-			pack.discarded = hand.getDiscarded();
-			pack.discardNum = pack.discarded.size();
+			std::vector<int> discarded = hand.getDiscarded();
+			std::cout << discarded.size();
+			pack.discardNum = discarded.size();
+			for(int i = 0; i < pack.discardNum; i++){
+				pack.discarded[i] = discarded[i];
+			}
 			pack.index = you;
+			send(*acceptSock, (char*)&info.phase, sizeof(int), 0);
+
 			send(*acceptSock, (char*)&pack, sizeof(packet2), 0);
-			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
+			if (threadProgress == 0) {
+				recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
+			}
+			else if (threadProgress == 2) {
+				recieve.join();
+				threadProgress = 0;
+				info.turn++;
+			}
 			recieve.join();
 			threadProgress = 0;
+			info.interactionClock.restart();
+
 		}
 	}
 	else if(players[info.turn].isPlayer){
@@ -374,13 +395,36 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 		}
 	}
 	else if(you == 0){
-		pack.discarded = hand.getDiscarded();
-		pack.discardNum = pack.discarded.size();
-		pack.index = you;
+			std::vector<int> discarded = hand.getDiscarded();
+			pack.discardNum = discarded.size();
+
+			for(int i = 0; i < pack.discardNum; i++){
+				pack.discarded[i] = discarded[i];
+			}
+		pack.index = info.turn;
+		
+		send(*acceptSock, (char*)&info.phase, sizeof(int), 0);
+
 		send(*acceptSock, (char *)&pack, sizeof(packet2), 0);
-		recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
-		recieve.join();
+		if(threadProgress == 0){
+			recieve = std::thread(&Poker::PokerGame::recvThread,this , acceptSock, &threadProgress);
+		}
+		else if(threadProgress == 2){
+			recieve.join();
+			threadProgress = 0;
+			info.turn++;
+		}
 		threadProgress = 0;
+	}
+	else{
+		if (threadProgress == 0) {
+			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
+		}
+		else if (threadProgress == 2) {
+			recieve.join();
+			threadProgress = 0;
+			info.turn++;
+		}
 	}
 }
 
