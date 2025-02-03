@@ -361,7 +361,6 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 	else if (players[info.turn].playerHand.getIsPlayer()) {
 		if (Keyboard::isKeyPressed(Keyboard::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
 			std::vector<int> discarded = hand.getDiscarded();
-			std::cout << discarded.size();
 			pack.discardNum = discarded.size();
 			for(int i = 0; i < pack.discardNum; i++){
 				pack.discarded[i] = discarded[i];
@@ -373,13 +372,10 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 			if (threadProgress == 0) {
 				recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
 			}
-			else if (threadProgress == 2) {
-				recieve.join();
-				threadProgress = 0;
-				info.turn++;
-			}
 			recieve.join();
+			info.turn++;
 			threadProgress = 0;
+
 			info.interactionClock.restart();
 
 		}
@@ -388,19 +384,20 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 		if(threadProgress == 0){
 			recieve = std::thread(&Poker::PokerGame::recvThread,this , acceptSock, &threadProgress);
 		}
-		else if(threadProgress == 2){
+		else if(threadProgress > 1){
 			recieve.join();
 			threadProgress = 0;
 			info.turn++;
 		}
 	}
 	else if(you == 0){
-			std::vector<int> discarded = hand.getDiscarded();
-			pack.discardNum = discarded.size();
+		std::vector<int> discarded = hand.getDiscarded();
+		pack.discardNum = discarded.size();
+		hand.hasChosen = false;
 
-			for(int i = 0; i < pack.discardNum; i++){
-				pack.discarded[i] = discarded[i];
-			}
+		for (int i = 0; i < pack.discardNum; i++) {
+			pack.discarded[i] = discarded[i];
+		}
 		pack.index = info.turn;
 		
 		send(*acceptSock, (char*)&info.phase, sizeof(int), 0);
@@ -409,14 +406,12 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 		if(threadProgress == 0){
 			recieve = std::thread(&Poker::PokerGame::recvThread,this , acceptSock, &threadProgress);
 		}
-		else if(threadProgress == 2){
-			recieve.join();
-			threadProgress = 0;
-			info.turn++;
-		}
+		recieve.join();
 		threadProgress = 0;
+		info.turn++;
 	}
 	else{
+		hand.hasChosen = false;
 		if (threadProgress == 0) {
 			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
 		}
@@ -424,6 +419,8 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 			recieve.join();
 			threadProgress = 0;
 			info.turn++;
+			std::cout << "Discard phase\n";
+
 		}
 	}
 }
@@ -462,7 +459,8 @@ void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 		}
 		for (size_t i = 0; i < 4; i++) {
 			auto& hand = players[i].playerHand;
-
+			hand.setHandType();
+			players[i].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
 			if (i == info.winnerIndex) {
 				players[i].t_handType.setString("Winner: " + static_cast<std::string>(players[i].t_handType.getString()));
 				players[i].t_handType.setFillColor(Color::Green);
@@ -477,23 +475,30 @@ void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 		info.end = true;
 		display.foldPressed = false;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
+	if (Keyboard::isKeyPressed(Keyboard::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime && you == 0) {
 		info.interactionClock.restart();
-		deck.reset();
+		packet3 pack;
 
-		info.phase++;
+		send(*acceptSock, (char *)&info.phase, sizeof(int), 0);
+		recv(*acceptSock, (char *)&pack, sizeof(packet3), 0);
+
 		players[info.winnerIndex].betMoney += info.betPool;
+		deck.reset();
 		info.winnerIndex = 0;
 		info.betPool = 0;
 		info.callAmount = 5;
-		info.end = false;
 		for (size_t i = 0; i < 4; i++) {
-			auto& hand = players[i].playerHand;
+			auto &hand = players[i].playerHand;
 			for (int j = 0; j < 5; j++) {
 				players[i].playerHand[j].getSprite().setColor(Color::White);
 			}
-			hand.setDeck(&deck);
-			hand.setHandType();
+		}
+		for (int i = 0; i < 4; i++) {
+			auto &hand = players[i].playerHand;
+			for(int j = 0; j < 5; j++){
+				hand.pat(j) = &deck.at(std::format("{}{}",
+			 							Suits::suit.at(pack.cards[i][j].second), pack.cards[i][j].first));
+			}
 			players[i].t_handType.setFillColor(Color::Blue);
 			players[i].t_handType.setString(Poker::Hand::typesMap.at(hand.getHandType()));
 			players[i].t_betMoney.setString(std::to_string(players[i].betMoney));
@@ -503,8 +508,30 @@ void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 			if (players[i].betMoney < 1) {
 				players[i].bust = true;
 			}
+
+			hand.sortCards();
+		}
+
+		info.phase++;
+		threadProgress = 0;
+		info.end = false;
+
+	}
+	else if(you != 0){
+		packet3 pack;
+
+		if (threadProgress == 0) {
+			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
+		}
+		else if (threadProgress == 2) {
+			recieve.join();
+			threadProgress = 0;
+
+			info.phase++;
+
 		}
 	}
+
 }
 
 void Poker::PokerGame::phaseChange() {

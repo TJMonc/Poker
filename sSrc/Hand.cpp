@@ -150,6 +150,7 @@ void Poker::Hand::unDiscard(int index) {
 
 void Poker::Hand::setDiscarded(std::vector<int> aDiscarded){
 	discarded = aDiscarded;
+
 }
 
 

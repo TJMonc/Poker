@@ -27,6 +27,10 @@ struct packet2{
     int discarded[5];
 };
 
+struct packet3{
+    std::pair<int, int> cards[4][5];
+};
+
 
 
 

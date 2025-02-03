@@ -1,4 +1,5 @@
 #include "Packets.h"
+
 void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck, int index){
     using namespace std::chrono_literals;
     //std::this_thread::sleep_for(20s);
@@ -6,7 +7,6 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
     SOCKADDR_IN allInfo[4];
     int phase = 0;
     int addrsize = sizeof(clientInfo);
-    std::cout << "1\n";
 
     std::cout << std::format("Player {} starting Deck: ", index) << hand;
     getpeername(*acceptSock, reinterpret_cast<SOCKADDR*>(&clientInfo), &addrsize);
@@ -21,49 +21,54 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
         getpeername(*allSocks[i], reinterpret_cast<SOCKADDR*>(&(allInfo[i])), &addrsize);
     }
     int recvCount;
+    
+    auto bet = [&]() {
+        
+        packet1 pack;
+        if ((recvCount = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR && recvCount == sizeof(packet1)) {
+            std::cout << std::format(
+                "Recieved Packet1:\n"
+                "Player: {}\n"
+                "Raise Amount: {}\n\n",
+                index, pack.raiseAmount);
+
+            for (int i = 0; i < 4; i++) {
+                if (allSocks[i] == nullptr) {
+                    continue;
+                }
+                sendto(*(allSocks[i]), (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&(allInfo[i])), sizeof(allInfo[i]));
+            }
+        }
+    };
     while (true) {
-        if ((recvCount = recv(*acceptSock, (char *)&phase, sizeof(int), 0)) != SOCKET_ERROR) {
+        if ((recvCount = recv(*acceptSock, (char *)&phase, sizeof(int), 0)) != SOCKET_ERROR && recvCount == sizeof(int)) {
             std::cout << std::format("Recieved Phase: {}\n", phase);
             switch (phase) {
-            case 0: { 
-                packet1 pack;
-                if ((recvCount = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR
-                && recvCount == sizeof(packet1)) {
-                    std::cout << std::format(
-                        "Recieved Packet1:\n"
-                        "Player: {}\n"
-                        "Raise Amount: {}\n\n", index, pack.raiseAmount);
-
-                    for (int i = 0; i < 4; i++) {
-                        if (allSocks[i] == nullptr) {
-                            continue;
-                        }
-                        sendto(*(allSocks[i]), (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&(allInfo[i])), sizeof(allInfo[i]));
-                    }
-
-                }
-            }
+            case 0:
+                bet();
             break;
             
             case 1: {
                 packet2 pack;
 
-                if((recvCount = recv(*acceptSock, (char*)&pack, sizeof(packet2), 0) != SOCKET_ERROR)){
+                if((recvCount = recv(*acceptSock, (char*)&pack, sizeof(packet2), 0)) != SOCKET_ERROR){
+                    std::cout << std::format("Packet Size: {}\n", recvCount);
+                    std::cout << std::format("Index: {}\n", pack.index);
+                    std::cout << std::format("DiscardNum: {}\n", pack.discardNum);
                     std::vector<int> d;
                     for(int i = 0; i < pack.discardNum; i++){
                         d.push_back(pack.discarded[i]);
                     }
-                    hand[index].setDiscarded(d);
+                    hand[pack.index].setDiscarded(d);
 
-                    hand[index].discardCards();
+                    hand[pack.index].discardCards();
                     for(int i = 0; i < pack.discardNum; i++){
                         std::cout << pack.discarded[i];
                     }
                 
                     for(int i = 0; i < 5; i++){
-                        pack.cards[i].first = hand[index].at(i).getNumber();
-                        pack.cards[i].second = hand[index].at(i).getSuite();
-                        std::cout << "\nvalue: " << pack.cards[i].second;
+                        pack.cards[i].first = hand[pack.index].at(i).getNumber();
+                        pack.cards[i].second = hand[pack.index].at(i).getSuite();
                     }
                     for (int i = 0; i < 4; i++) {
                         if (allSocks[i] == nullptr) {
@@ -76,15 +81,42 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
             }
             break;
 
+            case 2:
+                bet();
+                break;
+            case 3:{
+                packet3 pack;
+                deck->reset();
+                for(int i = 0; i < 4; i++){
+                    hand[i].setDeck(deck);
+                    std::cout << "Setdeck\n";
+                    for(int j = 0; j < 5; j++){
+                        pack.cards[i][j].first = hand[i][j].getNumber();
+                        pack.cards[i][j].second = hand[i][j].getSuite();
+                    }
+                }
+                for (int i = 0; i < 4; i++) {
+                    if (allSocks[i] == nullptr) {
+                        continue;
+                    }
+                    sendto(*(allSocks[i]), (char *)&pack, sizeof(packet3), 0, reinterpret_cast<SOCKADDR *>(&(allInfo[i])), sizeof(allInfo[i]));
+                }
+                break;
+            }
+
             default:
 
                 break;
             }
         }
         else{
+            std::cout << "No\n";
+            std::cin.get();
             break;
         }
     }
+    std::cout << "No\n";
+    std::cin.get();
     std::cout << std::format("{}:{} disconnected\n\n", inet_ntoa(clientInfo.sin_addr), clientInfo.sin_port);
     std::cout << "Socket Error: " << WSAGetLastError() << std::endl;
 

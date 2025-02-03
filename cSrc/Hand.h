@@ -46,7 +46,8 @@ namespace Poker {
 			if(isPlayer || hasChosen){
 				return;
 			}
-			int discardNum = rand() % 5;
+			discarded.clear();
+			int discardNum = rand() % 5 + 1;
 			if (discardNum != 5) {
 				for (int i = 0; i < discardNum; i++) {
 					discarded.push_back(i);

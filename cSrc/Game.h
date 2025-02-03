@@ -26,6 +26,9 @@ struct packet2{
     int discardNum;
     int discarded[5];
 };
+struct packet3{
+    std::pair<int, int> cards[4][5];
+};
 
 namespace Poker {
 	class PokerGame {
@@ -103,18 +106,15 @@ namespace Poker {
 			void draw(RenderWindow& window);
 
 			int recvThread(SOCKET *acceptSock, int *threadActive) {
-				using namespace std::chrono_literals;
 				this->threadProgress = 1;
-
-				switch (info.phase) {
-				case 0: {
+				auto bet = [&](){
 					packet1 pack;
 					int addrSize = sizeof(serverInfo);
-					int bytes = 0;
-					if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) > 0) {
+					int bytes;
+					if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR && bytes == sizeof(packet1)) {
 						int raiseAmount = pack.raiseAmount;
 						bool isRaising = pack.isRaising;
-
+						std::cout << std::format("Bet bytes: {}\n", bytes);
 						if (pack.isRaising) {
 
 							int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
@@ -145,34 +145,84 @@ namespace Poker {
 						players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 					}
 					else{
+						std::cout << "Error in betphase\n";
 						std::cout << WSAGetLastError();
 					}
+
+				};
+				switch (info.phase) {
+				case 0: 
+					bet();
 					break;
-
-				}
-
 				case 1:{
-					try{
 					packet2 pack2;
 					int recvCount;
-					if((recvCount = recv(*acceptSock, (char *)&pack2, sizeof(packet2), 0)) != SOCKET_ERROR){
+					if((recvCount = recv(*acceptSock, (char *)&pack2, sizeof(packet2), 0) == sizeof(packet2)) != SOCKET_ERROR){
 						for (int i = 0; i < 5; i++) {
-
-							std::cout << "index: " << i;
-							std::cout << "\nvalue: " << recvCount;
-							players[info.turn].playerHand.pat(i) = &deck.at(std::format("{}{}",
+							players[pack2.index].playerHand.pat(i) = &deck.at(std::format("{}{}",
 																	Suits::suit.at(pack2.cards[i].second), pack2.cards[i].first));
 						}
-						players[info.turn].playerHand.sortCards();
-					}
-					}
-					catch(std::out_of_range& e){
-						std::cout << e.what();
+						players[pack2.index].playerHand.sortCards();
 					}
 
 				}
 				break;
 
+				case 2:
+					bet();
+					break;
+				case 3: {
+					packet3 pack;
+					deck.reset();
+					int bytes = 0;
+
+					players[info.winnerIndex].betMoney += info.betPool;
+					info.winnerIndex = 0;
+					info.betPool = 0;
+					info.callAmount = 5;
+					for (size_t i = 0; i < 4; i++)
+					{
+						auto &hand = players[i].playerHand;
+						for (int j = 0; j < 5; j++)
+						{
+							players[i].playerHand[j].getSprite().setColor(Color::White);
+						}
+					}
+					if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet3), 0)) != SOCKET_ERROR && bytes == sizeof(packet3)) {
+						std::cout << std::format("end bytes: {}\n", bytes);
+
+						for (int i = 0; i < 4; i++) {
+							auto &hand = players[i].playerHand;
+
+							players[i].t_handType.setFillColor(Color::Blue);
+							players[i].t_handType.setString(Poker::Hand::typesMap.at(hand.getHandType()));
+							players[i].t_betMoney.setString(std::to_string(players[i].betMoney));
+							if (!hand.getIsPlayer()) {
+								hand.setTurned(true);
+							}
+							if (players[i].betMoney < 1) {
+								players[i].bust = true;
+							}
+							for (int j = 0; j < 5; j++) {
+								hand.pat(j) = &deck.at(std::format("{}{}",
+																   Suits::suit.at(pack.cards[i][j].second), pack.cards[i][j].first));
+							}
+							hand.sortCards();
+
+						}
+						info.end = false;
+
+						
+					}
+					else {
+						throw FileError("Failed recieving data\n");
+					}
+
+					break;
+				}
+
+				default:
+					break;
 				}
 				this->threadProgress = 2;
 				return 0;
