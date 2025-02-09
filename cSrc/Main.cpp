@@ -49,8 +49,38 @@ int main(){
     }
     RenderWindow window(VideoMode(), "Multiplayer Poker", Style::Fullscreen);
     Poker::PokerGame* game = new Poker::PokerGame(window);
-    game->init(window, &clientSock, clientServ);
-    game->update(window, &clientSock);
+
+
+    try{
+        game->init(window, &clientSock, clientServ);
+        game->update(window, &clientSock);
+    }
+    catch(std::exception &e){
+        Vector2f windowScale = {Vector2f(window.getSize()) / Vector2f RES_768};
+
+        sf::Text errorMsg;
+        sf::Font font;
+        font.loadFromFile(Game::FontPaths::blackLivesFont);
+        errorMsg.setFont(font);
+        std::string eString = e.what();
+        window.clear();
+
+        errorMsg.setCharacterSize(windowScale.x * 20.f );
+        errorMsg.setFillColor(Color::Red);
+        errorMsg.setPosition((Vector2f)window.getSize() / 2.f);
+        errorMsg.setString(std::format("Error: {}", eString));
+
+        window.draw(errorMsg);
+        window.display();
+        std::cerr << e.what();
+
+        std::cin.get();
+        delete game;
+        closesocket(clientSock);
+        WSACleanup();
+
+        std::exit(EXIT_FAILURE);
+    }
 
     delete game;
     closesocket(clientSock);

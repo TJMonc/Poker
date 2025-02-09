@@ -149,6 +149,10 @@ void Poker::Hand::unDiscard(int index) {
 }
 
 void Poker::Hand::discardCards() {
+
+	if (discarded.size() > 5){
+		throw std::runtime_error("Hand size is greater than max amount.");
+	}
 	std::vector<Card*> pastNums;
 	for (size_t i = 0; i < discarded.size(); i++) {
 		int randNum = rand() % deck->getSize();
@@ -398,7 +402,7 @@ Poker::Card& Poker::Hand::at(const std::string aID) {
 			return *hand[i];
 		}
 	}
-	throw FileError("Main app failure due to Poker::Hand::at");
+	throw std::runtime_error("Main app failure due to Poker::Hand::at");
 	return *hand[0];
 }
 
@@ -409,7 +413,7 @@ const Poker::Card& Poker::Hand::at(const std::string aID) const
 			return *hand[i];
 		}
 	}
-	throw FileError("Main app failure due to Poker::Hand::at");
+	throw std::runtime_error("Main app failure due to Poker::Hand::at");
 	return *hand[0];
 
 }
@@ -429,7 +433,7 @@ Poker::Card& Poker::Hand::operator[](const std::string ID) {
 			return *hand[i];
 		}
 	}
-	throw FileError("Main app failure due to Poker::Hand::operator[]");
+	throw std::runtime_error("Main app failure due to Poker::Hand::operator[]");
 	return *hand[0];
 }
 
@@ -439,7 +443,7 @@ const Poker::Card& Poker::Hand::operator[](const std::string ID) const {
 			return *hand[i];
 		}
 	}
-	throw FileError("Main app failure due to Poker::Hand::operator[]");
+	throw std::runtime_error("Main app failure due to Poker::Hand::operator[]");
 	return *hand[0];
 }
 

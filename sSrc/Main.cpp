@@ -139,7 +139,7 @@ int initThread(SOCKET* acceptSock, sockaddr_in* info, Time* initTime, Clock* ini
     }
 }
 
-int main(){
+int  main(){
     srand(time(NULL));
     WSAData data;
     WORD version = MAKEWORD(2,2);

@@ -80,6 +80,10 @@ namespace Poker {
 			void init();
 			void update();
 
+			RenderWindow* getWindow(){
+				return &window;
+			}
+
 	};
 }
 

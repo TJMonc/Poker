@@ -148,6 +148,10 @@ void Poker::Hand::unDiscard(int index) {
 }
 
 void Poker::Hand::discardCards() {
+
+	if (discarded.size() > 5){
+		throw std::runtime_error("Hand size is greater than max amount.");
+	}
 	std::vector<Card*> pastNums;
 	for (size_t i = 0; i < discarded.size(); i++) {
 		int randNum = rand() % 52;

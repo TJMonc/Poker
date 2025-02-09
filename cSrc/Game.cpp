@@ -210,7 +210,7 @@ void Poker::PokerGame::initUI(RenderWindow& window) {
 	display.t_callAmount.setPosition(deck.getPositon().x, deck.getPositon().y - 50.f * windowScale.y);
 	display.t_callAmount.setString(std::to_string(info.callAmount));
 }
-// NOTE: Refactor this later to have the calculations for the non-players to be done on server side.
+// NOTE: Refactor this later to have the calculations for the non-players to be done on server side. - DONE
 void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 	packet1 pack;
 	if (players[info.turn].playerHand.getFolded()) {
@@ -375,6 +375,8 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 			recieve.join();
 			info.turn++;
 			threadProgress = 0;
+			hand.setHandType();
+			players[info.turn].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
 
 			info.interactionClock.restart();
 
@@ -388,6 +390,10 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 			recieve.join();
 			threadProgress = 0;
 			info.turn++;
+
+			hand.setHandType();
+			players[info.turn].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
+
 		}
 	}
 	else if(you == 0){
@@ -409,6 +415,10 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 		recieve.join();
 		threadProgress = 0;
 		info.turn++;
+
+		hand.setHandType();
+		players[info.turn].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
+
 	}
 	else{
 		hand.hasChosen = false;
@@ -419,6 +429,8 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 			recieve.join();
 			threadProgress = 0;
 			info.turn++;
+			hand.setHandType();
+			players[info.turn].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
 			std::cout << "Discard phase\n";
 
 		}
