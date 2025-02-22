@@ -50,6 +50,7 @@ void Poker::Deck::setWindow(RenderWindow* aWindow) {
 	deckSprite.setScale(windowScale * 0.2f);
 	deckSprite.setOrigin(deckSprite.getGlobalBounds().getSize() / 2.f);
 	for (size_t i = 0; i < this->mySize; i++) {
+		
 		deck[i].getSprite().setScale(windowScale * 0.2f);
 	}
 	
