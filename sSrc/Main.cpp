@@ -111,12 +111,10 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
         }
         else{
             std::cout << "No\n";
-            std::cin.get();
             break;
         }
     }
-    std::cout << "No\n";
-    std::cin.get();
+
     std::cout << std::format("{}:{} disconnected\n\n", inet_ntoa(clientInfo.sin_addr), clientInfo.sin_port);
     std::cout << "Socket Error: " << WSAGetLastError() << std::endl;
 
@@ -124,22 +122,26 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
     delete acceptSock;
     acceptSock = nullptr;
     allSocks[index] = nullptr;
-    WSACleanup();   // NOTE: Depending on how this works, it's a possible memory leak.
+  //  WSACleanup();   // NOTE: Depending on how this works, it's a possible memory leak.
 }
 
 int initThread(SOCKET* acceptSock, sockaddr_in* info, Time* initTime, Clock* initClock, initPacket* pack, int index){
 
+    if(index == 0){
+        initClock->restart();
+    }
     while(true){
         if(initClock->getElapsedTime() > *initTime){
             initPacket playerPack = *pack;
             playerPack.index = index;
             sendto(*acceptSock, (char*)&playerPack, sizeof(initPacket), 0, reinterpret_cast<SOCKADDR*>(info), sizeof(*info));
+            
             return 0;
         }
     }
 }
 
-int  main(){
+int main(){
     srand(time(NULL));
     WSAData data;
     WORD version = MAKEWORD(2,2);
@@ -202,7 +204,6 @@ int  main(){
     if (listen(serverSock, MAX_CLIENTS) == SOCKET_ERROR) {
         std::cout << "Server Error: " << WSAGetLastError();
         WSACleanup();
-        std::cin.get();
         return -1;
     }
     else {
@@ -222,36 +223,60 @@ int  main(){
     std::thread* init = new std::thread[MAX_CLIENTS];
     Clock initClock;
     Time initTime = seconds(15);
-
-    for(int i = 0; i < MAX_CLIENTS; i++){
+    int index = 0;
+    while(true){
         SOCKET *acceptSock = new SOCKET(accept(serverSock, reinterpret_cast<SOCKADDR *>(&clientInfo), &addrsize));
-        allInfo[i] = clientInfo;
+        allInfo[index] = clientInfo;
         if (*acceptSock == INVALID_SOCKET) {
             std::cout << "Socket Time Out: " << WSAGetLastError() << "\n";
             std::cin.get();
             break;
         }
         else {
-            allSocks[i] = acceptSock;
+            allSocks[index] = acceptSock;
 
             std::cout << std::format("Connection established with {}:{}\n\n",
                                      inet_ntoa(clientInfo.sin_addr),
                                      clientInfo.sin_port);
             clientSize++;
-            client[i] = std::thread(clientThread, acceptSock, allSocks, hand, deck, i);
-            clientIndexes.push_back(i);
-            initPacket.index = i;
+            client[index] = std::thread(clientThread, acceptSock, allSocks, hand, deck, index);
+            initPacket.index = index;
            // sendto(*allSocks[i], (char*)&initPacket, sizeof(initPacket), 0, reinterpret_cast<SOCKADDR *>(&clientInfo), sizeof(clientInfo));
             initPacket.playerNum = clientSize;
-            init[i] = std::thread(initThread, acceptSock, &(allInfo[i]), &initTime, &initClock, &initPacket, initPacket.index);
+            init[index] = std::thread(initThread, acceptSock, &(allInfo[index]), &initTime, &initClock, &initPacket, initPacket.index);
             std::cout << std::format("Client Size = {}\n", clientSize);
+            index++;
         }
+        if(index > 3){
+            client[0].join();
+            client[1].join();
+            client[2].join();
+            client[3].join();
+            clientSize = 0;
+            index = 0;
+            deck->reset();
+            for(int i = 0; i < 4; i++){
+                hand[i].setDeck(deck);
+                for(int j = 0; j < 5; j++){
+                    initPacket.cards[i][j].first = hand[i][j].getNumber();
+                    initPacket.cards[i][j].second = hand[i][j].getSuite();
+                }
+                allSocks[i] = nullptr;
+
+            }
+
+            init = new std::thread[MAX_CLIENTS];
+            client = new std::thread[MAX_CLIENTS];
+            std::cout << "End: " << index;
+
+        }
+
     }
 
-    client[0].join();
-    delete[] deck;
+    delete deck;
     delete[] hand;
     delete[] client;
-    std::cin.get();
+    delete[] init;
+    std::cout << "ddd";
     WSACleanup();
 }
