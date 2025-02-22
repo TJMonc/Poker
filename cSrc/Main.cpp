@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <filesystem>
 
 /*The new plan is to use the server to store the "real" Deck / playerHands (AND ONLY THE DECK AND PLAYERHANDS)*/
 int main(){
@@ -68,7 +69,7 @@ int main(){
         errorMsg.setCharacterSize(windowScale.x * 20.f );
         errorMsg.setFillColor(Color::Red);
         errorMsg.setPosition((Vector2f)window.getSize() / 2.f);
-        errorMsg.setString(std::format("Error: {}", eString));
+        errorMsg.setString(std::format("Error: {}.", eString));
 
         window.draw(errorMsg);
         window.display();

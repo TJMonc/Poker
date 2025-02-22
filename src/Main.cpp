@@ -6,6 +6,7 @@ int main(){
     RenderWindow* window = game->getWindow();
 
     try{
+        
         game->init();
         game->update();
     }
