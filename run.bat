@@ -8,8 +8,6 @@ start server
 
 start client
 start client
-start client
-start client
 
 
 

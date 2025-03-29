@@ -226,6 +226,26 @@ int main(){
     int index = 0;
     while(true){
         SOCKET *acceptSock = new SOCKET(accept(serverSock, reinterpret_cast<SOCKADDR *>(&clientInfo), &addrsize));
+        if((index != 0) && (initTime < initClock.getElapsedTime())){
+            for(int i = 0; i < clientSize; i++){
+                client[i].join();
+            }
+            index = 0;
+            clientSize = 0;
+            index = 0;
+            deck->reset();
+            for(int i = 0; i < 4; i++){
+                hand[i].setDeck(deck);
+                for(int j = 0; j < 5; j++){
+                    initPacket.cards[i][j].first = hand[i][j].getNumber();
+                    initPacket.cards[i][j].second = hand[i][j].getSuite();
+                }
+                allSocks[i] = nullptr;
+            }
+            init = new std::thread[MAX_CLIENTS];
+            client = new std::thread[MAX_CLIENTS];
+            std::cout << "End: " << index;
+        }
         allInfo[index] = clientInfo;
         if (*acceptSock == INVALID_SOCKET) {
             std::cout << "Socket Time Out: " << WSAGetLastError() << "\n";
@@ -247,11 +267,10 @@ int main(){
             std::cout << std::format("Client Size = {}\n", clientSize);
             index++;
         }
-        if(index > 3){
-            client[0].join();
-            client[1].join();
-            client[2].join();
-            client[3].join();
+        if(clientSize > 3){
+            for(int i = 0; i < clientSize; i++){
+                client[i].join();
+            }
             clientSize = 0;
             index = 0;
             deck->reset();
@@ -262,15 +281,11 @@ int main(){
                     initPacket.cards[i][j].second = hand[i][j].getSuite();
                 }
                 allSocks[i] = nullptr;
-
             }
-
             init = new std::thread[MAX_CLIENTS];
             client = new std::thread[MAX_CLIENTS];
             std::cout << "End: " << index;
-
         }
-
     }
 
     delete deck;
