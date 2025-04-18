@@ -71,9 +71,6 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 				break;
 			
 		}
-		for(int i = 0; i < 4; i++){
-			players[i].playerHand.setTurned(false);
-		}
 		phaseChange();
 		if(info.turn != you){
 			sent = false;
