@@ -499,7 +499,6 @@ void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 		info.betPool = 0;
 		info.callAmount = 5;
 		for (size_t i = 0; i < 4; i++) {
-			auto &hand = players[i].playerHand;
 			for (int j = 0; j < 5; j++) {
 				players[i].playerHand[j].getSprite().setColor(Color::White);
 			}
@@ -737,6 +736,7 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 		deck.reset();
 		int bytes = 0;
 
+
 		players[info.winnerIndex].betMoney += info.betPool;
 		info.winnerIndex = 0;
 		info.betPool = 0;
@@ -767,6 +767,11 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 				for (int j = 0; j < 5; j++) {
 					hand.pat(j) = &deck.at(std::format("{}{}",
 													   Suits::suit.at(pack.cards[i][j].second), pack.cards[i][j].first));
+				}
+				for(size_t i = 0; i < 4; i++){
+					if (!players[i].playerHand.getIsPlayer()){
+						players[i].playerHand.setTurned(true);
+					}
 				}
 				hand.sortCards();
 

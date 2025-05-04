@@ -104,9 +104,13 @@ const Poker::Card& Poker::Deck::at(const std::string aID) const
 }
 
 Poker::Card& Poker::Deck::operator[](const int index) {
+	deck[index].getSprite().setColor(Color::White);
+
 	return (deck[index]);
 }
 const Poker::Card& Poker::Deck::operator[](const int index) const {
+	deck[index].getSprite().setColor(Color::White);
+
 	return (deck[index]);
 }
 
@@ -116,6 +120,8 @@ const Poker::Card& Poker::Deck::operator[](const std::string aID) const {
 			continue;
 		}
 		else {
+			deck[i].getSprite().setColor(Color::White);
+
 			return (deck[i]);
 		}
 	}
@@ -128,6 +134,7 @@ Poker::Card& Poker::Deck::operator[](const std::string aID) {
 			continue;
 		}
 		else {
+			deck[i].getSprite().setColor(Color::White);
 			return (deck[i]);
 		}
 	}
