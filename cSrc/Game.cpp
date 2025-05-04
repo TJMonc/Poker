@@ -52,9 +52,10 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 			players[info.turn].playerHand.setFolded(true);
 		}
 
-
 		mouseCircle.setPosition(Vector2f(Mouse::getPosition(window).x, Mouse::getPosition(window).y));
 		players[info.turn].playerHand.updateMouse(mouseCircle);
+		turnPointer.setPosition({players[info.turn].playerHand.getPosition().x,
+			 players[info.turn].playerHand.getPosition().y + players[info.turn].playerHand.getSize().y * windowScale.x});
 		switch(info.phase){
 			case 0:
 				betPhase(clientSock);
@@ -370,11 +371,12 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 				recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
 			}
 			recieve.join();
+
 			info.turn++;
 			threadProgress = 0;
 			hand.setHandType();
 			players[info.turn].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
-
+			players[info.turn].playerHand.setTurned(false);
 			info.interactionClock.restart();
 
 		}
@@ -633,12 +635,16 @@ void Poker::PokerGame::draw(RenderWindow& window) {
 	window.clear();
 	for (size_t i = 0; i < 4; i++) {
 		auto& hand = players[i].playerHand;
+		if(info.phase != 3 && !hand.getIsPlayer()){
+			hand.setTurned(true);
+		}
 		hand.drawTo(window);
 		window.draw(players[i].t_betMoney);
-		if (hand.getIsPlayer() || info.phase == 3) {
+		if (info.phase == 3) {
 			window.draw(players[i].t_handType);
 		}
 	}
+	window.draw(turnPointer);
 	deck.drawTo(window);
 	if (info.phase == 0 || info.phase == 2) {
 		window.draw(display.callBox);
@@ -715,7 +721,11 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 			}
 			players[pack2.index].playerHand.sortCards();
 		}
-
+		for(size_t i = 0; i < 4; i++){
+			if (!players[i].playerHand.getIsPlayer()){
+				players[i].playerHand.setTurned(true);
+			}
+		}
 	}
 	break;
 

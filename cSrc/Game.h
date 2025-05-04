@@ -89,6 +89,8 @@ namespace Poker {
 			sockaddr_in serverInfo;
 			int you;
 
+			CircleShape turnPointer;
+
 			std::thread recieve;
 			int threadProgress = 0;
 		
@@ -109,6 +111,9 @@ namespace Poker {
 		public:
 			PokerGame(RenderWindow& window) {
 				windowScale = {Vector2f(window.getSize()) / Vector2f RES_768};
+				turnPointer.setRadius(10.f * windowScale.x);
+				turnPointer.setPointCount(3);
+				turnPointer.setFillColor(Color::Red);
 				deck.setWindow(&window);
 				mouseCircle.setRadius(5.f);
 
