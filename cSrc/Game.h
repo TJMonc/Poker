@@ -10,6 +10,7 @@ struct packet1{
     int phase;
     bool isRaising;
     int raiseAmount;
+	bool folded = false;
 
 };
 
@@ -25,6 +26,7 @@ struct packet2{
     int index;
     int discardNum;
     int discarded[5];
+	bool folded = false;
 };
 struct packet3{
     std::pair<int, int> cards[4][5];

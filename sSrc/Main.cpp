@@ -55,20 +55,22 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
                     std::cout << std::format("Packet Size: {}\n", recvCount);
                     std::cout << std::format("Index: {}\n", pack.index);
                     std::cout << std::format("DiscardNum: {}\n", pack.discardNum);
-                    std::vector<int> d;
-                    for(int i = 0; i < pack.discardNum; i++){
-                        d.push_back(pack.discarded[i]);
-                    }
-                    hand[pack.index].setDiscarded(d);
+                    if(!pack.folded){
+                        std::vector<int> d;
+                        for(int i = 0; i < pack.discardNum; i++){
+                            d.push_back(pack.discarded[i]);
+                        }
+                        hand[pack.index].setDiscarded(d);
 
-                    hand[pack.index].discardCards();
-                    for(int i = 0; i < pack.discardNum; i++){
-                        std::cout << pack.discarded[i];
-                    }
-                
-                    for(int i = 0; i < 5; i++){
-                        pack.cards[i].first = hand[pack.index].at(i).getNumber();
-                        pack.cards[i].second = hand[pack.index].at(i).getSuite();
+                        hand[pack.index].discardCards();
+                        for(int i = 0; i < pack.discardNum; i++){
+                            std::cout << pack.discarded[i];
+                        }
+                    
+                        for(int i = 0; i < 5; i++){
+                            pack.cards[i].first = hand[pack.index].at(i).getNumber();
+                            pack.cards[i].second = hand[pack.index].at(i).getSuite();
+                        }
                     }
                     for (int i = 0; i < 4; i++) {
                         if (allSocks[i] == nullptr) {

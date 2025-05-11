@@ -29,6 +29,7 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 	bool sent = false;
 	getpeername(*clientSock, reinterpret_cast<SOCKADDR*>(&addrInfo), &addrSize);
 	while(window.isOpen()){
+		
 
 		Event anEvent;
 		while(window.pollEvent(anEvent)){
@@ -46,8 +47,6 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 		display.t_callAmount.setString(std::to_string(info.callAmount));
 
 		if (players[info.turn].bust) {
-			std::cin.get();
-
 
 			players[info.turn].playerHand.setFolded(true);
 		}
@@ -156,7 +155,7 @@ void Poker::PokerGame::initPlayers(RenderWindow& window) {
 void Poker::PokerGame::initGameState(RenderWindow& window) {
     info.betPool = 0;
     info.callAmount = 5;
-    info.interactionTime =  milliseconds(200);
+    info.interactionTime =  milliseconds(100);
     info.phase = 0;
     info.turn = 0;
     info.winnerIndex = -1;
@@ -218,20 +217,24 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 		if ((Keyboard::isKeyPressed(Keyboard::Enter)) && info.interactionClock.getElapsedTime() > info.interactionTime) {
 			info.interactionClock.restart();
 			if (display.foldPressed) {
+				pack.folded = true;
 				players[info.turn].playerHand.setFolded(true);
 			}
 			else if (players[info.turn].isRaising && display.input != "") {
 				int raiseAmount = std::stoi(display.input);
-				pack.raiseAmount = raiseAmount;
-
+				
 				int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
 				if (diff > players[info.turn].betMoney) {
 					diff = players[info.turn].betMoney;
+					raiseAmount = diff - info.callAmount;
 				}
+				info.callAmount += raiseAmount;
 				players[info.turn].betMoney -= diff;
 				info.betPool += diff;
-				info.callAmount += raiseAmount;
+
 				players[info.turn].betAmount += diff;
+				pack.raiseAmount = raiseAmount;
+
 			}
 			else {
 				pack.raiseAmount = 0;
@@ -276,7 +279,7 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 	else if(you == 0){
 		int randNum = std::rand() % 10 + 1;
 		players[info.turn].isRaising = (randNum > 8);
-		if ((players[info.turn].betMoney - info.callAmount) < 0) {
+		if ((players[info.turn].betMoney - info.callAmount) <= 0) {
 			players[info.turn].isRaising = false;
 		}
 		if (players[info.turn].isRaising) {
@@ -515,6 +518,9 @@ void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 			if (!hand.getIsPlayer()) {
 				hand.setTurned(true);
 			}
+			else{
+				hand.setTurned(false);
+			}
 			if (players[i].betMoney < 1) {
 				players[i].bust = true;
 			}
@@ -578,7 +584,9 @@ void Poker::PokerGame::displayInteraction(Event& anEvent) {
 			if (Mouse::isButtonPressed(Mouse::Left) &&
 				info.interactionClock.getElapsedTime() > info.interactionTime) {
 				info.interactionClock.restart();
-
+				
+				display.foldPressed = false;
+				display.foldBox.setFillColor(Color::White);
 				if (mouseCircle.getGlobalBounds().intersects(display.callBox.getGlobalBounds())) {
 					if (display.callText.getString() == display.callString) {
 						players[info.turn].isRaising = true;
@@ -593,6 +601,7 @@ void Poker::PokerGame::displayInteraction(Event& anEvent) {
 						 !players[info.turn].isRaising) {
 					
 					display.foldPressed = true;
+					display.foldBox.setFillColor(Color(227, 51, 11));
 				}
 				if (mouseCircle.getGlobalBounds().intersects(display.inputRect.getGlobalBounds())) {
 					display.isWriting = true;
@@ -668,36 +677,42 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 		int addrSize = sizeof(serverInfo);
 		int bytes;
 		if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR && bytes == sizeof(packet1)) {
-			int raiseAmount = pack.raiseAmount;
-			bool isRaising = pack.isRaising;
-			std::cout << std::format("Bet bytes: {}\n", bytes);
-			if (pack.isRaising){
-
-				int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
-				if (diff > players[info.turn].betMoney) {
-					diff = players[info.turn].betMoney;
-				}
-				players[info.turn].betMoney -= diff;
-				info.betPool += diff;
-				info.callAmount += raiseAmount;
-				players[info.turn].betAmount += diff;
+			if(pack.folded){
+				players[info.turn].playerHand.setFolded(true);
 			}
-			else {
-				players[info.turn].isRaising = false;
-				if (players[info.turn].betAmount < info.callAmount) {
-					if (players[info.turn].betMoney < (info.callAmount - players[info.turn].betAmount)) {
-						players[info.turn].betAmount += players[info.turn].betMoney;
-						players[info.turn].betMoney = 0;
-					}
-					else {
-						int diff = info.callAmount - players[info.turn].betAmount;
-						players[info.turn].betMoney -= diff;
-						info.betPool += diff;
+			else{
+				int raiseAmount = pack.raiseAmount;
+				bool isRaising = pack.isRaising;
+				std::cout << std::format("Bet bytes: {}\n", bytes);
+				if (pack.isRaising){
 
-						players[info.turn].betAmount = info.callAmount;
+					int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
+					if (diff > players[info.turn].betMoney) {
+						diff = players[info.turn].betMoney;
+						raiseAmount = diff;
+					}
+					players[info.turn].betMoney -= diff;
+					info.betPool += diff;
+					info.callAmount = diff > players[info.turn].betMoney ? (info.callAmount + players[info.turn].betMoney) :(info.callAmount + raiseAmount);
+					players[info.turn].betAmount += diff;
+				}
+				else {
+					players[info.turn].isRaising = false;
+					if (players[info.turn].betAmount < info.callAmount) {
+						if (players[info.turn].betMoney < (info.callAmount - players[info.turn].betAmount)) {
+							players[info.turn].betAmount += players[info.turn].betMoney;
+							players[info.turn].betMoney = 0;
+						}
+						else {
+							int diff = info.callAmount - players[info.turn].betAmount;
+							players[info.turn].betMoney -= diff;
+							info.betPool += diff;
+
+							players[info.turn].betAmount = info.callAmount;
+						}
 					}
 				}
-			}
+		}
 			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 		}
 		else{

@@ -391,16 +391,22 @@ void Poker::Hand::setHandType() {
 
 
 Poker::Card*& Poker::Hand::pat(const int index) {
+	hand[index]->getSprite().setColor(Color::White);
 	return hand[index];
 }
 
 const Poker::Card& Poker::Hand::at(const int index) const {
+	hand[index]->getSprite().setColor(Color::White);
+
 	return *hand[index];
 }
 
 Poker::Card& Poker::Hand::at(const std::string aID) {
 	for (size_t i = 0; i < 5; i++) {
 		if (hand[i]->getID() == aID) {
+			
+			hand[i]->getSprite().setColor(Color::White);
+
 			return *hand[i];
 		}
 	}
@@ -412,6 +418,8 @@ const Poker::Card& Poker::Hand::at(const std::string aID) const
 {
 	for (size_t i = 0; i < 5; i++) {
 		if (hand[i]->getID() == aID) {
+			hand[i]->getSprite().setColor(Color::White);
+
 			return *hand[i];
 		}
 	}
@@ -421,6 +429,7 @@ const Poker::Card& Poker::Hand::at(const std::string aID) const
 }
 
 Poker::Card& Poker::Hand::operator[](const int index) {
+	
 	return *hand[index];
 }
 
