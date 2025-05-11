@@ -155,7 +155,7 @@ void Poker::PokerGame::initPlayers(RenderWindow& window) {
 void Poker::PokerGame::initGameState(RenderWindow& window) {
     info.betPool = 0;
     info.callAmount = 5;
-    info.interactionTime =  milliseconds(100);
+    info.interactionTime =  milliseconds(150);
     info.phase = 0;
     info.turn = 0;
     info.winnerIndex = -1;
