@@ -21,7 +21,7 @@ int main(){
 
     //Socket Initialization
     SOCKET clientSock = INVALID_SOCKET;
-    clientSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    clientSock = socket(AF_INET, SOCK_STREAM, 0);
 
     if(clientSock == INVALID_SOCKET){
         std::cout << "Error at Socket: " << WSAGetLastError() << std::endl;
@@ -36,9 +36,8 @@ int main(){
     u_short port = 1234;
 
     clientServ.sin_family = AF_INET;
-    clientServ.sin_addr.s_addr = inet_addr("127.0.0.1");
+    clientServ.sin_addr.s_addr = inet_addr("10.0.0.18");
     clientServ.sin_port = htons(port);
-
     if(connect(clientSock, reinterpret_cast<SOCKADDR*>(&clientServ), sizeof(clientServ)) == SOCKET_ERROR){
         std::cout << "Client failed to connect: " << WSAGetLastError();
         std::cin.get();
