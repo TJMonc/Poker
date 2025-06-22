@@ -5,7 +5,9 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "C:/SFML-2.6.1/Visual Studio (32 bit)/include",
-                "C:/Users/terra/Downloads/Projects/Libraries/MinGW/MiscLib/include"
+                "C:/Users/terra/Downloads/Projects/Libraries/MinGW/MiscLib/include",
+                "/home/terrance/SFML/SFML-2.6.2/include",
+                "/home/terrance/Projects/Libraries/MiscLib/include"
             ],
             "defines": [
                 "_DEBUG",
@@ -13,7 +15,7 @@
                 "_UNICODE"
             ],
             "windowsSdkVersion": "10.0.22621.0",
-            "compilerPath": "cl.exe",
+            "compilerPath": "g++",
             "intelliSenseMode": "windows-msvc-x64"
         }
     ],
