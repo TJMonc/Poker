@@ -230,7 +230,7 @@ void Poker::Hand::sortCards() {
 			hand[min] = temp;
 		}
 	}
-	this->highCard = CardNumbers::Number(2);
+	this->highCard = CardNumbers::Number::two;
 	this->setHighSuit();
 	this->setHandType();
 	this->setPosition(position);

@@ -9,12 +9,12 @@ link_directories("/home/terrance/SFML/SFML-2.6.2/lib" "/home/terrance/Projects/L
 #Build Single Player
 file(GLOB SOURCES "src/*.cpp")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
-add_executable(Poker ${SOURCES})
-target_link_libraries(Poker Misc sfml-graphics sfml-window sfml-audio sfml-network sfml-system)
+add_executable(Poker.out ${SOURCES})
+target_link_libraries(Poker.out Misc sfml-graphics sfml-window sfml-audio sfml-network sfml-system)
 
 
 #Build Server
 file(GLOB SOURCES "sSrc/*.cpp")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
-add_executable(server ${SOURCES})
-target_link_libraries(server Misc sfml-graphics sfml-window sfml-audio sfml-network sfml-system)
+add_executable(server.out ${SOURCES})
+target_link_libraries(server.out Misc sfml-graphics sfml-window sfml-audio sfml-network sfml-system)

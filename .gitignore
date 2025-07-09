@@ -6,4 +6,5 @@
 
 /Build
 build/
-/*.exe
+bin/*.exe
+bin/*.out

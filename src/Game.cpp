@@ -294,16 +294,50 @@ void Poker::PokerGame::endPhase() {
 				info.winnerIndex = i;
 			}
 			else if (winner->getHandType() == hand.getHandType()) {
-				if (winner->getHandType() == Poker::Hand::Flush) {
-					if (hand.getHighSuit() > winner->getHighSuit()) {
-						winner = &hand;
-						info.winnerIndex = i;
+				if(winner->getHandType() == Hand::HandTypes::Pair){
+					if(hand.getHighCard() == winner->getHighCard()){
+						int winnerHigh = 0, otherHigh = 0;
+						bool foundOther = false, foundWinner = false;
+						for(int i = 4; i > 0; i--){
+							if(foundWinner && foundOther){
+								if(foundWinner == foundOther){
+									foundOther = false;
+									foundWinner = false;
+									continue;
+								}
+								else{
+									break;
+								}
+							}
+							if(!foundOther){
+								if(hand.at(i).getNumber() == hand.getHighCard()){
+									continue;
+								}
+								else{
+									otherHigh = hand.at(i).getNumber();
+									foundOther = true;
+								}
+							}
+
+							if (!foundWinner){
+								if (winner->at(i).getNumber() == winner->getHighCard()){
+									continue;
+								}
+								else {
+									winnerHigh = winner->at(i).getNumber();
+									foundWinner = true;
+								}
+							}
+
+						}
+
+						if (winnerHigh < otherHigh){
+							winner = &hand;
+							info.winnerIndex = i;
+						}
 					}
 				}
-				else if (hand.getHighCard() > winner->getHighCard()) {
-					winner = &hand;
-					info.winnerIndex = i;
-				}
+
 			}
 		}
 		for (size_t i = 0; i < 4; i++) {
