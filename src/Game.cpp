@@ -185,6 +185,7 @@ void Poker::PokerGame::betPhase() {
 				int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
 				if (diff > players[info.turn].betMoney) {
 					diff = players[info.turn].betMoney;
+					raiseAmount = diff - (info.callAmount - players[info.turn].betAmount);
 				}
 				players[info.turn].betMoney -= diff;
 				info.betPool += diff;
@@ -243,7 +244,6 @@ void Poker::PokerGame::betPhase() {
 				}
 			}
 		}
-		players[info.turn].playerHand.hasChosen = false;
 		players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 		info.turn++;
 	}
@@ -251,7 +251,6 @@ void Poker::PokerGame::betPhase() {
 
 void Poker::PokerGame::discardPhase(){
 	auto& hand = players[info.turn].playerHand; 
-
 	if (hand.getFolded()){
 		info.turn++;
 	}
@@ -294,50 +293,52 @@ void Poker::PokerGame::endPhase() {
 				info.winnerIndex = i;
 			}
 			else if (winner->getHandType() == hand.getHandType()) {
-				if(winner->getHandType() == Hand::HandTypes::Pair){
-					if(hand.getHighCard() == winner->getHighCard()){
-						int winnerHigh = 0, otherHigh = 0;
-						bool foundOther = false, foundWinner = false;
-						for(int i = 4; i > 0; i--){
-							if(foundWinner && foundOther){
-								if(foundWinner == foundOther){
-									foundOther = false;
-									foundWinner = false;
-									continue;
-								}
-								else{
-									break;
-								}
+				if(hand.getHighCard() == winner->getHighCard()){
+					//If current hand's high card is equal to winner's high card, find the next highest card.
+					int winnerHigh = 0, otherHigh = 0;
+					bool foundOther = false, foundWinner = false;
+					for(int i = 4; i > 0; i--){
+						if(foundWinner && foundOther){
+							if(foundWinner == foundOther){
+								foundOther = false;
+								foundWinner = false;
+								continue;
 							}
-							if(!foundOther){
-								if(hand.at(i).getNumber() == hand.getHighCard()){
-									continue;
-								}
-								else{
-									otherHigh = hand.at(i).getNumber();
-									foundOther = true;
-								}
+							else{
+								break;
 							}
-
-							if (!foundWinner){
-								if (winner->at(i).getNumber() == winner->getHighCard()){
-									continue;
-								}
-								else {
-									winnerHigh = winner->at(i).getNumber();
-									foundWinner = true;
-								}
+						}
+						if(!foundOther){
+							if(hand.at(i).getNumber() == hand.getHighCard()){
+								continue;
 							}
-
+							else{
+								otherHigh = hand.at(i).getNumber();
+								foundOther = true;
+							}
 						}
 
-						if (winnerHigh < otherHigh){
-							winner = &hand;
-							info.winnerIndex = i;
+						if (!foundWinner){
+							if (winner->at(i).getNumber() == winner->getHighCard()){
+								continue;
+							}
+							else {
+								winnerHigh = winner->at(i).getNumber();
+								foundWinner = true;
+							}
 						}
+
+					}
+
+					if (winnerHigh < otherHigh){
+						winner = &hand;
+						info.winnerIndex = i;
 					}
 				}
-
+				else if (winner->getHighCard() < hand.getHighCard()){
+					winner = &hand;
+					info.winnerIndex = i;
+				}
 			}
 		}
 		for (size_t i = 0; i < 4; i++) {

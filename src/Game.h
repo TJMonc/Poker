@@ -71,6 +71,7 @@ namespace Poker {
 			void displayInteraction(Event& anEvent);
 			void draw();
 		public:
+			int log = 0;
 			PokerGame(): window({VideoMode(), "Poker", Style::Fullscreen}){
 				windowScale = {Vector2f(window.getSize()) / Vector2f RES_768};
 				deck.setWindow(&window);
