@@ -101,7 +101,6 @@ namespace Poker {
 		bool checkFullHouse();
 		void setHandType();
 
-
 		Card*& pat(const int index);
 		const Card& at(const int index) const;
 		Card& at(const std::string aID);

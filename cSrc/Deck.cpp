@@ -12,9 +12,9 @@ Poker::Deck::Deck() {
 			deck[counter].changeCard(j, i);
 			std::unique_ptr<std::vector<std::string>> vect = std::move(Poker::Card::getCardBackPaths());
 			deck[counter].setIsTurned(false);
-			int lol = rand() % vect->size();
+			int index = rand() % vect->size();
 
-			deck[counter].setBackPath((*vect)[lol]);
+			deck[counter].setBackPath((*vect)[index]);
 			counter++;
 		}
 	}
@@ -99,7 +99,7 @@ const Poker::Card& Poker::Deck::at(const std::string aID) const
 			return deck[i];
 		}
 	}
-	//throw FileError("Main app failure due to Poker::Deck::at");
+	throw FileError("Main app failure due to Poker::Deck::at");
 	return deck[0];
 }
 

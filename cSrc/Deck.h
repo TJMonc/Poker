@@ -22,6 +22,9 @@ namespace Poker {
 		void setPosition(const Vector2f aPos);
 		const Vector2f& getPositon() const;
 		int getSize() const { return mySize; }
+
+		//All at() functions changed to use deck instead of objDeck 
+
 		Card& at(const int index);
 		const Card& at(const int index) const;
 		Card& at(const std::string aID);
