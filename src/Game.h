@@ -14,6 +14,7 @@ namespace Poker {
 
 			Text t_handType;
 			Text t_betMoney;
+			Text t_betAmount;
 		};
 		struct GameState{
 			int turn;
@@ -43,8 +44,9 @@ namespace Poker {
 			bool isWriting;
 			Text inputText;
 			std::string input;
-			Text t_callAmount;
 
+			Text t_callAmount;
+			Text t_betPool;
 		};
 
 
