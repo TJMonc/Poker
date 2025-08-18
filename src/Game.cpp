@@ -23,6 +23,7 @@ void Poker::PokerGame::update() {
 			}
 		}
 		display.t_callAmount.setString(std::to_string(info.callAmount));
+		display.t_betPool.setString(std::to_string(info.betPool));
 
 		if (players[info.turn].bust) {
 			players[info.turn].playerHand.setFolded(true);
@@ -95,6 +96,13 @@ void Poker::PokerGame::initPlayers() {
 
         players[i].t_betMoney.setFillColor(Color::Cyan);
         players[i].t_betMoney.setString(std::to_string(players[i].betMoney));
+		
+		players[i].t_betAmount.setFont(display.font);
+		players[i].t_betAmount.setCharacterSize(20.f * windowScale.x);
+		players[i].t_betAmount.setPosition(players[i].playerHand.getPosition().x, players[i].playerHand.getPosition().y - 40 * windowScale.y);
+
+		players[i].t_betAmount.setFillColor(Color::Cyan);
+		players[i].t_betAmount.setString(std::to_string(players[i].betAmount));
     }
 
     for(size_t i = 0; i < 4; i++){
@@ -168,6 +176,12 @@ void Poker::PokerGame::initUI() {
 	display.t_callAmount.setFillColor(Color::White);
 	display.t_callAmount.setPosition(deck.getPositon().x, deck.getPositon().y - 50.f * windowScale.y);
 	display.t_callAmount.setString(std::to_string(info.callAmount));
+
+	display.t_betPool.setFont(display.font);
+	display.t_betPool.setCharacterSize(20.f * windowScale.x);
+	display.t_betPool.setFillColor(Color(17, 255, 0));
+	display.t_betPool.setPosition(deck.getPositon().x, deck.getPositon().y - 80.f * windowScale.y);
+
 }
 
 void Poker::PokerGame::betPhase() {
@@ -209,7 +223,7 @@ void Poker::PokerGame::betPhase() {
 				}
 			}
 			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
-
+			players[info.turn].t_betAmount.setString(std::to_string(players[info.turn].betAmount));
 			info.turn++;
 		}
 	}
@@ -245,6 +259,8 @@ void Poker::PokerGame::betPhase() {
 			}
 		}
 		players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
+		players[info.turn].t_betAmount.setString(std::to_string(players[info.turn].betAmount));
+
 		info.turn++;
 	}
 }
@@ -480,6 +496,7 @@ void Poker::PokerGame::draw() {
 		auto& hand = players[i].playerHand;
 		hand.drawTo(window);
 		window.draw(players[i].t_betMoney);
+		window.draw(players[i].t_betAmount);
 		if (hand.getIsPlayer() || info.phase == 3) {
 			window.draw(players[i].t_handType);
 		}
@@ -498,5 +515,7 @@ void Poker::PokerGame::draw() {
 		}
 	}
 	window.draw(display.t_callAmount);
+	window.draw(display.t_betPool);
+
 	window.display();
 }
