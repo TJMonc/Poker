@@ -8,7 +8,7 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
     int phase = 0;
     int addrsize = sizeof(clientInfo);
 
-    std::cout << std::format("Player {} starting Deck: ", index) << hand;
+    std::cout << std::format("Player {} starting Deck:\n", index + 1) << *hand << "\n\n";
     getpeername(*acceptSock, reinterpret_cast<SOCKADDR*>(&clientInfo), &addrsize);
     for(int i = 0; i < 4; i++){
         initPacket pack0;
@@ -71,6 +71,8 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
                             pack.cards[i].first = hand[pack.index].at(i).getNumber();
                             pack.cards[i].second = hand[pack.index].at(i).getSuite();
                         }
+
+                        std::cout << std::format("Player {} New Hand: \n", pack.index + 1) << *hand << "\n\n";
                     }
                     for (int i = 0; i < 4; i++) {
                         if (allSocks[i] == nullptr) {

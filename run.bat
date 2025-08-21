@@ -3,10 +3,6 @@ cmake -G "MinGW Makefiles" -D CMAKE_CXX_COMPILER="C:/msys64/mingw32(13.1.0)/bin/
 
 cmake --build build
 
-cd bin
-
-start server
-start client
 
 
 
