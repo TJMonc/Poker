@@ -45,6 +45,7 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 		}
 
 		display.t_callAmount.setString(std::to_string(info.callAmount));
+		display.t_betPool.setString(std::to_string(info.betPool));
 
 		if (players[info.turn].bust) {
 
@@ -58,7 +59,6 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 		switch(info.phase){
 			case 0:
 				betPhase(clientSock);
-
 				break;
 			case 1:
 				discardPhase(clientSock);
@@ -133,6 +133,12 @@ void Poker::PokerGame::initPlayers(RenderWindow& window) {
 
         players[i].t_betMoney.setFillColor(Color::Cyan);
         players[i].t_betMoney.setString(std::to_string(players[i].betMoney));
+
+		players[i].t_betAmount.setFont(display.font);
+		players[i].t_betAmount.setCharacterSize(20.f * windowScale.x);
+		players[i].t_betAmount.setPosition(players[i].playerHand.getPosition().x, players[i].playerHand.getPosition().y - 40 * windowScale.y);
+		players[i].t_betAmount.setFillColor(Color::Cyan);
+		players[i].t_betAmount.setString(std::to_string(players[i].betAmount));
     }
 
     for(size_t i = 0; i < 4; i++){
@@ -206,8 +212,14 @@ void Poker::PokerGame::initUI(RenderWindow& window) {
 	display.t_callAmount.setFillColor(Color::White);
 	display.t_callAmount.setPosition(deck.getPositon().x, deck.getPositon().y - 50.f * windowScale.y);
 	display.t_callAmount.setString(std::to_string(info.callAmount));
+
+	display.t_betPool.setFont(display.font);
+	display.t_betPool.setCharacterSize(20.f * windowScale.x);
+	display.t_betPool.setFillColor(Color::Green);
+	display.t_betPool.setPosition(deck.getPositon().x, deck.getPositon().y - 70.f * windowScale.y);
+	display.t_betPool.setString(std::to_string(info.callAmount));
 }
-// NOTE: Refactor this later to have the calculations for the non-players to be done on server side. - DONE
+
 void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 	packet1 pack;
 	if (players[info.turn].playerHand.getFolded()) {
@@ -258,6 +270,7 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 					}
 				}
 			}
+			players[info.turn].t_betAmount.setString(std::to_string(players[info.turn].betAmount));
 			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 
 			pack.isRaising = players[info.turn].isRaising;
@@ -312,7 +325,10 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 				}
 			}
 		}
+
+		players[info.turn].t_betAmount.setString(std::to_string(players[info.turn].betAmount));
 		players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
+
 		pack.isRaising = players[info.turn].isRaising;
 		int t = 0;
 		send(*acceptSock, (char*)&info.phase, sizeof(int), 0);
@@ -350,6 +366,7 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 					}
 				}
 			}
+			players[info.turn].t_betAmount.setString(std::to_string(players[info.turn].betAmount));
 			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 			info.turn++;
 		}
@@ -687,6 +704,7 @@ void Poker::PokerGame::draw(RenderWindow& window) {
 		}
 		hand.drawTo(window);
 		window.draw(players[i].t_betMoney);
+		window.draw(players[i].t_betAmount);
 		if (info.phase == 3) {
 			window.draw(players[i].t_handType);
 		}
@@ -706,6 +724,7 @@ void Poker::PokerGame::draw(RenderWindow& window) {
 		}
 	}
 	window.draw(display.t_callAmount);
+	window.draw(display.t_betPool);
 	window.display();
 }
 
@@ -752,6 +771,7 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 					}
 				}
 		}
+			players[info.turn].t_betAmount.setString(std::to_string(players[info.turn].betAmount));
 			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 		}
 		else{
