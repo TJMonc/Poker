@@ -1,7 +1,9 @@
+#include "Windows.h"
 #include "Game.h"
 #include <format>
 
-int main(){
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+    PSTR lpCmdLine, int nCmdShow){
     Poker::PokerGame* game = new Poker::PokerGame;
     RenderWindow* window = game->getWindow();
 
@@ -23,4 +25,6 @@ int main(){
         std::cerr << e.what();
     }
     delete game;
+
+    return 0;
 }

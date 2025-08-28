@@ -18,7 +18,6 @@ void Poker::PokerGame::init(RenderWindow& window, SOCKET* acceptSock, sockaddr_i
 			total += 1;
 		}
 	}
-	std::cout << total;
 	draw(window);
 
 }
@@ -453,7 +452,6 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 			info.turn++;
 			hand.setHandType();
 			players[info.turn].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
-			std::cout << "Discard phase\n";
 
 		}
 	}
@@ -741,7 +739,6 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 			else{
 				int raiseAmount = pack.raiseAmount;
 				bool isRaising = pack.isRaising;
-				std::cout << std::format("Bet bytes: {}\n", bytes);
 				if (pack.isRaising){
 
 					int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
@@ -775,8 +772,7 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 		}
 		else{
-			std::cout << "Error in betphase\n";
-			std::cout << WSAGetLastError();
+			throw std::runtime_error(std::to_string(WSAGetLastError()));
 		}
 
 	};
@@ -824,7 +820,6 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 			}
 		}
 		if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet3), 0)) != SOCKET_ERROR && bytes == sizeof(packet3)) {
-			std::cout << std::format("end bytes: {}\n", bytes);
 
 			for (int i = 0; i < 4; i++) {
 				auto &hand = players[i].playerHand;

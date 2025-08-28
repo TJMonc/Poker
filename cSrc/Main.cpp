@@ -2,7 +2,8 @@
 #include <filesystem>
 
 /*The new plan is to use the server to store the "real" Deck / playerHands (AND ONLY THE DECK AND PLAYERHANDS)*/
-int main(){
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+    PSTR lpCmdLine, int nCmdShow){
 
     WSADATA wsaData;
     int wsaerr;
@@ -10,13 +11,10 @@ int main(){
 
     wsaerr = WSAStartup(version, &wsaData);
     if(wsaerr != 0){
-        std::cout << "Winsock dll not found.\n";
-        std::cin.get();
+        WSACleanup();
+
+        throw std::runtime_error("Winsock not found...");
         return -1;
-    }
-    else{
-        std::cout << "Winsock dll found.\n";
-        std::cout << "System status: " << wsaData.szSystemStatus << "\n";
     }
 
     //Socket Initialization
@@ -24,11 +22,9 @@ int main(){
     clientSock = socket(AF_INET, SOCK_STREAM, 0);
 
     if(clientSock == INVALID_SOCKET){
-        std::cout << "Error at Socket: " << WSAGetLastError() << std::endl;
+        std::string errmsg = "Error at socket " + WSAGetLastError();
         WSACleanup();
-    }
-    else{
-        std::cout << "Client Socket initialized\n";
+        throw std::runtime_error(errmsg);
     }
 
     //Connection
@@ -39,13 +35,10 @@ int main(){
     clientServ.sin_addr.s_addr = inet_addr("127.0.0.1");
     clientServ.sin_port = htons(port);
     if(connect(clientSock, reinterpret_cast<SOCKADDR*>(&clientServ), sizeof(clientServ)) == SOCKET_ERROR){
-        std::cout << "Client failed to connect: " << WSAGetLastError();
-        std::cin.get();
+        std::string errmsg = "Client failed to connect: " + WSAGetLastError();
+        throw std::runtime_error(errmsg);
         WSACleanup();
         return -1;
-    }
-    else {
-        std::cout << "Client connected to " << inet_ntoa(clientServ.sin_addr) << "\n\n";
     }
     RenderWindow window(VideoMode(), "Multiplayer Poker", Style::Fullscreen);
     Poker::PokerGame* game = new Poker::PokerGame(window);
@@ -85,4 +78,5 @@ int main(){
     delete game;
     closesocket(clientSock);
     WSACleanup();
+    return 0;
 }
