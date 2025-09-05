@@ -1,24 +1,49 @@
 cmake_minimum_required(VERSION 3.21)
 set(CMAKE_CXX_STANDARD 20)
+include(FetchContent)
+
+
+#set output directories
+
+set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/deps)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+make_directory(${FETCHCONTENT_BASE_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${FETCHCONTENT_BASE_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${FETCHCONTENT_BASE_DIR}/lib)
+
+
+FetchContent_Declare(
+    SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 2.6.1
+)
+
+FetchContent_Declare(
+    MiscLib
+    GIT_REPOSITORY https://github.com/TJMonc/MiscLib.git
+    GIT_TAG 09-05-2025
+)
+FetchContent_MakeAvailable(SFML)
+FetchContent_MakeAvailable(MiscLib)
+
 project(Poker)
 
 
 #define variables
-set(SFML_DIR "C:/SFML-2.6.1/MinGW (32 bit)")
-set(MISC_DIR "C:/Users/terra/Downloads/Projects/Libraries/MinGW/MiscLib")
-set(LINKED_LIBS ws2_32 libMisc.a libsfml-graphics.a libsfml-window.a libsfml-audio.a libsfml-main.a libsfml-network.a libopenal32.a libsfml-system.a)
-set(INCLUDE_DIRECTORIES ${SFML_DIR}/include ${MISC_DIR}/include)
-set(LINK_DIRECTORIES ${SFML_DIR}/lib ${MISC_DIR}/lib)
+set(SFML_DIR ${FETCHCONTENT_BASE_DIR})
+set(MISC_DIR ${FETCHCONTENT_BASE_DIR})
+set(INCLUDE_DIRECTORIES ${SFML_DIR}/sfml-src/include ${MISC_DIR}/misclib-src/include)
+set(LINK_DIRECTORIES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+set(LINKED_LIBS ws2_32 libMisc.dll.a libsfml-graphics.a libsfml-window.a libsfml-audio.a libsfml-main.a libsfml-network.a libsfml-system.a)
 set(COMPILE_OPTIONS -std=c++20 -O3 -Werror -Wno-trigraphs)
 
 #Build Single Player
 file(GLOB SOURCES "src/*.cpp")
 add_executable(Poker WIN32 ${SOURCES})
+target_link_libraries(Poker ${LINKED_LIBS})
 target_compile_options(Poker PRIVATE ${COMPILE_OPTIONS})
 target_include_directories(Poker PRIVATE ${INCLUDE_DIRECTORIES})
 target_link_directories(Poker PRIVATE ${LINK_DIRECTORIES})
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
-target_link_libraries(Poker ${LINKED_LIBS})
 
 
 #Build Client
@@ -40,10 +65,8 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 target_link_libraries(server ${LINKED_LIBS})
 
 
-
-
-
-
+add_dependencies(Misc sfml-graphics sfml-window sfml-audio sfml-main sfml-network sfml-system)
+add_dependencies(Poker Misc)
 
 
 
