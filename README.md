@@ -13,6 +13,6 @@ ________________________________________________________________________________
 
 - To check whether Cmake and the compiler was installed correctly run "cmake --version", "g++ --version", and "mingw32-make --version" in your terminal.
 
-- If you've successfully installed everythin, run "run.bat" and wait for the project to compile.
+- If you've successfully installed everything, run "run.bat" and wait for the project to compile.
 
 
