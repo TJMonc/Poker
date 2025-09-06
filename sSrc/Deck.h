@@ -7,8 +7,9 @@ namespace Poker {
 		Card* deck;
 		Card* objDeck[52];
 		size_t mySize;
-		Sprite deckSprite;
 		Texture deckText;
+		Sprite deckSprite = Sprite(deckText);
+
 		Vector2f position;
 		Vector2f windowScale;
 		RenderWindow* window;

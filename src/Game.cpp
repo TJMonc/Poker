@@ -1,5 +1,6 @@
 #include "Game.h"
 
+Font Poker::PokerGame::UIStruct::font = Font();
 void Poker::PokerGame::init() {
     initDeck();
     initGameState();
@@ -11,14 +12,12 @@ void Poker::PokerGame::init() {
 void Poker::PokerGame::update() {
 	
 	while(window.isOpen()){
-		Event anEvent;
-		while(window.pollEvent(anEvent)){
-			switch(anEvent.type){
-			case Event::EventType::Closed:
+		std::optional<Event> event;
+		while(event = window.pollEvent()){
+			if(event->is<Event::Closed>()){
 				window.close();
-				break;
 			}
-			if(Keyboard::isKeyPressed(Keyboard::Escape)){
+			if(Keyboard::isKeyPressed(Keyboard::Key::Escape)){
 				window.close();
 			}
 		}
@@ -47,7 +46,7 @@ void Poker::PokerGame::update() {
 			
 		}
 		phaseChange();
-		displayInteraction(anEvent);
+		displayInteraction(event);
 		draw();
 	}
 }
@@ -55,8 +54,8 @@ void Poker::PokerGame::update() {
 void Poker::PokerGame::initDeck()
 {
     Vector2f deckPos = {
-        window.getSize().x - deck[0].getGlobalBounds().getSize().x,
-        window.getSize().y - deck[0].getGlobalBounds().getSize().y
+        window.getSize().x - deck[0].getGlobalBounds().size.x,
+        window.getSize().y - deck[0].getGlobalBounds().size.y
     };
     deckPos = (1.f / 2.f) * deckPos;
     deck.setPosition(deckPos);
@@ -92,14 +91,14 @@ void Poker::PokerGame::initPlayers() {
     for(int i = 0; i < 4; i++){
         players[i].t_betMoney.setFont(display.font);
         players[i].t_betMoney.setCharacterSize(20.f * windowScale.x);
-        players[i].t_betMoney.setPosition(players[i].playerHand.getPosition().x, players[i].playerHand.getPosition().y - 20 * windowScale.y);
+        players[i].t_betMoney.setPosition({players[i].playerHand.getPosition().x, players[i].playerHand.getPosition().y - 20 * windowScale.y});
 
         players[i].t_betMoney.setFillColor(Color::Cyan);
         players[i].t_betMoney.setString(std::to_string(players[i].betMoney));
 		
 		players[i].t_betAmount.setFont(display.font);
 		players[i].t_betAmount.setCharacterSize(20.f * windowScale.x);
-		players[i].t_betAmount.setPosition(players[i].playerHand.getPosition().x, players[i].playerHand.getPosition().y - 40 * windowScale.y);
+		players[i].t_betAmount.setPosition({players[i].playerHand.getPosition().x, players[i].playerHand.getPosition().y - 40 * windowScale.y});
 
 		players[i].t_betAmount.setFillColor(Color::Cyan);
 		players[i].t_betAmount.setString(std::to_string(players[i].betAmount));
@@ -132,7 +131,10 @@ void Poker::PokerGame::initGameState() {
 }
 
 void Poker::PokerGame::initUI() {
-    display.font.loadFromFile(Game::FontPaths::blackLivesFont);
+	
+    if(!display.font.openFromFile(Game::FontPaths::blackLivesFont)){
+		throw FileError(Game::FontPaths::blackLivesFont);
+	};
     display.foldPressed = false;
     
     display.inputRect.setOutlineColor(Color::Blue);
@@ -149,10 +151,10 @@ void Poker::PokerGame::initUI() {
     display.callBox.setSize(Vector2f(100.f, 50.f) * windowScale);
 	display.callBox.setOutlineColor(Color::Blue);
 	display.callBox.setOutlineThickness(5.f * windowScale.y);
-	display.callBox.setPosition(
+	display.callBox.setPosition({
 		window.getSize().x - display.callBox.getSize().x - 50.f * windowScale.x,
 		window.getSize().y - display.callBox.getSize().y - 50.f * windowScale.y
-	);
+	});
 	display.callText.setFont(display.font);
 	display.callText.setCharacterSize(30.f * windowScale.x);
 	display.callText.setPosition(display.callBox.getPosition());
@@ -162,8 +164,8 @@ void Poker::PokerGame::initUI() {
     display.foldBox.setSize(display.callBox.getSize());
 	display.foldBox.setOutlineColor(Color::Red);
 	display.foldBox.setOutlineThickness(5.f * windowScale.y);
-	display.foldBox.setPosition(display.callBox.getPosition().x,
-     display.callBox.getPosition().y - display.callBox.getSize().y - 30.f * windowScale.y);
+	display.foldBox.setPosition({display.callBox.getPosition().x,
+     display.callBox.getPosition().y - display.callBox.getSize().y - 30.f * windowScale.y});
     
     display.foldText.setFont(display.font);
 	display.foldText.setCharacterSize(30.f * windowScale.x);
@@ -174,13 +176,13 @@ void Poker::PokerGame::initUI() {
     display.t_callAmount.setFont(display.font);
 	display.t_callAmount.setCharacterSize(20.f * windowScale.x);
 	display.t_callAmount.setFillColor(Color::White);
-	display.t_callAmount.setPosition(deck.getPositon().x, deck.getPositon().y - 50.f * windowScale.y);
+	display.t_callAmount.setPosition({deck.getPositon().x, deck.getPositon().y - 50.f * windowScale.y});
 	display.t_callAmount.setString(std::to_string(info.callAmount));
 
 	display.t_betPool.setFont(display.font);
 	display.t_betPool.setCharacterSize(20.f * windowScale.x);
 	display.t_betPool.setFillColor(Color(17, 255, 0));
-	display.t_betPool.setPosition(deck.getPositon().x, deck.getPositon().y - 80.f * windowScale.y);
+	display.t_betPool.setPosition({deck.getPositon().x, deck.getPositon().y - 80.f * windowScale.y});
 
 }
 
@@ -189,7 +191,7 @@ void Poker::PokerGame::betPhase() {
 		info.turn++;
 	}
 	else if (players[info.turn].playerHand.getIsPlayer()) {
-		if ((Keyboard::isKeyPressed(Keyboard::Enter)) && info.interactionClock.getElapsedTime() > info.interactionTime) {
+		if ((Keyboard::isKeyPressed(Keyboard::Key::Enter)) && info.interactionClock.getElapsedTime() > info.interactionTime) {
 			info.interactionClock.restart();
 			if (display.foldPressed) {
 				players[info.turn].playerHand.setFolded(true);
@@ -271,7 +273,7 @@ void Poker::PokerGame::discardPhase(){
 		info.turn++;
 	}
 	else if (players[info.turn].playerHand.getIsPlayer()) {
-		if (Keyboard::isKeyPressed(Keyboard::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
+		if (Keyboard::isKeyPressed(Keyboard::Key::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
 			info.interactionClock.restart();
 			hand.discardCards();
 			hand.setHandType();
@@ -374,7 +376,7 @@ void Poker::PokerGame::endPhase() {
 		info.end = true;
 		display.foldPressed = false;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
+	if (Keyboard::isKeyPressed(Keyboard::Key::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
 		info.interactionClock.restart();
 		deck.reset();
 
@@ -429,17 +431,17 @@ void Poker::PokerGame::phaseChange() {
 	}
 }
 
-void Poker::PokerGame::displayInteraction(Event& anEvent) {
+void Poker::PokerGame::displayInteraction(std::optional<Event>& event) {
 	auto& hand = players[info.turn].playerHand;
 
 	if (hand.getIsPlayer()) {
 		if ((info.turn == 0 || info.turn == 2)) {
 
-			if (Mouse::isButtonPressed(Mouse::Left) &&
+			if (Mouse::isButtonPressed(Mouse::Button::Left) &&
 				info.interactionClock.getElapsedTime() > info.interactionTime) {
 				info.interactionClock.restart();
 
-				if (mouseCircle.getGlobalBounds().intersects(display.callBox.getGlobalBounds())) {
+				if (mouseCircle.getGlobalBounds().findIntersection(display.callBox.getGlobalBounds()).has_value()) {
 					if (display.callText.getString() == display.callString) {
 						players[info.turn].isRaising = true;
 						display.callText.setString(display.raiseString);
@@ -449,38 +451,38 @@ void Poker::PokerGame::displayInteraction(Event& anEvent) {
 						display.callText.setString(display.callString);
 					}
 				}
-				else if (mouseCircle.getGlobalBounds().intersects(display.foldBox.getGlobalBounds()) &&
+				else if (mouseCircle.getGlobalBounds().findIntersection(display.foldBox.getGlobalBounds()).has_value() &&
 						 !players[info.turn].isRaising) {
 					
 					display.foldPressed = true;
 				}
-				if (mouseCircle.getGlobalBounds().intersects(display.inputRect.getGlobalBounds())) {
+				if (mouseCircle.getGlobalBounds().findIntersection(display.inputRect.getGlobalBounds()).has_value()) {
 					display.isWriting = true;
 				}
 				else {
 					display.isWriting = false;
 				}
 			}
-			if (display.isWriting && players[info.turn].isRaising) {
+			if (display.isWriting && players[info.turn].isRaising){
 				std::string validNums = "1234567890";
+				if (const auto *key = event->getIf<Event::TextEntered>()){
+					if (info.interactionClock.getElapsedTime() > info.interactionTime){
+						info.interactionClock.restart();
+						if (key->unicode == '\b'){
+							if (display.inputText.getString() != ""){
+								display.input.erase(display.input.size() - 1);
+							}
+						}
+						else{
+							display.input += key->unicode;
 
-				if (anEvent.type == Event::TextEntered && 
-					info.interactionClock.getElapsedTime() > info.interactionTime) {
-					info.interactionClock.restart();
-					if (anEvent.text.unicode == '\b') {
-						if (display.inputText.getString() != "") {
-							display.input.erase(display.input.size() - 1);
+							if (display.input.find_first_of(validNums) == std::string::npos){
+								display.input.erase(display.input.size() - 1);
+							}
 						}
 					}
-					else {
-						display.input += anEvent.text.unicode;
-
-						if (display.input.find_first_of(validNums) == std::string::npos) {
-							display.input.erase(display.input.size() - 1);
-						}
-					}
+					display.inputText.setString(display.input);
 				}
-				display.inputText.setString(display.input);
 			}
 			else {
 				display.input = "";

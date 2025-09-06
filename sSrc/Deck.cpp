@@ -1,6 +1,6 @@
 #include "Deck.h"
 
-Poker::Deck::Deck() {
+Poker::Deck::Deck(){
 	this->deck = (Card*)new Card[52];
 	for(int i = 0; i < 52; i++){
 		objDeck[i] = &(deck[i]);
@@ -48,7 +48,7 @@ void Poker::Deck::setWindow(RenderWindow* aWindow) {
 	this->window = aWindow;
 	this->windowScale = (Vector2f(window->getSize()) / Vector2f RES_768);
 	deckSprite.setScale(windowScale * 0.2f);
-	deckSprite.setOrigin(deckSprite.getGlobalBounds().getSize() / 2.f);
+	deckSprite.setOrigin(deckSprite.getGlobalBounds().size / 2.f);
 	for (size_t i = 0; i < this->mySize; i++) {
 		deck[i].getSprite().setScale(windowScale * 0.2f);
 	}

@@ -40,7 +40,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         WSACleanup();
         return -1;
     }
-    RenderWindow window(VideoMode(), "Multiplayer Poker", Style::Fullscreen);
+    RenderWindow window(VideoMode(), "Multiplayer Poker", State::Fullscreen);
     Poker::PokerGame* game = new Poker::PokerGame(window);
 
 
@@ -50,11 +50,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
     catch(std::exception &e){
         Vector2f windowScale = {Vector2f(window.getSize()) / Vector2f RES_768};
-
-        sf::Text errorMsg;
         sf::Font font;
-        font.loadFromFile(Game::FontPaths::blackLivesFont);
-        errorMsg.setFont(font);
+        sf::Text errorMsg(font);
+        Game::loadFont(errorMsg, font, Game::FontPaths::blackLivesFont);
+
         std::string eString = e.what();
         window.clear();
 

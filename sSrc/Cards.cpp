@@ -7,8 +7,7 @@ const std::unordered_map<int, std::string> Poker::Suits::suit = { {Spades, "spad
 
 
 Poker::Card::Card(const int aNumber, const int aSuit)
-: number(CardNumbers::Number(aNumber)), suit(Suits::Suit(aSuit)), inHand(false), isTurned(false){
-	cardText = Texture();
+: number(CardNumbers::Number(aNumber)), suit(Suits::Suit(aSuit)), inHand(false), isTurned(false), cardSprite(cardText){
 	this->changeCard(number, suit);
 	texturePath = "";
 	std::unique_ptr<std::vector<std::string>> vect = std::move(getCardBackPaths());

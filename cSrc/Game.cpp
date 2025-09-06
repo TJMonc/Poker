@@ -1,4 +1,5 @@
 #include "Game.h"
+Font Poker::PokerGame::UIStruct::font = Font();
 
 void Poker::PokerGame::init(RenderWindow& window, SOCKET* acceptSock, sockaddr_in aServInfo) {
 	this->serverInfo = aServInfo;
@@ -28,17 +29,13 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 	bool sent = false;
 	getpeername(*clientSock, reinterpret_cast<SOCKADDR*>(&addrInfo), &addrSize);
 	while(window.isOpen()){
-		
+		std::optional<Event> event;
+		while(event = window.pollEvent()){
 
-		Event anEvent;
-		while(window.pollEvent(anEvent)){
-
-			switch(anEvent.type){
-			case Event::EventType::Closed:
+			if(event->is<Event::Closed>()){
 				window.close();
-				break;
 			}
-			if(Keyboard::isKeyPressed(Keyboard::Escape)){
+			if(Keyboard::isKeyPressed(Keyboard::Key::Escape)){
 				window.close();
 			}
 		}
@@ -51,7 +48,7 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 			players[info.turn].playerHand.setFolded(true);
 		}
 
-		mouseCircle.setPosition(Vector2f(Mouse::getPosition(window).x, Mouse::getPosition(window).y));
+		mouseCircle.setPosition({Vector2f(Mouse::getPosition(window).x, Mouse::getPosition(window).y)});
 		players[info.turn].playerHand.updateMouse(mouseCircle);
 		turnPointer.setPosition({players[info.turn].playerHand.getPosition().x,
 			 players[info.turn].playerHand.getPosition().y + players[info.turn].playerHand.getSize().y * windowScale.x});
@@ -74,15 +71,15 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 		if(info.turn != you){
 			sent = false;
 		}
-		displayInteraction(anEvent);
+		displayInteraction(event);
 		draw(window);
 	}
 }
 
 void Poker::PokerGame::initDeck(RenderWindow& window) {
     Vector2f deckPos = {
-        window.getSize().x - deck[0].getGlobalBounds().getSize().x,
-        window.getSize().y - deck[0].getGlobalBounds().getSize().y
+        window.getSize().x - deck[0].getGlobalBounds().size.x,
+        window.getSize().y - deck[0].getGlobalBounds().size.y
     };
     deckPos = (1.f / 2.f) * deckPos;
     deck.setPosition(deckPos);
@@ -128,14 +125,14 @@ void Poker::PokerGame::initPlayers(RenderWindow& window) {
     for(int i = 0; i < 4; i++){
         players[i].t_betMoney.setFont(display.font);
         players[i].t_betMoney.setCharacterSize(20.f * windowScale.x);
-        players[i].t_betMoney.setPosition(players[i].playerHand.getPosition().x, players[i].playerHand.getPosition().y - 20 * windowScale.y);
+        players[i].t_betMoney.setPosition({players[i].playerHand.getPosition().x, players[i].playerHand.getPosition().y - 20 * windowScale.y});
 
         players[i].t_betMoney.setFillColor(Color::Cyan);
         players[i].t_betMoney.setString(std::to_string(players[i].betMoney));
 
 		players[i].t_betAmount.setFont(display.font);
 		players[i].t_betAmount.setCharacterSize(20.f * windowScale.x);
-		players[i].t_betAmount.setPosition(players[i].playerHand.getPosition().x, players[i].playerHand.getPosition().y - 40 * windowScale.y);
+		players[i].t_betAmount.setPosition({players[i].playerHand.getPosition().x, players[i].playerHand.getPosition().y - 40 * windowScale.y});
 		players[i].t_betAmount.setFillColor(Color::Cyan);
 		players[i].t_betAmount.setString(std::to_string(players[i].betAmount));
     }
@@ -167,7 +164,10 @@ void Poker::PokerGame::initGameState(RenderWindow& window) {
 }
 
 void Poker::PokerGame::initUI(RenderWindow& window) {
-    display.font.loadFromFile(Game::FontPaths::blackLivesFont);
+
+    if(!display.font.openFromFile(Game::FontPaths::blackLivesFont)){
+		throw FileError(Game::FontPaths::blackLivesFont);
+	};
     display.foldPressed = false;
     
     display.inputRect.setOutlineColor(Color::Blue);
@@ -184,9 +184,9 @@ void Poker::PokerGame::initUI(RenderWindow& window) {
     display.callBox.setSize(Vector2f(100.f, 50.f) * windowScale);
 	display.callBox.setOutlineColor(Color::Blue);
 	display.callBox.setOutlineThickness(5.f * windowScale.y);
-	display.callBox.setPosition(
+	display.callBox.setPosition({
 		window.getSize().x - display.callBox.getSize().x - 50.f * windowScale.x,
-		window.getSize().y - display.callBox.getSize().y - 50.f * windowScale.y
+		window.getSize().y - display.callBox.getSize().y - 50.f * windowScale.y}
 	);
 	display.callText.setFont(display.font);
 	display.callText.setCharacterSize(30.f * windowScale.x);
@@ -197,8 +197,8 @@ void Poker::PokerGame::initUI(RenderWindow& window) {
     display.foldBox.setSize(display.callBox.getSize());
 	display.foldBox.setOutlineColor(Color::Red);
 	display.foldBox.setOutlineThickness(5.f * windowScale.y);
-	display.foldBox.setPosition(display.callBox.getPosition().x,
-     display.callBox.getPosition().y - display.callBox.getSize().y - 30.f * windowScale.y);
+	display.foldBox.setPosition({display.callBox.getPosition().x,
+     display.callBox.getPosition().y - display.callBox.getSize().y - 30.f * windowScale.y});
     
     display.foldText.setFont(display.font);
 	display.foldText.setCharacterSize(30.f * windowScale.x);
@@ -209,13 +209,13 @@ void Poker::PokerGame::initUI(RenderWindow& window) {
     display.t_callAmount.setFont(display.font);
 	display.t_callAmount.setCharacterSize(20.f * windowScale.x);
 	display.t_callAmount.setFillColor(Color::White);
-	display.t_callAmount.setPosition(deck.getPositon().x, deck.getPositon().y - 50.f * windowScale.y);
+	display.t_callAmount.setPosition({deck.getPositon().x, deck.getPositon().y - 50.f * windowScale.y});
 	display.t_callAmount.setString(std::to_string(info.callAmount));
 
 	display.t_betPool.setFont(display.font);
 	display.t_betPool.setCharacterSize(20.f * windowScale.x);
 	display.t_betPool.setFillColor(Color::Green);
-	display.t_betPool.setPosition(deck.getPositon().x, deck.getPositon().y - 70.f * windowScale.y);
+	display.t_betPool.setPosition({deck.getPositon().x, deck.getPositon().y - 70.f * windowScale.y});
 	display.t_betPool.setString(std::to_string(info.callAmount));
 }
 
@@ -225,7 +225,7 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 		info.turn++;
 	}
 	else if (players[info.turn].playerHand.getIsPlayer()) {
-		if ((Keyboard::isKeyPressed(Keyboard::Enter)) && info.interactionClock.getElapsedTime() > info.interactionTime) {
+		if ((Keyboard::isKeyPressed(Keyboard::Key::Enter)) && info.interactionClock.getElapsedTime() > info.interactionTime) {
 			info.interactionClock.restart();
 			if (display.foldPressed) {
 				pack.folded = true;
@@ -379,7 +379,7 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 		info.turn++;
 	}
 	else if (players[info.turn].playerHand.getIsPlayer()) {
-		if (Keyboard::isKeyPressed(Keyboard::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
+		if (Keyboard::isKeyPressed(Keyboard::Key::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
 			std::vector<int> discarded = hand.getDiscarded();
 			pack.discardNum = discarded.size();
 			for(int i = 0; i < pack.discardNum; i++){
@@ -543,7 +543,7 @@ void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 		info.end = true;
 		display.foldPressed = false;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime && you == 0) {
+	if (Keyboard::isKeyPressed(Keyboard::Key::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime && you == 0) {
 		info.interactionClock.restart();
 		packet3 pack;
 
@@ -629,19 +629,19 @@ void Poker::PokerGame::phaseChange() {
 	}
 }
 
-void Poker::PokerGame::displayInteraction(Event& anEvent) {
+void Poker::PokerGame::displayInteraction(std::optional<Event>& event) {
 	auto& hand = players[info.turn].playerHand;
 
 	if (true) {
 		if ((info.phase == 0 || info.phase == 2)) {
 
-			if (Mouse::isButtonPressed(Mouse::Left) &&
+			if (Mouse::isButtonPressed(Mouse::Button::Left) &&
 				info.interactionClock.getElapsedTime() > info.interactionTime) {
 				info.interactionClock.restart();
 				
 				display.foldPressed = false;
 				display.foldBox.setFillColor(Color::White);
-				if (mouseCircle.getGlobalBounds().intersects(display.callBox.getGlobalBounds())) {
+				if (mouseCircle.getGlobalBounds().findIntersection(display.callBox.getGlobalBounds()).has_value()) {
 					if (display.callText.getString() == display.callString) {
 						players[info.turn].isRaising = true;
 						display.callText.setString(display.raiseString);
@@ -651,13 +651,13 @@ void Poker::PokerGame::displayInteraction(Event& anEvent) {
 						display.callText.setString(display.callString);
 					}
 				}
-				else if (mouseCircle.getGlobalBounds().intersects(display.foldBox.getGlobalBounds()) &&
+				else if (mouseCircle.getGlobalBounds().findIntersection(display.foldBox.getGlobalBounds()).has_value() &&
 						 !players[info.turn].isRaising) {
 					
 					display.foldPressed = true;
 					display.foldBox.setFillColor(Color(227, 51, 11));
 				}
-				if (mouseCircle.getGlobalBounds().intersects(display.inputRect.getGlobalBounds())) {
+				if (mouseCircle.getGlobalBounds().findIntersection(display.inputRect.getGlobalBounds()).has_value()) {
 					display.isWriting = true;
 				}
 				else {
@@ -667,23 +667,24 @@ void Poker::PokerGame::displayInteraction(Event& anEvent) {
 			if (display.isWriting && players[info.turn].isRaising) {
 				std::string validNums = "1234567890";
 
-				if (anEvent.type == Event::TextEntered && 
-					info.interactionClock.getElapsedTime() > info.interactionTime) {
-					info.interactionClock.restart();
-					if (anEvent.text.unicode == '\b') {
-						if (display.inputText.getString() != "") {
-							display.input.erase(display.input.size() - 1);
+				if (const auto* key = event->getIf<Event::TextEntered>()){
+						if(info.interactionClock.getElapsedTime() > info.interactionTime){
+						info.interactionClock.restart();
+						if (key->unicode == '\b') {
+							if (display.inputText.getString() != "") {
+								display.input.erase(display.input.size() - 1);
+							}
 						}
-					}
-					else {
-						display.input += anEvent.text.unicode;
+						else {
+							display.input += key->unicode;
 
-						if (display.input.find_first_not_of(validNums) != std::string::npos) {
-							display.input.erase(display.input.size() - 1);
+							if (display.input.find_first_not_of(validNums) != std::string::npos) {
+								display.input.erase(display.input.size() - 1);
+							}
 						}
 					}
+					display.inputText.setString(display.input);
 				}
-				display.inputText.setString(display.input);
 			}
 			else {
 				display.input = "";

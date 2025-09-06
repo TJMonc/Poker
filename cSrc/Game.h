@@ -52,9 +52,9 @@ namespace Poker {
 			int betAmount;
 			bool bust;
 
-			Text t_handType;
-			Text t_betMoney;
-			Text t_betAmount;
+			Text t_handType = Text(UIStruct::font);
+			Text t_betMoney = Text(UIStruct::font);
+			Text t_betAmount = Text(UIStruct::font);
 		};
 		struct GameState{
 			int turn;
@@ -69,24 +69,24 @@ namespace Poker {
 		};
 		
 		struct UIStruct{
-			Font font;
+			static Font font;
 
-			Text callText;
+			Text callText = Text(font);
 			RectangleShape callBox;
 			const std::string callString = "Call";
 			const std::string raiseString = "Raise";
 
-			Text foldText;
+			Text foldText = Text(font);
 			RectangleShape foldBox;
 
 			RectangleShape inputRect;
 			bool foldPressed;
 			bool isWriting;
-			Text inputText;
+			Text inputText = Text(font);
 			std::string input;
 
-			Text t_callAmount;
-			Text t_betPool;
+			Text t_callAmount = Text(font);
+			Text t_betPool = Text(font);
 
 
 		};
@@ -119,7 +119,7 @@ namespace Poker {
 			void discardPhase(SOCKET* acceptSock);
 			void endPhase(SOCKET* acceptSock);
 			void phaseChange();
-			void displayInteraction(Event& anEvent);
+			void displayInteraction(std::optional<Event>& event);
 			void draw(RenderWindow& window);
 			int recvThread(SOCKET *acceptSock, int *threadActive);
 

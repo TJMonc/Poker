@@ -2,7 +2,7 @@
 Windows Users
 ____________________________________________________________________________________________
 - You need CMake to compile this program: https://cmake.org/download/
-- You also need a C++ compiler (MSVCRT): https://www.msys2.org/ https://packages.msys2.org/packages/mingw-w64-x86_64-gcc
+- You also need a C++ compiler: https://www.msys2.org/ https://packages.msys2.org/packages/mingw-w64-x86_64-gcc
 
 - You may need to edit your environment variables:
     - Go to control panel
@@ -14,5 +14,10 @@ ________________________________________________________________________________
 - To check whether Cmake and the compiler was installed correctly run "cmake --version", "g++ --version", and "mingw32-make --version" in your terminal.
 
 - If you've successfully installed everything, run "run.bat" and wait for the project to compile.
+
+Linux Users
+___________________________________________________________________________________________________________
+
+- The linux version of this program isn't finished.
 
 

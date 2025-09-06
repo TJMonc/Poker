@@ -46,10 +46,10 @@ void Poker::Hand::setWindow(RenderWindow* aWindow) {
 	this->setPosition({ 0,0 });
 	Vector2f handSize;
 	float xFactor = windowScale.x * 10.f;
-	size = { 0, hand[0]->getGlobalBounds().getSize().y };
+	size = { 0, hand[0]->getGlobalBounds().size.y };
 	for (size_t i = 0; i < 5; i++) {
-		Vector2f trueChoice = Vector2f(hand[i]->getGlobalBounds().getSize().x - xFactor, hand[i]->getGlobalBounds().getSize().y);
-		Vector2f falseChoice = Vector2f(relativePos - xFactor, hand[i]->getGlobalBounds().getSize().y);
+		Vector2f trueChoice = Vector2f(hand[i]->getGlobalBounds().size.x - xFactor, hand[i]->getGlobalBounds().size.y);
+		Vector2f falseChoice = Vector2f(relativePos - xFactor, hand[i]->getGlobalBounds().size.y);
 
 		handSize = (i == 5 - 1) ? trueChoice : falseChoice;
 		this->visibleHand[i].setSize(handSize);
@@ -71,14 +71,14 @@ void Poker::Hand::updateMouse(CircleShape& mPointer) {
 	}
 	else if (isPlayer) {
 		for (size_t i = 0; i < 5; i++) {
-			if (visibleHand[i].getGlobalBounds().intersects(mPointer.getGlobalBounds())) {
+			if (visibleHand[i].getGlobalBounds().findIntersection(mPointer.getGlobalBounds()).has_value()) {
 				hand[i]->getSprite().setColor(Color::Green);
 				if (interactionClock.getElapsedTime() > interactionTime) {
-					if (Mouse::isButtonPressed(Mouse::Left) && isDiscarded(i)) {
+					if (Mouse::isButtonPressed(Mouse::Button::Left) && isDiscarded(i)) {
 						unDiscard(i);
 						hand[i]->getSprite().setColor(Color::White);
 					}
-					else if (Mouse::isButtonPressed(Mouse::Left)) {
+					else if (Mouse::isButtonPressed(Mouse::Button::Left)) {
 						discarded.push_back(i);
 					}
 					interactionClock.restart();

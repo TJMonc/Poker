@@ -5,6 +5,7 @@
 namespace Poker {
 	class PokerGame {
 	private:
+	
 		struct PlayerStruct {
 			Hand playerHand;
 			bool isRaising;
@@ -12,9 +13,10 @@ namespace Poker {
 			int betAmount;
 			bool bust;
 
-			Text t_handType;
-			Text t_betMoney;
-			Text t_betAmount;
+			Text t_handType = Text(UIStruct::font);
+			Text t_betMoney = Text(UIStruct::font);
+			Text t_betAmount = Text(UIStruct::font);
+
 		};
 		struct GameState{
 			int turn;
@@ -29,24 +31,24 @@ namespace Poker {
 		};
 		
 		struct UIStruct{
-			Font font;
-
-			Text callText;
+			static Font font;
+			Text callText = Text(font);
 			RectangleShape callBox;
 			const std::string callString = "Call";
 			const std::string raiseString = "Raise";
 
-			Text foldText;
+			Text foldText = Text(font);
 			RectangleShape foldBox;
 
 			RectangleShape inputRect;
 			bool foldPressed;
 			bool isWriting;
-			Text inputText;
+			Text inputText = Text(font);
 			std::string input;
 
-			Text t_callAmount;
-			Text t_betPool;
+			Text t_callAmount = Text(font);
+			Text t_betPool = Text(font);
+			
 		};
 
 
@@ -70,11 +72,11 @@ namespace Poker {
 			void discardPhase();
 			void endPhase();
 			void phaseChange();
-			void displayInteraction(Event& anEvent);
+			void displayInteraction(std::optional<Event>& event);
 			void draw();
 		public:
 			int log = 0;
-			PokerGame(): window({VideoMode(), "Poker", Style::Fullscreen}){
+			PokerGame(): window({VideoMode(), "Poker", State::Fullscreen}){
 				windowScale = {Vector2f(window.getSize()) / Vector2f RES_768};
 				deck.setWindow(&window);
 				mouseCircle.setRadius(5.f);

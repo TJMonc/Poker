@@ -13,7 +13,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         game->update();
     }
     catch(std::exception &e){
-        sf::Text errorMsg;
+        sf::Font font;
+        sf::Text errorMsg(font);
+
+        Game::loadFont(errorMsg, font, Game::FontPaths::blackLivesFont);
         std::string eString = e.what();
         window->clear();
         errorMsg.setCharacterSize(100);

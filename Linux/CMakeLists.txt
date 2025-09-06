@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 4)
 add_definitions(-std=c++20)
 set(CMAKE_CXX_STANDARD 20)
 project(Poker)
