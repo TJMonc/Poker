@@ -18,7 +18,7 @@ Poker::Deck::Deck(): deckSprite(deckText) {
 			counter++;
 		}
 	}
-	deckText = Texture("CardBacks/CardDeck.png");
+	Game::loadSprite(deckText, "CardBacks/CardDeck.png");
 	deckSprite.setTexture(deckText);
 }
 

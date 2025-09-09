@@ -3,8 +3,8 @@ cmake --build build
 
 
 cd bin
-start server.exe
-client.exe
+
+start Poker.exe
 
 
 

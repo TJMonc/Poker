@@ -48,7 +48,7 @@ target_link_directories(Poker PRIVATE ${LINK_DIRECTORIES})
 
 #Build Client
 file(GLOB SOURCES "cSrc/*.cpp")
-add_executable(client ${SOURCES})
+add_executable(client WIN32 ${SOURCES})
 target_compile_options(client PRIVATE ${COMPILE_OPTIONS})
 target_include_directories(client PRIVATE ${INCLUDE_DIRECTORIES})
 target_link_directories(client PRIVATE ${LINK_DIRECTORIES})
