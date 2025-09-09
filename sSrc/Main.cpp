@@ -6,7 +6,7 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
     SOCKADDR_IN clientInfo = {0};
     SOCKADDR_IN allInfo[4];
     int phase = 0;
-    int addrsize = sizeof(clientInfo);
+    unsigned int addrsize = sizeof(clientInfo);
 
     std::cout << std::format("Player {} starting Deck:\n", index + 1) << *hand << "\n\n";
     getpeername(*acceptSock, reinterpret_cast<SOCKADDR*>(&clientInfo), &addrsize);
@@ -133,9 +133,19 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
     }
 
     std::cout << std::format("{}:{} disconnected\n\n", inet_ntoa(clientInfo.sin_addr), clientInfo.sin_port);
-    std::cout << "Socket Error: " << WSAGetLastError() << std::endl;
 
+    #ifdef _WIN32
+    std::cout << "Socket Error: " << WSAGetLastError() << std::endl;
     closesocket(*acceptSock);
+
+    #endif
+
+    #ifdef __unix__
+    std::cout << "Socket Error: " << errno << std::endl;
+    close(*acceptSock);
+
+    #endif
+
     delete acceptSock;
     acceptSock = nullptr;
     allSocks[index] = nullptr;
@@ -160,8 +170,16 @@ int initThread(SOCKET* acceptSock, sockaddr_in* info, Time* initTime, Clock* ini
 
 int main(){
     srand(time(NULL));
+    #ifdef _WIN32
+
     WSAData data;
     WORD version = MAKEWORD(2,2);
+    int wsaerr = WSAStartup(version, &data);
+
+    #endif
+
+
+
     Deck* deck = new Deck;
     Hand* hand = new Hand[4];
 
@@ -174,9 +192,9 @@ int main(){
             initPacket.cards[i][j].second = hand[i][j].getSuite();
         }
     }
-    int wsaerr = WSAStartup(version, &data);
     const int MAX_CLIENTS = 4;
     const unsigned short PORT = 1234;
+    #ifdef _WIN32
     
     if(wsaerr != 0){
         std::cout << "ERROR: Winsock dll not found\n";
@@ -187,13 +205,28 @@ int main(){
         std::cout << "Winsock dll found.\n";
         std::cout << "System status: " << data.szSystemStatus << "\n";
     }
+    #endif
+
 
     SOCKET serverSock = INVALID_SOCKET;
     serverSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     if (serverSock == INVALID_SOCKET) {
+        #ifdef _WIN32
+
         std::cout << "Socket Error: " << WSAGetLastError() << std::endl;
+
         WSACleanup();
+        #endif
+
+        #ifdef __unix__
+            std::cout << "Socket Error: " << errno << std::endl;
+            exit(-1);
+
+        #endif
+
+
+
     }
     else {
         std::cout << "Server Socket initialized\n";
@@ -207,10 +240,19 @@ int main(){
 
 
     if(bind(serverSock, reinterpret_cast<SOCKADDR*>(&service), sizeof(service)) == SOCKET_ERROR){
+        #ifdef _WIN32
+
         std::cout << "Server bind failed: " << WSAGetLastError() << "\n";
         std::cin.get();
 
         WSACleanup();
+
+        #endif
+
+        #ifdef __unix__
+        std::cout << "Server bind failed: " << errno << "\n";
+
+        #endif
         return -1;
     }
     else{
@@ -219,8 +261,16 @@ int main(){
     }
 
     if (listen(serverSock, MAX_CLIENTS) == SOCKET_ERROR) {
+    #ifdef _WIN32
+
         std::cout << "Server Error: " << WSAGetLastError();
         WSACleanup();
+    #endif
+        
+    #ifdef __unix__
+        std::cout << "Server Error: " << errno << std::endl;
+
+    #endif
         return -1;
     }
     else {
@@ -230,7 +280,7 @@ int main(){
     SOCKADDR_IN clientInfo = {0};
     SOCKADDR_IN checkInfo = {0};
 
-    int addrsize = sizeof(clientInfo);
+    unsigned int addrsize = sizeof(clientInfo);
     std::thread *client = new std::thread[MAX_CLIENTS];
     SOCKET *allSocks[MAX_CLIENTS] = {nullptr, nullptr, nullptr, nullptr};
     SOCKADDR_IN allInfo[MAX_CLIENTS];
@@ -265,8 +315,15 @@ int main(){
         }
         allInfo[index] = clientInfo;
         if (*acceptSock == INVALID_SOCKET) {
+            #ifdef _WIN32
             std::cout << "Socket Time Out: " << WSAGetLastError() << "\n";
             std::cin.get();
+            #endif
+
+            #ifdef __unix__
+            std::cout << "Socket Time Out: " << errno << "\n";
+            std::cin.get(); 
+            #endif
             break;
         }
         else {
@@ -310,5 +367,9 @@ int main(){
     delete[] client;
     delete[] init;
     std::cout << "ddd";
+
+    #ifdef _WIN32
     WSACleanup();
+    #endif
+
 }

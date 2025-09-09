@@ -1,10 +1,17 @@
 #include "Game.h"
 #include <filesystem>
 
-/*The new plan is to use the server to store the "real" Deck / playerHands (AND ONLY THE DECK AND PLAYERHANDS)*/
+#ifdef __unix__
+int closesocket(int socket){
+    return close(socket);
+}
+int main(int argc, char** argv){
+
+#endif
+
+#ifdef _WIN32
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     PSTR lpCmdLine, int nCmdShow){
-    srand(time(NULL));
     WSADATA wsaData;
     int wsaerr;
     WORD version = MAKEWORD(2,2);
@@ -16,14 +23,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         throw std::runtime_error("Winsock not found...");
         return -1;
     }
+#endif
+
+    srand(time(NULL));
+
 
     //Socket Initialization
     SOCKET clientSock = INVALID_SOCKET;
     clientSock = socket(AF_INET, SOCK_STREAM, 0);
 
     if(clientSock == INVALID_SOCKET){
+        #ifdef _WIN32
         std::string errmsg = "Error at socket " + WSAGetLastError();
         WSACleanup();
+        #endif
+        #ifdef __unix__
+        std::string errmsg = "Error at socket " + errno;
+        #endif
         throw std::runtime_error(errmsg);
     }
 
@@ -35,9 +51,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     clientServ.sin_addr.s_addr = inet_addr("127.0.0.1");
     clientServ.sin_port = htons(port);
     if(connect(clientSock, reinterpret_cast<SOCKADDR*>(&clientServ), sizeof(clientServ)) == SOCKET_ERROR){
+        #ifdef _WIN32
+
         std::string errmsg = "Client failed to connect: " + WSAGetLastError();
-        throw std::runtime_error(errmsg);
         WSACleanup();
+
+        #endif
+
+        #ifdef __unix__
+        std::string errmsg = "Client failed to connect: " + std::to_string(errno);
+
+        #endif
+
+        throw std::runtime_error(errmsg);
         return -1;
     }
     RenderWindow window(VideoMode(), "Multiplayer Poker", State::Fullscreen);
@@ -64,18 +90,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
         window.draw(errorMsg);
         window.display();
+        #ifdef _WIN32
         std::cout << WSAGetLastError();
+        #endif
+
+        #ifdef __unix__
+        std::cout << errno;
+        #endif
 
         std::cin.get();
         delete game;
         closesocket(clientSock);
-        WSACleanup();
 
+        #ifdef _WIN32
+        WSACleanup();
+        #endif
         std::exit(EXIT_FAILURE);
     }
 
     delete game;
     closesocket(clientSock);
+    #ifdef _WIN32
     WSACleanup();
+    #endif
     return 0;
 }

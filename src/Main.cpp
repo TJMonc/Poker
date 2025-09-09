@@ -1,9 +1,15 @@
-#include "Windows.h"
 #include "Game.h"
 #include <format>
+#ifdef __unix__
+int main(int argc, char** argv){
 
+#endif
+
+#ifdef _WIN32
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     PSTR lpCmdLine, int nCmdShow){
+
+#endif
     srand(time(NULL));
     Poker::PokerGame* game = new Poker::PokerGame;
     RenderWindow* window = game->getWindow();

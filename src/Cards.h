@@ -1,6 +1,10 @@
 #pragma once
 #include "Misc.h"
 
+#ifdef _WIN32
+#include "Windows.h"
+#endif
+
 using namespace sf;
 namespace Poker {
 	struct CardNumbers {

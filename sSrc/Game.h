@@ -2,8 +2,29 @@
 #define POKERGAME_H
 #include "Hand.h"
 #include <format>
+
+#ifdef _WIN32
 #include <WinSock2.h>
 #include <WS2tcpip.h>
+#endif
+
+#ifdef __unix__
+#include <sys/socket.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <errno.h>
+#include <sys/stat.h>
+#define SOCKET_ERROR -1
+#define INVALID_SOCKET -1
+
+
+typedef int SOCKET;
+typedef sockaddr_in SOCKADDR_IN;
+typedef sockaddr SOCKADDR;
+#endif
+
 namespace Poker {
 	class PokerGame {
 	public:

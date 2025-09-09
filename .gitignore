@@ -7,6 +7,10 @@
 /Build
 build/
 bin/*.exe
-bin/*.out
 bin/*.dll
+bin/*.so*
 deps
+
+bin/server
+bin/Poker
+bin/client

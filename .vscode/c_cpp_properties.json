@@ -4,10 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:\\SFML\\3.0.0\\MinGW (64 bit)\\include",
-                "C:/Users/terra/Downloads/Projects/Libraries/MinGW/MiscLib/include",
-                "/home/terrance/SFML/SFML-2.6.2/include",
-                "/home/terrance/Projects/Libraries/MiscLib/include"
+                "${workspaceFolder}/deps/misclib-src/include",
+                "${workspaceFolder}/deps/sfml-src/include"
             ],
             "defines": [
                 "_DEBUG",

@@ -25,7 +25,7 @@ void Poker::PokerGame::init(RenderWindow& window, SOCKET* acceptSock, sockaddr_i
 
 void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 	sockaddr_in addrInfo = {0};
-	int addrSize = sizeof(addrInfo);
+	unsigned int addrSize = sizeof(addrInfo);
 	bool sent = false;
 	getpeername(*clientSock, reinterpret_cast<SOCKADDR*>(&addrInfo), &addrSize);
 	while(window.isOpen()){
@@ -794,7 +794,15 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 		}
 		else{
+			#ifdef _WIN32
 			throw std::runtime_error(std::to_string(WSAGetLastError()));
+
+			#else
+			throw std::runtime_error(std::to_string(errno));
+
+			#endif
+
+		
 		}
 
 	};
