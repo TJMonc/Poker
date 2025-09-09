@@ -20,7 +20,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     MiscLib
     GIT_REPOSITORY https://github.com/TJMonc/MiscLib.git
-    GIT_TAG 09-06-2025
+    GIT_TAG 09-09-2025
 )
 FetchContent_MakeAvailable(SFML)
 FetchContent_MakeAvailable(MiscLib)
