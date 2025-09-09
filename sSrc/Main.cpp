@@ -6,7 +6,17 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
     SOCKADDR_IN clientInfo = {0};
     SOCKADDR_IN allInfo[4];
     int phase = 0;
+
+    #ifdef _WIN32
+    int addrsize = sizeof(clientInfo);
+
+    #endif
+
+    
+    #ifdef __unix__
     unsigned int addrsize = sizeof(clientInfo);
+
+    #endif
 
     std::cout << std::format("Player {} starting Deck:\n", index + 1) << *hand << "\n\n";
     getpeername(*acceptSock, reinterpret_cast<SOCKADDR*>(&clientInfo), &addrsize);
@@ -280,7 +290,16 @@ int main(){
     SOCKADDR_IN clientInfo = {0};
     SOCKADDR_IN checkInfo = {0};
 
+    #ifdef _WIN32
+    int addrsize = sizeof(clientInfo);
+
+    #endif
+
+    
+    #ifdef __unix__
     unsigned int addrsize = sizeof(clientInfo);
+
+    #endif
     std::thread *client = new std::thread[MAX_CLIENTS];
     SOCKET *allSocks[MAX_CLIENTS] = {nullptr, nullptr, nullptr, nullptr};
     SOCKADDR_IN allInfo[MAX_CLIENTS];

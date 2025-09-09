@@ -25,7 +25,16 @@ void Poker::PokerGame::init(RenderWindow& window, SOCKET* acceptSock, sockaddr_i
 
 void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 	sockaddr_in addrInfo = {0};
-	unsigned int addrSize = sizeof(addrInfo);
+    #ifdef _WIN32
+    int addrSize = sizeof(addrInfo);
+
+    #endif
+
+    
+    #ifdef __unix__
+    unsigned int addrSize = sizeof(addrInfo);
+
+    #endif
 	bool sent = false;
 	getpeername(*clientSock, reinterpret_cast<SOCKADDR*>(&addrInfo), &addrSize);
 	while(window.isOpen()){

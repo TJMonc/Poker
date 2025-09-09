@@ -32,12 +32,12 @@ project(Poker)
 set(SFML_DIR ${FETCHCONTENT_BASE_DIR})
 set(MISC_DIR ${FETCHCONTENT_BASE_DIR})
 set(INCLUDE_DIRECTORIES ${SFML_DIR}/sfml-src/include ${MISC_DIR}/misclib-src/include)
-set(LINK_DIRECTORIES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+set(LINK_DIRECTORIES ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 set(COMPILE_OPTIONS -std=c++20 -O3 -Werror -Wno-trigraphs)
 
 #Build Single Player
 if(WIN32)
-    set(LINKED_LIBS ws2_32 libMisc.dll.a libsfml-graphics.a libsfml-window.a libsfml-audio.a libsfml-main.a libsfml-network.a libsfml-system.a)
+    set(LINKED_LIBS ws2_32 libMisc.dll.a libsfml-graphics.a libsfml-window.a libsfml-audio.a libsfml-network.a libsfml-system.a)
 
     file(GLOB SOURCES "src/*.cpp")
     add_executable(Poker WIN32 ${SOURCES})
