@@ -12,14 +12,22 @@ void Poker::PokerGame::init() {
 void Poker::PokerGame::update() {
 	
 	while(window.isOpen()){
+
 		std::optional<Event> event;
 		while(event = window.pollEvent()){
 			if(event->is<Event::Closed>()){
 				window.close();
 			}
-			if(Keyboard::isKeyPressed(Keyboard::Key::Escape)){
-				window.close();
+			if(const auto* key = event->getIf<Event::KeyPressed>()){
+				if(key->scancode == Keyboard::Scancode::Enter){
+					info.enterPressed = true;
+				}
 			}
+			if(event->is<Event::Resized>()){
+				windowScale = {Vector2f(window.getSize()) / Vector2f RES_768};
+			}
+
+			handleBetInput(event.value());
 		}
 		display.t_callAmount.setString(std::to_string(info.callAmount));
 		display.t_betPool.setString(std::to_string(info.betPool));
@@ -46,7 +54,7 @@ void Poker::PokerGame::update() {
 			
 		}
 		phaseChange();
-		displayInteraction(event);
+		displayInteraction();
 		draw();
 	}
 }
@@ -191,7 +199,8 @@ void Poker::PokerGame::betPhase() {
 		info.turn++;
 	}
 	else if (players[info.turn].playerHand.getIsPlayer()) {
-		if ((Keyboard::isKeyPressed(Keyboard::Key::Enter)) && info.interactionClock.getElapsedTime() > info.interactionTime) {
+		if (info.enterPressed && info.interactionClock.getElapsedTime() > info.interactionTime) {
+			info.enterPressed = false;
 			info.interactionClock.restart();
 			if (display.foldPressed) {
 				players[info.turn].playerHand.setFolded(true);
@@ -227,6 +236,7 @@ void Poker::PokerGame::betPhase() {
 			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 			players[info.turn].t_betAmount.setString(std::to_string(players[info.turn].betAmount));
 			info.turn++;
+
 		}
 	}
 	else {
@@ -273,7 +283,8 @@ void Poker::PokerGame::discardPhase(){
 		info.turn++;
 	}
 	else if (players[info.turn].playerHand.getIsPlayer()) {
-		if (Keyboard::isKeyPressed(Keyboard::Key::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
+		if (info.enterPressed && info.interactionClock.getElapsedTime() > info.interactionTime) {
+			info.enterPressed = false;
 			info.interactionClock.restart();
 			hand.discardCards();
 			hand.setHandType();
@@ -376,7 +387,8 @@ void Poker::PokerGame::endPhase() {
 		info.end = true;
 		display.foldPressed = false;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Key::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
+	if (info.enterPressed && info.interactionClock.getElapsedTime() > info.interactionTime) {
+		info.enterPressed = false;
 		info.interactionClock.restart();
 		deck.reset();
 
@@ -431,7 +443,7 @@ void Poker::PokerGame::phaseChange() {
 	}
 }
 
-void Poker::PokerGame::displayInteraction(std::optional<Event>& event) {
+void Poker::PokerGame::displayInteraction() {
 	auto& hand = players[info.turn].playerHand;
 
 	if (hand.getIsPlayer()) {
@@ -445,6 +457,7 @@ void Poker::PokerGame::displayInteraction(std::optional<Event>& event) {
 					if (display.callText.getString() == display.callString) {
 						players[info.turn].isRaising = true;
 						display.callText.setString(display.raiseString);
+						
 					}
 					else {
 						players[info.turn].isRaising = false;
@@ -463,31 +476,7 @@ void Poker::PokerGame::displayInteraction(std::optional<Event>& event) {
 					display.isWriting = false;
 				}
 			}
-			if (display.isWriting && players[info.turn].isRaising){
-				std::string validNums = "1234567890";
-				if (const auto *key = event->getIf<Event::TextEntered>()){
-					if (info.interactionClock.getElapsedTime() > info.interactionTime){
-						info.interactionClock.restart();
-						if (key->unicode == '\b'){
-							if (display.inputText.getString() != ""){
-								display.input.erase(display.input.size() - 1);
-							}
-						}
-						else{
-							display.input += key->unicode;
 
-							if (display.input.find_first_of(validNums) == std::string::npos){
-								display.input.erase(display.input.size() - 1);
-							}
-						}
-					}
-					display.inputText.setString(display.input);
-				}
-			}
-			else {
-				display.input = "";
-				display.inputText.setString(display.input);
-			}
 		}
 	}
 }

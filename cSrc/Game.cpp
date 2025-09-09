@@ -276,7 +276,8 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 			send(*acceptSock, (char*)&info.phase, sizeof(int), 0);
 
 			send(*acceptSock, (char*)&pack, sizeof(packet1), 0);
-			recv(*acceptSock, (char*)&pack, sizeof(packet1), 0);
+			int count = recv(*acceptSock, (char*)&pack, sizeof(packet1), 0);
+			
 
 
 			info.turn++;
@@ -334,6 +335,7 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 
 		send(*acceptSock, (char*)&pack, sizeof(packet1), 0);
 		recv(*acceptSock, (char *)&pack, sizeof(packet1), 0);
+		
 		info.turn++;
 	}
 	else{
@@ -435,10 +437,11 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 		}
 		recieve.join();
 		threadProgress = 0;
-		info.turn++;
 
 		hand.setHandType();
 		players[info.turn].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
+		info.turn++;
+
 
 	}
 	else{
@@ -608,6 +611,8 @@ void Poker::PokerGame::phaseChange() {
 	if (info.turn > 3) {
 		info.turn = 0;
 		info.phase++;
+		
+
 		bool allCall;
 		for (size_t i = 0; i < 4; i++) {
 			if (players[i].playerHand.getFolded()) {
@@ -734,6 +739,7 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 		int addrSize = sizeof(serverInfo);
 		int bytes;
 		if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR && bytes == sizeof(packet1)) {
+			
 			if(pack.folded){
 				players[info.turn].playerHand.setFolded(true);
 			}
@@ -784,12 +790,17 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 	case 1:{
 		packet2 pack2;
 		int recvCount;
-		if((recvCount = recv(*acceptSock, (char *)&pack2, sizeof(packet2), 0) == sizeof(packet2)) != SOCKET_ERROR){
+		if((recvCount = recv(*acceptSock, (char *)&pack2, sizeof(packet2), 0)) == sizeof(packet2) != SOCKET_ERROR){
+			
+
 			for (int i = 0; i < 5; i++) {
 				players[pack2.index].playerHand.pat(i) = &deck.at(std::format("{}{}",
 														Suits::suit.at(pack2.cards[i].second), pack2.cards[i].first));
 			}
 			players[pack2.index].playerHand.sortCards();
+		}
+		else{
+			
 		}
 		for(size_t i = 0; i < 4; i++){
 			if (!players[i].playerHand.getIsPlayer()){

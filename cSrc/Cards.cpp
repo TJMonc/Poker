@@ -7,7 +7,7 @@ const std::unordered_map<int, std::string> Poker::Suits::suit = { {Spades, "spad
 
 
 Poker::Card::Card(const int aNumber, const int aSuit)
-: number(CardNumbers::Number(aNumber)), suit(Suits::Suit(aSuit)), inHand(false), isTurned(false){
+: number(CardNumbers::Number(aNumber)), suit(Suits::Suit(aSuit)), inHand(false), isTurned(false), cardSprite(cardText){
 	cardText = Texture();
 	this->changeCard(number, suit);
 	texturePath = "";
@@ -114,7 +114,7 @@ void Poker::Card::changeCard(const int aNumber, const int aSuit) {
 	this->suit = Suits::Suit(aSuit);
 
 	this->texturePath = getCardPath(number, suit);
-	Game::loadSprite(cardText, texturePath);
+	cardText = Texture(texturePath);
 	this->ID = Suits::suit.at(aSuit) + std::to_string(aNumber);
 	
 	cardSprite.setTexture(cardText);

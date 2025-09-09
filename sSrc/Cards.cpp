@@ -113,7 +113,7 @@ void Poker::Card::changeCard(const int aNumber, const int aSuit) {
 	this->suit = Suits::Suit(aSuit);
 
 	this->texturePath = getCardPath(number, suit);
-	Game::loadSprite(cardText, texturePath);
+	cardText = Texture(texturePath);
 	this->ID = Suits::suit.at(aSuit) + std::to_string(aNumber);
 	
 	cardSprite.setTexture(cardText);

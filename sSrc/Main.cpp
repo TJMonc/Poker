@@ -39,6 +39,11 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
                 sendto(*(allSocks[i]), (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&(allInfo[i])), sizeof(allInfo[i]));
             }
         }
+        else{
+            std::cout << "No\n";
+            std::cout << "Expected: " << sizeof(packet1) << "\n";
+            std::cout << "Recieved: " << recvCount;
+        }
     };
     while (true) {
         if ((recvCount = recv(*acceptSock, (char *)&phase, sizeof(int), 0)) != SOCKET_ERROR && recvCount == sizeof(int)) {
@@ -52,6 +57,7 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
                 packet2 pack;
 
                 if((recvCount = recv(*acceptSock, (char*)&pack, sizeof(packet2), 0)) != SOCKET_ERROR){
+
                     std::cout << std::format("Packet Size: {}\n", recvCount);
                     std::cout << std::format("Index: {}\n", pack.index);
                     std::cout << std::format("DiscardNum: {}\n", pack.discardNum);
@@ -72,14 +78,19 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
                             pack.cards[i].second = hand[pack.index].at(i).getSuite();
                         }
 
-                        std::cout << std::format("Player {} New Hand: \n", pack.index + 1) << *hand << "\n\n";
+                        std::cout << std::format("Player {} New Hand: \n", pack.index + 1) << hand[pack.index] << "\n\n";
                     }
                     for (int i = 0; i < 4; i++) {
                         if (allSocks[i] == nullptr) {
                             continue;
                         }
-                        sendto(*(allSocks[i]), (char *)&pack, sizeof(packet2), 0, reinterpret_cast<SOCKADDR *>(&(allInfo[i])), sizeof(allInfo[i]));
+                        sendto(*(allSocks[i]), (char*)&pack, sizeof(packet2), 0, reinterpret_cast<SOCKADDR *>(&(allInfo[i])), sizeof(allInfo[i]));
                     }              
+                }
+                else{
+                    std::cout << "No\n";
+                    std::cout << "Expected: " << sizeof(packet2) << "\n";
+                    std::cout << "Recieved: " << recvCount;
                 }
 
             }
@@ -115,6 +126,8 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
         }
         else{
             std::cout << "No\n";
+            std::cout << "Expected: " << sizeof(int) << "\n";
+            std::cout << "Recieved: " << recvCount;
             break;
         }
     }

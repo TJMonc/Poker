@@ -4,6 +4,7 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     PSTR lpCmdLine, int nCmdShow){
+    srand(time(NULL));
     Poker::PokerGame* game = new Poker::PokerGame;
     RenderWindow* window = game->getWindow();
 
@@ -25,7 +26,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         errorMsg.setString(std::format("Error: {}", eString));
         window->draw(errorMsg);
         window->display();
-        std::cerr << e.what();
+        std::cout << e.what();
     }
     delete game;
 

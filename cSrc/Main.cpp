@@ -4,7 +4,7 @@
 /*The new plan is to use the server to store the "real" Deck / playerHands (AND ONLY THE DECK AND PLAYERHANDS)*/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     PSTR lpCmdLine, int nCmdShow){
-
+    srand(time(NULL));
     WSADATA wsaData;
     int wsaerr;
     WORD version = MAKEWORD(2,2);
@@ -64,7 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
         window.draw(errorMsg);
         window.display();
-        std::cerr << e.what();
+        std::cout << WSAGetLastError();
 
         std::cin.get();
         delete game;

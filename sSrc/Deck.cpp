@@ -1,6 +1,6 @@
 #include "Deck.h"
 
-Poker::Deck::Deck(){
+Poker::Deck::Deck(): deckSprite(deckText){
 	this->deck = (Card*)new Card[52];
 	for(int i = 0; i < 52; i++){
 		objDeck[i] = &(deck[i]);
@@ -18,7 +18,7 @@ Poker::Deck::Deck(){
 			counter++;
 		}
 	}
-	Game::loadSprite(deckText, "CardBacks/CardDeck.png");
+	deckText = Texture("CardBacks/CardDeck.png");
 	deckSprite.setTexture(deckText);
 }
 

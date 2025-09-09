@@ -48,7 +48,7 @@ target_link_directories(Poker PRIVATE ${LINK_DIRECTORIES})
 
 #Build Client
 file(GLOB SOURCES "cSrc/*.cpp")
-add_executable(client WIN32 ${SOURCES})
+add_executable(client ${SOURCES})
 target_compile_options(client PRIVATE ${COMPILE_OPTIONS})
 target_include_directories(client PRIVATE ${INCLUDE_DIRECTORIES})
 target_link_directories(client PRIVATE ${LINK_DIRECTORIES})
@@ -65,6 +65,8 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 target_link_libraries(server ${LINKED_LIBS})
 
 #Dependencies to ensure build order is correct
+set_target_properties(sfml-graphics sfml-window sfml-audio sfml-main sfml-network sfml-system 
+PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 add_dependencies(Misc sfml-graphics sfml-window sfml-audio sfml-main sfml-network sfml-system)
 add_dependencies(Poker Misc)
 

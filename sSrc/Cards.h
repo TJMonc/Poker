@@ -36,7 +36,7 @@ namespace Poker {
 	private:
 		RenderWindow* window;
 		Vector2f windowScale;
-		Texture cardText;
+		Texture cardText = Texture("Cards/2_of_clubs.png");
 		Sprite cardSprite;
 		CardNumbers::Number number;
 		Suits::Suit suit;
