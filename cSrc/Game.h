@@ -63,6 +63,7 @@ namespace Poker {
 			int callAmount;
 			int betPool;
 			bool end;
+			bool enterPressed = false;
 			Clock interactionClock;
 			Time interactionTime;
 
@@ -120,6 +121,8 @@ namespace Poker {
 			void endPhase(SOCKET* acceptSock);
 			void phaseChange();
 			void displayInteraction(std::optional<Event>& event);
+			void handleBetInput(const Event& e);
+
 			void draw(RenderWindow& window);
 			int recvThread(SOCKET *acceptSock, int *threadActive);
 

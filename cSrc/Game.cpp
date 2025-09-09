@@ -35,9 +35,15 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 			if(event->is<Event::Closed>()){
 				window.close();
 			}
+			if(const Event::KeyPressed* key = event->getIf<Event::KeyPressed>()){
+				if(key->scancode == Keyboard::Scancode::Enter && info.turn == you){
+					info.enterPressed = true;
+				}
+			}
 			if(Keyboard::isKeyPressed(Keyboard::Key::Escape)){
 				window.close();
 			}
+			this->handleBetInput(event.value());
 		}
 
 		display.t_callAmount.setString(std::to_string(info.callAmount));
@@ -225,7 +231,9 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 		info.turn++;
 	}
 	else if (players[info.turn].playerHand.getIsPlayer()) {
-		if ((Keyboard::isKeyPressed(Keyboard::Key::Enter)) && info.interactionClock.getElapsedTime() > info.interactionTime) {
+		if (info.enterPressed && info.interactionClock.getElapsedTime() > info.interactionTime) {
+			info.enterPressed = false;
+
 			info.interactionClock.restart();
 			if (display.foldPressed) {
 				pack.folded = true;
@@ -282,6 +290,7 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 
 			info.turn++;
 		}
+
 	}
 	else if(players[info.turn].isPlayer){
 		//IN PROGRESS
@@ -381,7 +390,9 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 		info.turn++;
 	}
 	else if (players[info.turn].playerHand.getIsPlayer()) {
-		if (Keyboard::isKeyPressed(Keyboard::Key::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime) {
+		if (info.enterPressed && info.interactionClock.getElapsedTime() > info.interactionTime) {
+			info.enterPressed = false;
+
 			std::vector<int> discarded = hand.getDiscarded();
 			pack.discardNum = discarded.size();
 			for(int i = 0; i < pack.discardNum; i++){
@@ -458,6 +469,7 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 
 		}
 	}
+
 }
 
 void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
@@ -546,7 +558,9 @@ void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 		info.end = true;
 		display.foldPressed = false;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Key::Enter) && info.interactionClock.getElapsedTime() > info.interactionTime && you == 0) {
+	if (info.enterPressed && info.interactionClock.getElapsedTime() > info.interactionTime && you == 0) {
+		info.enterPressed = false;
+
 		info.interactionClock.restart();
 		packet3 pack;
 
@@ -669,35 +683,10 @@ void Poker::PokerGame::displayInteraction(std::optional<Event>& event) {
 					display.isWriting = false;
 				}
 			}
-			if (display.isWriting && players[info.turn].isRaising) {
-				std::string validNums = "1234567890";
-
-				if (const auto* key = event->getIf<Event::TextEntered>()){
-						if(info.interactionClock.getElapsedTime() > info.interactionTime){
-						info.interactionClock.restart();
-						if (key->unicode == '\b') {
-							if (display.inputText.getString() != "") {
-								display.input.erase(display.input.size() - 1);
-							}
-						}
-						else {
-							display.input += key->unicode;
-
-							if (display.input.find_first_not_of(validNums) != std::string::npos) {
-								display.input.erase(display.input.size() - 1);
-							}
-						}
-					}
-					display.inputText.setString(display.input);
-				}
-			}
-			else {
-				display.input = "";
-				display.inputText.setString(display.input);
-			}
 		}
 	}
 }
+
 
 void Poker::PokerGame::draw(RenderWindow& window) {
 	window.clear();
@@ -731,7 +720,33 @@ void Poker::PokerGame::draw(RenderWindow& window) {
 	window.draw(display.t_betPool);
 	window.display();
 }
+void Poker::PokerGame::handleBetInput(const Event& e){
+	if (display.isWriting && players[info.turn].isRaising){
+		std::string validNums = "1234567890";
+		const Event::TextEntered* key;
+		if ((key = e.getIf<Event::TextEntered>()) != nullptr && info.interactionClock.getElapsedTime() > info.interactionTime){
 
+			info.interactionClock.restart();
+
+			if (key->unicode == '\b'){
+				if (display.inputText.getString() != ""){
+					display.input.erase(display.input.size() - 1);
+				}
+			}
+			else{
+				display.input += key->unicode;
+				if (display.input.find_first_of(validNums) == std::string::npos){
+					display.input.erase(display.input.size() - 1);
+				}
+			}
+			display.inputText.setString(display.input);
+		}
+	}
+	else {
+		display.input = "";
+		display.inputText.setString(display.input);
+	}
+}
 int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 	this->threadProgress = 1;
 	auto bet = [&](){

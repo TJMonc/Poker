@@ -76,33 +76,7 @@ namespace Poker {
 			void endPhase();
 			void phaseChange();
 			void displayInteraction();
-			void handleBetInput(const Event& e){
-				if (display.isWriting && players[info.turn].isRaising){
-					std::string validNums = "1234567890";
-					const Event::TextEntered* key;
-					if ((key = e.getIf<Event::TextEntered>()) != nullptr && info.interactionClock.getElapsedTime() > info.interactionTime){
-
-						info.interactionClock.restart();
-
-						if (key->unicode == '\b'){
-							if (display.inputText.getString() != ""){
-								display.input.erase(display.input.size() - 1);
-							}
-						}
-						else{
-							display.input += key->unicode;
-							if (display.input.find_first_of(validNums) == std::string::npos){
-								display.input.erase(display.input.size() - 1);
-							}
-						}
-						display.inputText.setString(display.input);
-					}
-				}
-				else {
-					display.input = "";
-					display.inputText.setString(display.input);
-				}
-		}
+			void handleBetInput(const Event& e);
 		void draw();
 		public:
 			PokerGame(): window(VideoMode(), "Poker", State::Fullscreen){
