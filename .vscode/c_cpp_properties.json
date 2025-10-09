@@ -3,7 +3,10 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/***",
+                "${workspaceFolder}/deps/misclib-src/include",
+                "${workspaceFolder}/deps/sfml-src/include"
+
             ],
             "defines": [
                 "_DEBUG",
