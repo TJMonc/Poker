@@ -328,6 +328,8 @@ int main(){
                 }
                 allSocks[i] = nullptr;
             }
+            delete[] client;
+            delete[] init;
             init = new std::thread[MAX_CLIENTS];
             client = new std::thread[MAX_CLIENTS];
             std::cout << "End: " << index;
@@ -375,6 +377,8 @@ int main(){
                 }
                 allSocks[i] = nullptr;
             }
+            delete[] client;
+            delete[] init;
             init = new std::thread[MAX_CLIENTS];
             client = new std::thread[MAX_CLIENTS];
             std::cout << "End: " << index;
