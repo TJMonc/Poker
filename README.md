@@ -27,7 +27,10 @@ ________________________________________________________________________________
  ' sudo apt install gcc g++ '
 
 - You may be missing a few additional packages:
- ' sudo apt-get install -y libfreetype6-dev libudev-dev libxrandr-dev libxcursor-dev libxi-dev libvorbis-dev dos2unix '
+ ' sudo apt-get install -y libfreetype6-dev libudev-dev libxrandr-dev libxcursor-dev libxi-dev libvorbis-dev dos2unix libgl1-mesa-dev libflac-dev
+'
+- If anything else is missing:
+' sudo apt install build-essential
 
 - The .csv files may still have the CRLF linefeeds instead of LF. This will cause the program to crash:
  ' dos2unix bin/CardBackPaths.csv bin/CardPaths.csv '
