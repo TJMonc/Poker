@@ -22,6 +22,8 @@ ________________________________________________________________________________
 
 - If you've successfully installed everything, run "run.bat" and wait for the project to compile.
 
+- Executable located in the bin folder
+
 Linux Users
 ___________________________________________________________________________________________________________
 
@@ -42,4 +44,7 @@ ________________________________________________________________________________
  ' dos2unix bin/CardBackPaths.csv bin/CardPaths.csv '
 
 - run the run.sh script and wait for the program to compile.
+
+- Executable located in the bin folder
+
 
