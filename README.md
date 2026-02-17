@@ -1,4 +1,4 @@
-This is the compile instructions for a client-server poker game.
+These are the compile instructions for a client-server poker game.
 
 
 Windows Users
