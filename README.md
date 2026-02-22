@@ -48,3 +48,25 @@ ________________________________________________________________________________
 - Executable located in the bin folder
 
 
+Using the program
+______________________________________________________________________________________________________________
+
+- Run the server executable first. 
+
+- There is a 15 second timer between a player joining, and the game starting. The timer resets every time a player joins.
+
+- Max of 4 players. Any players after the 4th will get an error.
+
+- If a client disconnects
+
+- Connects to port 1234 by default.
+
+- To edit server ip.
+    - Go to cSrc/Main.cpp
+    - find the variable: `clientServ.sin_addr.s_addr`
+    - change the value to the target server/router's ip.
+    - recompile with run.bat or run.sh
+
+
+
+

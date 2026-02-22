@@ -10,8 +10,8 @@ int main(int argc, char** argv){
 #endif
 
 #ifdef _WIN32
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-    PSTR lpCmdLine, int nCmdShow){
+int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow){
+
     WSADATA wsaData;
     int wsaerr;
     WORD version = MAKEWORD(2,2);
@@ -70,43 +70,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     Poker::PokerGame* game = new Poker::PokerGame(window);
 
 
-    try{
-        game->init(window, &clientSock, clientServ);
-        game->update(window, &clientSock);
-    }
-    catch(std::exception &e){
-        Vector2f windowScale = {Vector2f(window.getSize()) / Vector2f RES_768};
-        sf::Font font;
-        sf::Text errorMsg(font);
-        Game::loadFont(errorMsg, font, Game::FontPaths::blackLivesFont);
-
-        std::string eString = e.what();
-        window.clear();
-
-        errorMsg.setCharacterSize(windowScale.x * 20.f );
-        errorMsg.setFillColor(Color::Red);
-        errorMsg.setPosition((Vector2f)window.getSize() / 2.f);
-        errorMsg.setString(std::format("Error: {}.", eString));
-
-        window.draw(errorMsg);
-        window.display();
-        #ifdef _WIN32
-        std::cout << WSAGetLastError();
-        #endif
-
-        #ifdef __unix__
-        std::cout << errno;
-        #endif
-
-        std::cin.get();
-        delete game;
-        closesocket(clientSock);
-
-        #ifdef _WIN32
-        WSACleanup();
-        #endif
-        std::exit(EXIT_FAILURE);
-    }
+    
+    game->init(window, &clientSock, clientServ);
+    game->update(window, &clientSock);
 
     delete game;
     closesocket(clientSock);

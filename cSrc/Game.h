@@ -1,6 +1,7 @@
 #ifndef POKERGAME_H
 #define POKERGAME_H
 #include <format>
+#include <mutex>
 #include "Hand.h"
 
 
@@ -30,6 +31,8 @@ typedef sockaddr SOCKADDR;
 #endif
 
 
+
+
 struct packet1{
     int phase;
     bool isRaising;
@@ -47,7 +50,7 @@ struct initPacket{
 	int playerNum;
 };
 
-struct packet2{
+struct packet2 {
 	//First in the pair is card number. Second in pair is card suit. Refer to Poker::CardNumbers::Numbers and Poker::Suits::Suit enums
 	std::pair<int, int> cards[5];
 
@@ -56,11 +59,20 @@ struct packet2{
     int discarded[5];
 	bool folded = false;
 };
-struct packet3{
+struct packet3 {
 	/*1st index is player index. Second index is card. Card[0][3] would be player 1's third card
 	First in the pair is card number. Second in pair is card suit. Refer to Poker::CardNumbers::Numbers and Poker::Suits::Suit enums
 	*/
     std::pair<int, int> cards[4][5];
+};
+
+struct DisconnectPacket {
+	int index = -1;
+	int phase = -1;
+};
+
+struct PacketHeader {
+	bool isDisconnectedPeer = false;
 };
 
 namespace Poker {
@@ -130,8 +142,19 @@ namespace Poker {
 			CircleShape turnPointer;
 
 			std::thread recieve;
-			int threadProgress = 0;
-		
+			std::atomic<int> threadProgress = 0;
+			std::atomic<bool> running = true;
+			std::mutex mutex;
+
+			std::unique_ptr<packet1> packPtr1 = nullptr;
+			std::unique_ptr<packet2> packPtr2 = nullptr;
+			std::unique_ptr<packet3> packPtr3 = nullptr;
+
+
+
+
+
+	
 		private:
 			void initDeck(RenderWindow& window);
 			void initPlayers(RenderWindow& window);
@@ -146,7 +169,108 @@ namespace Poker {
 			void handleBetInput(const Event& e);
 
 			void draw(RenderWindow& window);
-			int recvThread(SOCKET *acceptSock, int *threadActive);
+			int applyPacket1(std::unique_ptr<packet1> &pack) {
+
+				if (pack->folded) {
+					players[info.turn].playerHand.setFolded(true);
+				}
+				else {
+					int raiseAmount = pack->raiseAmount;
+					bool isRaising = pack->isRaising;
+					if (pack->isRaising) {
+						int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
+						if (diff > players[info.turn].betMoney) {
+							diff = players[info.turn].betMoney;
+							raiseAmount = diff - info.callAmount;
+						}
+						players[info.turn].betMoney -= diff;
+						info.betPool += diff;
+						info.callAmount += raiseAmount;
+						players[info.turn].betAmount += diff;
+					}
+					else {
+						players[info.turn].isRaising = false;
+						if (players[info.turn].betAmount < info.callAmount) {
+							if (players[info.turn].betMoney < (info.callAmount - players[info.turn].betAmount)) {
+								players[info.turn].betAmount += players[info.turn].betMoney;
+								players[info.turn].betMoney = 0;
+							}
+							else {
+								int diff = info.callAmount - players[info.turn].betAmount;
+								players[info.turn].betMoney -= diff;
+								info.betPool += diff;
+
+								players[info.turn].betAmount = info.callAmount;
+							}
+						}
+					}
+				}
+				players[info.turn].t_betAmount.setString(std::to_string(players[info.turn].betAmount));
+				players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
+
+				return 0;
+			};
+			int applyPacket2(std::unique_ptr<packet2>& pack2){
+				for (int i = 0; i < 5; i++) {
+
+					players[pack2->index].playerHand.pat(i) = &deck.at(std::format("{}{}", Suits::suit.at(pack2->cards[i].second), pack2->cards[i].first));
+				}
+				players[pack2->index].playerHand.sortCards();
+
+				for (size_t i = 0; i < 4; i++) {
+					if (!players[i].playerHand.getIsPlayer()) {
+						players[i].playerHand.setTurned(true);
+					}
+				}
+				return 0;
+			};
+			int applyPacket3(std::unique_ptr<packet3>& pack){
+				deck.reset();
+
+				players[info.winnerIndex].betMoney += info.betPool;
+				info.winnerIndex = 0;
+				info.betPool = 0;
+				info.callAmount = 5;
+				for (size_t i = 0; i < 4; i++) {
+					auto &hand = players[i].playerHand;
+					for (int j = 0; j < 5; j++)
+					{
+						players[i].playerHand[j].getSprite().setColor(Color::White);
+					}
+				}
+
+				for (int i = 0; i < 4; i++) {
+					auto &hand = players[i].playerHand;
+
+					players[i].t_handType.setFillColor(Color::Blue);
+					players[i].t_handType.setString(Poker::Hand::typesMap.at(hand.getHandType()));
+					players[i].t_betMoney.setString(std::to_string(players[i].betMoney));
+					if (!hand.getIsPlayer()) {
+						hand.setTurned(true);
+					}
+					if (players[i].betMoney < 1) {
+						players[i].bust = true;
+					}
+					for (int j = 0; j < 5; j++) {
+						hand.pat(j) = &deck.at(std::format("{}{}",
+														   Suits::suit.at(pack->cards[i][j].second), pack->cards[i][j].first));
+					}
+					for (size_t i = 0; i < 4; i++) {
+						if (!players[i].playerHand.getIsPlayer()) {
+							players[i].playerHand.setTurned(true);
+						}
+					}
+					hand.sortCards();
+				}
+				info.end = false;
+				return 0;
+			};
+			int applyDisconnect(std::unique_ptr<DisconnectPacket>& packet);
+			int recvThread(SOCKET *acceptSock, void* packet);
+
+			
+
+			bool verifyConnections(SOCKET* acceptSock);
 
 		public:
 			PokerGame(RenderWindow& window) {
@@ -157,6 +281,13 @@ namespace Poker {
 				deck.setWindow(&window);
 				mouseCircle.setRadius(5.f);
 
+			}
+			~PokerGame(){
+				running = false;
+
+				if (recieve.joinable()){
+					recieve.join();
+				}
 			}
 			void init(RenderWindow& window, SOCKET* acceptSock, sockaddr_in aServInfo);
 			void update(RenderWindow& window, SOCKET* acceptSock);

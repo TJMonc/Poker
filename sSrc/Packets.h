@@ -6,6 +6,7 @@ typedef Poker::Deck Deck;
 typedef Poker::Hand Hand;
 
 
+
 struct packet1{
     int phase;
     bool isRaising;
@@ -32,9 +33,18 @@ struct packet2{
     int discarded[5];
 	bool folded = false;
 };
-struct packet3{
+struct packet3 {
 	/*1st index is player index. Second index is card. Card[0][3] would be player 1's third card
 	First in the pair is card number. Second in pair is card suit. Refer to Poker::CardNumbers::Numbers and Poker::Suits::Suit enums
 	*/
     std::pair<int, int> cards[4][5];
+};
+
+struct DisconnectPacket {
+	int index = -1;
+	int phase = -1;
+};
+
+struct PacketHeader {
+	bool isDisconnectedPeer = false;
 };

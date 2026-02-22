@@ -33,7 +33,7 @@ set(SFML_DIR ${FETCHCONTENT_BASE_DIR})
 set(MISC_DIR ${FETCHCONTENT_BASE_DIR})
 set(INCLUDE_DIRECTORIES ${SFML_DIR}/sfml-src/include ${MISC_DIR}/misclib-src/include)
 set(LINK_DIRECTORIES ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
-set(COMPILE_OPTIONS -std=c++20 -O3 -Werror -Wno-trigraphs)
+set(COMPILE_OPTIONS -std=c++20 -O2 -Werror -Wno-trigraphs)
 
 #Build Single Player
 if(WIN32)

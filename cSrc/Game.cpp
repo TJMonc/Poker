@@ -1,9 +1,11 @@
 #include "Game.h"
+#include <mutex>
+
 Font Poker::PokerGame::UIStruct::font = Font();
 
 void Poker::PokerGame::init(RenderWindow& window, SOCKET* acceptSock, sockaddr_in aServInfo) {
 	this->serverInfo = aServInfo;
-	if(recv(*acceptSock, (char*)&initPack, sizeof(initPacket), 0) > 0){
+	if(recv(*acceptSock, (char*)&initPack, sizeof(initPacket), 0) == sizeof(initPacket)){
 		you = initPack.index;
 	};
     initDeck(window);
@@ -25,6 +27,7 @@ void Poker::PokerGame::init(RenderWindow& window, SOCKET* acceptSock, sockaddr_i
 
 void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 	sockaddr_in addrInfo = {0};
+
     #ifdef _WIN32
     int addrSize = sizeof(addrInfo);
 
@@ -37,11 +40,15 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
     #endif
 	bool sent = false;
 	getpeername(*clientSock, reinterpret_cast<SOCKADDR*>(&addrInfo), &addrSize);
-	while(window.isOpen()){
+	while(window.isOpen() && running){
 		std::optional<Event> event;
 		while(event = window.pollEvent()){
 
 			if(event->is<Event::Closed>()){
+				running = false;
+				if(recieve.joinable()){
+					recieve.join();
+				}
 				window.close();
 			}
 			if(const Event::KeyPressed* key = event->getIf<Event::KeyPressed>()){
@@ -50,6 +57,10 @@ void Poker::PokerGame::update(RenderWindow& window, SOCKET* clientSock) {
 				}
 			}
 			if(Keyboard::isKeyPressed(Keyboard::Key::Escape)){
+				running = false;
+				if(recieve.joinable()){
+					recieve.join();
+				}				
 				window.close();
 			}
 			this->handleBetInput(event.value());
@@ -236,6 +247,7 @@ void Poker::PokerGame::initUI(RenderWindow& window) {
 
 void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 	packet1 pack;
+	PacketHeader header;
 	if (players[info.turn].playerHand.getFolded()) {
 		info.turn++;
 	}
@@ -293,6 +305,7 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 			send(*acceptSock, (char*)&info.phase, sizeof(int), 0);
 
 			send(*acceptSock, (char*)&pack, sizeof(packet1), 0);
+			verifyConnections(acceptSock);
 			int count = recv(*acceptSock, (char*)&pack, sizeof(packet1), 0);
 			
 
@@ -303,13 +316,24 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 	}
 	else if(players[info.turn].isPlayer){
 		//IN PROGRESS
+		if (packPtr1 == nullptr){
+			packPtr1 = std::make_unique<packet1>();
+		}
 		if(threadProgress == 0){
-			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
+			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, packPtr1.get());
 		}
 		else if(threadProgress > 1){
 			recieve.join();
 			threadProgress = 0;
+
+			std::unique_ptr<packet1> pack1Ptr(static_cast<packet1*>(packPtr1.release()));
+			
+			packPtr1 = nullptr;
+			applyPacket1(pack1Ptr);
 			info.turn++;
+
+
+
 		}
 	}
 	else if(you == 0){
@@ -343,21 +367,23 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 				}
 			}
 		}
-
 		players[info.turn].t_betAmount.setString(std::to_string(players[info.turn].betAmount));
 		players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
 
 		pack.isRaising = players[info.turn].isRaising;
 		int t = 0;
 		send(*acceptSock, (char*)&info.phase, sizeof(int), 0);
-
 		send(*acceptSock, (char*)&pack, sizeof(packet1), 0);
+
+		verifyConnections(acceptSock);
 		recv(*acceptSock, (char *)&pack, sizeof(packet1), 0);
 		
 		info.turn++;
 	}
 	else{
 		int recvCount;
+		verifyConnections(acceptSock);
+
 		if ((recvCount = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR) {
 			players[info.turn].isRaising = pack.isRaising;
 			
@@ -395,6 +421,7 @@ void Poker::PokerGame::betPhase(SOCKET* acceptSock) {
 void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 	auto& hand = players[info.turn].playerHand; 
 	packet2 pack;
+	PacketHeader header;
 	if (hand.getFolded()){
 		info.turn++;
 	}
@@ -409,33 +436,55 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 			}
 			pack.index = you;
 			send(*acceptSock, (char*)&info.phase, sizeof(int), 0);
-
 			send(*acceptSock, (char*)&pack, sizeof(packet2), 0);
+
+			if (packPtr2 == nullptr) {
+				packPtr2 = std::make_unique<packet2>();
+			}
 			if (threadProgress == 0) {
-				recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
+				recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, packPtr2.get());
 			}
 			recieve.join();
 
-			info.turn++;
+			
+			std::unique_ptr<packet2> pack2Ptr(static_cast<packet2*>(packPtr2.release()));
+			packPtr2 = nullptr;
+			applyPacket2(pack2Ptr);
+
+
 			threadProgress = 0;
 			hand.setHandType();
 			players[info.turn].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
 			players[info.turn].playerHand.setTurned(false);
 			info.interactionClock.restart();
 
+			info.turn++;
+
+
 		}
 	}
 	else if(players[info.turn].isPlayer){
+		if (packPtr2 == nullptr) {
+			packPtr2 = std::make_unique<packet2>();
+		}
 		if(threadProgress == 0){
-			recieve = std::thread(&Poker::PokerGame::recvThread,this , acceptSock, &threadProgress);
+			recieve = std::thread(&Poker::PokerGame::recvThread,this , acceptSock, packPtr2.get());
 		}
 		else if(threadProgress > 1){
+
 			recieve.join();
 			threadProgress = 0;
-			info.turn++;
+
+			std::unique_ptr<packet2> pack2Ptr(static_cast<packet2*>(packPtr2.release()));
+			packPtr2 = nullptr;
+			applyPacket2(pack2Ptr);
+
 
 			hand.setHandType();
 			players[info.turn].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
+
+			info.turn++;
+
 
 		}
 	}
@@ -452,37 +501,60 @@ void Poker::PokerGame::discardPhase(SOCKET* acceptSock){
 		send(*acceptSock, (char*)&info.phase, sizeof(int), 0);
 
 		send(*acceptSock, (char *)&pack, sizeof(packet2), 0);
-		if(threadProgress == 0){
-			recieve = std::thread(&Poker::PokerGame::recvThread,this , acceptSock, &threadProgress);
+
+		if (packPtr2 == nullptr) {
+			packPtr2 = std::make_unique<packet2>();
 		}
+		if(threadProgress == 0){
+			recieve = std::thread(&Poker::PokerGame::recvThread,this , acceptSock, (void*)packPtr2.get());
+		}
+
 		recieve.join();
 		threadProgress = 0;
 
+		std::unique_ptr<packet2> pack2Ptr(static_cast<packet2*>(packPtr2.release()));
+		packPtr2 = nullptr;
+		applyPacket2(pack2Ptr);
+
 		hand.setHandType();
 		players[info.turn].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
+
+
 		info.turn++;
 
 
 	}
 	else{
 		hand.hasChosen = false;
+		if (packPtr2 == nullptr){
+			packPtr2 = std::make_unique<packet2>();
+		}
 		if (threadProgress == 0) {
-			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
+			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, packPtr2.get());
 		}
 		else if (threadProgress == 2) {
 			recieve.join();
 			threadProgress = 0;
-			info.turn++;
+			std::unique_ptr<packet2> pack2Ptr(static_cast<packet2*>(packPtr2.release()));
+			packPtr2 = nullptr;
+			applyPacket2(pack2Ptr);
+
 			hand.setHandType();
 			players[info.turn].t_handType.setString(Hand::typesMap.at(hand.getHandType()));
 
+			info.turn++;
+
+
 		}
 	}
+
 
 }
 
 void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 	Poker::Hand *winner = &players[0].playerHand;
+	PacketHeader header;
+
 	if (!info.end) {
 		info.winnerIndex = 0;
 
@@ -574,6 +646,8 @@ void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 		packet3 pack;
 
 		send(*acceptSock, (char *)&info.phase, sizeof(int), 0);
+
+		verifyConnections(acceptSock);
 		recv(*acceptSock, (char *)&pack, sizeof(packet3), 0);
 
 		players[info.winnerIndex].betMoney += info.betPool;
@@ -614,14 +688,18 @@ void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 
 	}
 	else if(you != 0){
-		packet3 pack;
-
+		if (packPtr3 == nullptr) {
+			packPtr3 = std::make_unique<packet3>();
+		}
 		if (threadProgress == 0) {
-			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, &threadProgress);
+			recieve = std::thread(&Poker::PokerGame::recvThread, this, acceptSock, packPtr3.get());
 		}
 		else if (threadProgress == 2) {
 			recieve.join();
 			threadProgress = 0;
+			std::unique_ptr<packet3> pack3Ptr(static_cast<packet3*>(packPtr3.release()));
+			packPtr3 = nullptr;
+			applyPacket3(pack3Ptr);
 
 			info.phase++;
 
@@ -631,12 +709,15 @@ void Poker::PokerGame::endPhase(SOCKET* acceptSock) {
 }
 
 void Poker::PokerGame::phaseChange() {
+	if(threadProgress != 0){
+		return;
+	}
 	if (info.turn > 3) {
 		info.turn = 0;
 		info.phase++;
 		
 
-		bool allCall;
+		bool allCall = false;
 		for (size_t i = 0; i < 4; i++) {
 			if (players[i].playerHand.getFolded()) {
 				continue;
@@ -701,9 +782,15 @@ void Poker::PokerGame::draw(RenderWindow& window) {
 	window.clear();
 	for (size_t i = 0; i < 4; i++) {
 		auto& hand = players[i].playerHand;
-		if(info.phase != 3 && !hand.getIsPlayer()){
-			hand.setTurned(true);
+		if(info.phase != 3){
+			if(!hand.getIsPlayer()){
+				hand.setTurned(true);
+			}
+			else{
+				hand.setTurned(false);
+			}
 		}
+	
 		hand.drawTo(window);
 		window.draw(players[i].t_betMoney);
 		window.draw(players[i].t_betAmount);
@@ -756,51 +843,16 @@ void Poker::PokerGame::handleBetInput(const Event& e){
 		display.inputText.setString(display.input);
 	}
 }
-int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
+int Poker::PokerGame::recvThread(SOCKET *acceptSock, void* packet){
 	this->threadProgress = 1;
 	auto bet = [&](){
 		packet1 pack;
 		int addrSize = sizeof(serverInfo);
 		int bytes;
 		if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet1), 0)) != SOCKET_ERROR && bytes == sizeof(packet1)) {
-			
-			if(pack.folded){
-				players[info.turn].playerHand.setFolded(true);
-			}
-			else{
-				int raiseAmount = pack.raiseAmount;
-				bool isRaising = pack.isRaising;
-				if (pack.isRaising){
-
-					int diff = raiseAmount + (info.callAmount - players[info.turn].betAmount);
-					if (diff > players[info.turn].betMoney) {
-						diff = players[info.turn].betMoney;
-						raiseAmount = diff - info.callAmount;
-					}
-					players[info.turn].betMoney -= diff;
-					info.betPool += diff;
-					info.callAmount += raiseAmount;
-					players[info.turn].betAmount += diff;
-				}
-				else {
-					players[info.turn].isRaising = false;
-					if (players[info.turn].betAmount < info.callAmount) {
-						if (players[info.turn].betMoney < (info.callAmount - players[info.turn].betAmount)) {
-							players[info.turn].betAmount += players[info.turn].betMoney;
-							players[info.turn].betMoney = 0;
-						}
-						else {
-							int diff = info.callAmount - players[info.turn].betAmount;
-							players[info.turn].betMoney -= diff;
-							info.betPool += diff;
-
-							players[info.turn].betAmount = info.callAmount;
-						}
-					}
-				}
-		}
-			players[info.turn].t_betAmount.setString(std::to_string(players[info.turn].betAmount));
-			players[info.turn].t_betMoney.setString(std::to_string(players[info.turn].betMoney));
+				std::cout << std::format("\nBet amount: {}\n", pack.raiseAmount);
+				packet1* packetPtr1 = (packet1*)packet;
+				*packetPtr1 = pack;
 		}
 		else{
 			#ifdef _WIN32
@@ -815,94 +867,74 @@ int Poker::PokerGame::recvThread(SOCKET *acceptSock, int *threadActive){
 		}
 
 	};
-	switch (info.phase) {
-	case 0: 
-		bet();
-		break;
-	case 1:{
-		packet2 pack2;
-		int recvCount;
-		if((recvCount = recv(*acceptSock, (char *)&pack2, sizeof(packet2), 0)) == sizeof(packet2) != SOCKET_ERROR){
-			
+	bool isGood = verifyConnections(acceptSock);
+	if (isGood) {
+		switch (info.phase){
+		case 0:
+			bet();
+			break;
+		case 1:{
+			packet2 pack2;
+			int recvCount;
+			if ((recvCount = recv(*acceptSock, (char *)&pack2, sizeof(packet2), 0)) == sizeof(packet2)){
+				packet2* packetPtr2 = (packet2*)packet;
+				*packetPtr2 = pack2;
 
-			for (int i = 0; i < 5; i++) {
-				players[pack2.index].playerHand.pat(i) = &deck.at(std::format("{}{}",
-														Suits::suit.at(pack2.cards[i].second), pack2.cards[i].first));
+
 			}
-			players[pack2.index].playerHand.sortCards();
-		}
-		else{
-			
-		}
-		for(size_t i = 0; i < 4; i++){
-			if (!players[i].playerHand.getIsPlayer()){
-				players[i].playerHand.setTurned(true);
+			else {
+				throw FileError("Failed in recieving data");
 			}
+
+		}
+		break;
+
+		case 2:
+			bet();
+			break;
+		case 3: {
+			packet3 pack;
+			int bytes = 0;
+
+			if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet3), 0)) != SOCKET_ERROR && bytes == sizeof(packet3)) {
+				packet3* packetPtr3 = (packet3*)packet;
+				*packetPtr3 = pack;
+
+			}
+			else {
+				throw FileError("Failed recieving data\n");
+			}
+
+			break;
+		}
+
+		default:
+			break;
 		}
 	}
-	break;
 
-	case 2:
-		bet();
-		break;
-	case 3: {
-		packet3 pack;
-		deck.reset();
-		int bytes = 0;
-
-
-		players[info.winnerIndex].betMoney += info.betPool;
-		info.winnerIndex = 0;
-		info.betPool = 0;
-		info.callAmount = 5;
-		for (size_t i = 0; i < 4; i++)
-		{
-			auto &hand = players[i].playerHand;
-			for (int j = 0; j < 5; j++)
-			{
-				players[i].playerHand[j].getSprite().setColor(Color::White);
-			}
-		}
-		if ((bytes = recv(*acceptSock, (char *)&pack, sizeof(packet3), 0)) != SOCKET_ERROR && bytes == sizeof(packet3)) {
-
-			for (int i = 0; i < 4; i++) {
-				auto &hand = players[i].playerHand;
-
-				players[i].t_handType.setFillColor(Color::Blue);
-				players[i].t_handType.setString(Poker::Hand::typesMap.at(hand.getHandType()));
-				players[i].t_betMoney.setString(std::to_string(players[i].betMoney));
-				if (!hand.getIsPlayer()) {
-					hand.setTurned(true);
-				}
-				if (players[i].betMoney < 1) {
-					players[i].bust = true;
-				}
-				for (int j = 0; j < 5; j++) {
-					hand.pat(j) = &deck.at(std::format("{}{}",
-													   Suits::suit.at(pack.cards[i][j].second), pack.cards[i][j].first));
-				}
-				for(size_t i = 0; i < 4; i++){
-					if (!players[i].playerHand.getIsPlayer()){
-						players[i].playerHand.setTurned(true);
-					}
-				}
-				hand.sortCards();
-
-			}
-			info.end = false;
-
-			
-		}
-		else {
-			throw FileError("Failed recieving data\n");
-		}
-
-		break;
-	}
-
-	default:
-		break;
-	}
 	this->threadProgress = 2;
 	return 0;
+}
+
+bool Poker::PokerGame::verifyConnections(SOCKET *acceptSock) {
+	PacketHeader header;
+	DisconnectPacket pack;
+	if(recv(*acceptSock, (char*)&header, sizeof(header), 0) != SOCKET_ERROR){
+		if(!header.isDisconnectedPeer){
+			return true;
+		}
+		if(recv(*acceptSock, (char*)&pack, sizeof(pack), 0) != SOCKET_ERROR){
+			players[pack.index].isPlayer = false;
+			return false;
+			
+		}
+		else{
+			throw FileError("Failed to recieve packet header");
+	
+		}
+	}
+	else{
+		throw FileError("Failed to recieve packet header");
+	}
 }

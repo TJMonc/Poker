@@ -6,6 +6,9 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
     SOCKADDR_IN clientInfo = {0};
     SOCKADDR_IN allInfo[4];
     int phase = 0;
+    PacketHeader header;
+    header.isDisconnectedPeer = false;
+
 
     #ifdef _WIN32
     int addrsize = sizeof(clientInfo);
@@ -46,8 +49,8 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
                 if (allSocks[i] == nullptr) {
                     continue;
                 }
-                sendto(*(allSocks[i]), (char *)&pack, sizeof(packet1), 0, reinterpret_cast<SOCKADDR *>(&(allInfo[i])), sizeof(allInfo[i]));
-            }
+                send(*(allSocks[i]), (char *)&header, sizeof(PacketHeader), 0);
+                send(*(allSocks[i]), (char *)&pack, sizeof(packet1), 0);            }
         }
         else{
             std::cout << "No\n";
@@ -94,7 +97,8 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
                         if (allSocks[i] == nullptr) {
                             continue;
                         }
-                        sendto(*(allSocks[i]), (char*)&pack, sizeof(packet2), 0, reinterpret_cast<SOCKADDR *>(&(allInfo[i])), sizeof(allInfo[i]));
+                    send(*(allSocks[i]), (char *)&header, sizeof(PacketHeader), 0);
+                    send(*(allSocks[i]), (char *)&pack, sizeof(packet2), 0);
                     }              
                 }
                 else{
@@ -124,7 +128,8 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
                     if (allSocks[i] == nullptr) {
                         continue;
                     }
-                    sendto(*(allSocks[i]), (char *)&pack, sizeof(packet3), 0, reinterpret_cast<SOCKADDR *>(&(allInfo[i])), sizeof(allInfo[i]));
+                    send(*(allSocks[i]), (char *)&header, sizeof(PacketHeader), 0);
+                    send(*(allSocks[i]), (char *)&pack, sizeof(packet3), 0);
                 }
                 break;
             }
@@ -159,17 +164,32 @@ void clientThread(SOCKET* acceptSock, SOCKET** allSocks, Hand* hand, Deck* deck,
     delete acceptSock;
     acceptSock = nullptr;
     allSocks[index] = nullptr;
+    DisconnectPacket pack;
+    pack.index = index;
+    pack.phase = phase;
+
+    header.isDisconnectedPeer = true;
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (allSocks[i] == nullptr) {
+            continue;
+        }
+        send(*(allSocks[i]), (char *)&header, sizeof(PacketHeader), 0);
+        send(*(allSocks[i]), (char *)&pack, sizeof(DisconnectPacket), 0);
+    }
   //  WSACleanup();   // NOTE: Depending on how this works, it's a possible memory leak.
 }
 
 int initThread(SOCKET* acceptSock, sockaddr_in* info, Time* initTime, Clock* initClock, initPacket* pack, int index){
 
-    if(index == 0){
+    if(index < 3){
         initClock->restart();
     }
     while(true){
         if(initClock->getElapsedTime() > *initTime){
             initPacket playerPack = *pack;
+            
             playerPack.index = index;
             sendto(*acceptSock, (char*)&playerPack, sizeof(initPacket), 0, reinterpret_cast<SOCKADDR*>(info), sizeof(*info));
             
@@ -200,6 +220,9 @@ int main(){
         for(int j = 0; j < 5; j++){
             initPacket.cards[i][j].first = hand[i][j].getNumber();
             initPacket.cards[i][j].second = hand[i][j].getSuite();
+
+
+
         }
     }
     const int MAX_CLIENTS = 4;
@@ -314,7 +337,13 @@ int main(){
         SOCKET *acceptSock = new SOCKET(accept(serverSock, reinterpret_cast<SOCKADDR *>(&clientInfo), &addrsize));
         if((index != 0) && (initTime < initClock.getElapsedTime())){
             for(int i = 0; i < clientSize; i++){
-                client[i].join();
+                if(client[i].joinable()){
+                    client[i].join();
+                }
+
+                if(init[i].joinable()){
+                    init[i].join();
+                }
             }
             index = 0;
             clientSize = 0;
@@ -354,11 +383,12 @@ int main(){
                                      inet_ntoa(clientInfo.sin_addr),
                                      clientInfo.sin_port);
             clientSize++;
-            client[index] = std::thread(clientThread, acceptSock, allSocks, hand, deck, index);
             initPacket.index = index;
            // sendto(*allSocks[i], (char*)&initPacket, sizeof(initPacket), 0, reinterpret_cast<SOCKADDR *>(&clientInfo), sizeof(clientInfo));
             initPacket.playerNum = clientSize;
             init[index] = std::thread(initThread, acceptSock, &(allInfo[index]), &initTime, &initClock, &initPacket, initPacket.index);
+            client[index] = std::thread(clientThread, acceptSock, allSocks, hand, deck, index);
+
             std::cout << std::format("Client Size = {}\n", clientSize);
             index++;
         }
