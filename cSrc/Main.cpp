@@ -34,7 +34,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 
     if(clientSock == INVALID_SOCKET){
         #ifdef _WIN32
-        std::string errmsg = "Error at socket " + WSAGetLastError();
+        std::string errmsg = "Error at socket ";
         WSACleanup();
         #endif
         #ifdef __unix__
@@ -53,7 +53,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     if(connect(clientSock, reinterpret_cast<SOCKADDR*>(&clientServ), sizeof(clientServ)) == SOCKET_ERROR){
         #ifdef _WIN32
 
-        std::string errmsg = "Client failed to connect: " + WSAGetLastError();
+        std::string errmsg = "Client failed to connect: " + std::to_string(WSAGetLastError());
         WSACleanup();
 
         #endif
