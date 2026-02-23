@@ -53,15 +53,17 @@ ________________________________________________________________________________
 
 - Run the server executable first. 
 
-- There is a 15 second timer between a player joining, and the game starting. The timer resets every time a player joins.
+- There is a 15 second timer between each player joining, and the game starting. The timer resets every time a player joins.
 
 - Max of 4 players. Any players after the 4th will get an error.
 
-- If a client disconnects
+- No proper game reset, so players will have to close the game and reopen it to play again
+
+- Server should keep running between games regardless of problems on the client side.
 
 - Connects to port 1234 by default.
 
-- To edit server ip.
+- To edit server ip. (Will be changed to use a txt file later, so you can edit it from that)
     - Go to cSrc/Main.cpp
     - find the variable: `clientServ.sin_addr.s_addr`
     - change the value to the target server/router's ip.

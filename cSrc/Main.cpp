@@ -38,7 +38,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
         WSACleanup();
         #endif
         #ifdef __unix__
-        std::string errmsg = "Error at socket " + errno;
+        std::string errmsg = "Error at socket " + std::to_string(errno);
         #endif
         throw std::runtime_error(errmsg);
     }
