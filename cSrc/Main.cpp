@@ -67,14 +67,13 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
         return -1;
     }
     RenderWindow window(VideoMode(), "Multiplayer Poker", State::Fullscreen);
-    Poker::PokerGame* game = new Poker::PokerGame(window);
+    std::unique_ptr<Poker::PokerGame> game = std::make_unique<Poker::PokerGame>(window);
 
 
     
     game->init(window, &clientSock, clientServ);
     game->update(window, &clientSock);
 
-    delete game;
     closesocket(clientSock);
     #ifdef _WIN32
     WSACleanup();
